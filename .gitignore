@@ -1,3 +1,8 @@
 .claude/
 .wrangler/
 .DS_Store
+
+# local screenshot tooling (puppeteer) — not part of the project
+node_modules/
+package.json
+package-lock.json
