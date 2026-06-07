@@ -369,6 +369,13 @@
     .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
       margin-left: 2px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
 
+    /* expert "spotlight" — a soft pool of light under the two experts during act 1 */
+    .cv-spotlight { position: absolute; left: 50%; top: 86%; width: 52%; height: 15%; transform: translate(-50%,-50%);
+      background: radial-gradient(50% 50% at 50% 50%, rgba(0,179,255,0.32), transparent 70%);
+      filter: blur(7px); opacity: 0; transition: opacity 0.9s ease; pointer-events: none; z-index: 0; }
+    .cv-scene.experts .cv-spotlight { opacity: 1; }
+    .cv-scene.revealed .cv-spotlight { opacity: 0; transition: opacity 0.8s ease; }
+
     /* crowd cloud (organic, absolute positions + per-person depth set inline) */
     .cv-crowd { position: absolute; inset: 24% 4% 5% 4%; }
     /* constellation — faint links between near neighbours, behind the people */
@@ -608,6 +615,7 @@
     scene.innerHTML = `
       <div class="cv-people">
         <div class="cv-narrate"></div>
+        <div class="cv-spotlight"></div>
         <div class="cv-crowd"></div>
       </div>
       <div class="cv-questions">
