@@ -361,20 +361,21 @@
     .cv-scene.revealed .cv-title-b { opacity: 1; transition: opacity 0.9s ease 0.5s; }
 
     /* crowd cloud (organic, absolute positions set inline) */
-    .cv-crowd { position: absolute; inset: 26% 6% 8% 6%; }
-    .cv-dot, .cv-hero-ic { position: absolute; width: 6.4%; aspect-ratio: 1; transform: translate(-50%,-50%); }
+    .cv-crowd { position: absolute; inset: 22% 4% 5% 4%; }
+    .cv-dot, .cv-hero-ic { position: absolute; width: 12%; aspect-ratio: 1; transform: translate(-50%,-50%); }
     .cv-dot svg, .cv-hero-ic svg { width: 100%; height: 100%; display: block; fill: currentColor; }
     .cv-dot { color: #fff; opacity: 0; }                              /* the wider org — white */
-    .cv-dot svg { animation: cvFloat 4s ease-in-out infinite; animation-delay: calc(var(--d,0) * 1s); }
+    .cv-dot svg { animation: cvFloat 3s ease-in-out infinite; animation-delay: calc(var(--d,0) * 1s); }
     .cv-scene.revealed .cv-dot { animation: cvPop 0.6s calc(var(--i,0) * 0.02s) cubic-bezier(0.22,1,0.36,1) forwards; }
 
     /* the two experts — start large & centred, then fly to their crowd spots and shrink */
     .cv-hero-ic { color: var(--sf-blue-l); opacity: 0; z-index: 4;
-      filter: drop-shadow(0 0 9px rgba(0,179,255,0.6));
-      transform: translate(-50%,-50%) translate(var(--sx,0), var(--sy,0)) scale(var(--hs,3.4));
-      transition: transform 1.5s cubic-bezier(0.4,0,0.2,1), opacity 0.8s ease; }
+      filter: drop-shadow(0 0 12px rgba(0,179,255,0.6));
+      transform: translate(-50%,-50%) translate(var(--sx,0), var(--sy,0)) scale(var(--hs,4.2));
+      transition: transform 1.6s cubic-bezier(0.4,0,0.2,1), opacity 0.9s ease; }
     .cv-scene.playing .cv-hero-ic { opacity: 1; }
     .cv-scene.revealed .cv-hero-ic { transform: translate(-50%,-50%) scale(1); }
+    .cv-scene.revealed .cv-hero-ic svg { animation: cvFloat 3s ease-in-out infinite; }
 
     /* question bubbles */
     .cv-q { position: relative; align-self: flex-start; max-width: 100%;
@@ -385,7 +386,7 @@
     .cv-q.answered .cv-tick { opacity: 1; }
     .cv-q .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l); margin-left: 1px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
 
-    @keyframes cvFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes cvFloat { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(1.5px,-5px); } 50% { transform: translate(0,-9px); } 75% { transform: translate(-1.5px,-4px); } }
     @keyframes cvPop   { from { opacity: 0; transform: translate(-50%,-50%) scale(0.3); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
     @keyframes cvQIn   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
     @keyframes cvBlink { 50% { opacity: 0; } }
@@ -594,13 +595,15 @@
     // Seeded RNG → a stable, organic cloud (not a grid).
     let s = 20260607;
     const rnd = () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-    const N = 52, pts = [];
+    // Place points in an ellipse. AR corrects for the crowd box being wider than tall, so the
+    // spacing test is roughly uniform in pixels (prevents vertical stacking / clipping).
+    const N = 30, RX = 48, RY = 47, AR = 2.2, MIND = 10, pts = [];
     let guard = 0;
-    while (pts.length < N && guard++ < 6000) {
-      const x = 50 + (rnd() * 2 - 1) * 47;
-      const y = 50 + (rnd() * 2 - 1) * 45;
-      if (((x - 50) / 47) ** 2 + ((y - 50) / 45) ** 2 > 1) continue;     // inside an ellipse
-      if (pts.some(p => Math.hypot(p.x - x, p.y - y) < 7)) continue;     // light spacing
+    while (pts.length < N && guard++ < 9000) {
+      const x = 50 + (rnd() * 2 - 1) * RX;
+      const y = 50 + (rnd() * 2 - 1) * RY;
+      if (((x - 50) / RX) ** 2 + ((y - 50) / RY) ** 2 > 1) continue;     // inside an ellipse
+      if (pts.some(p => Math.hypot(p.x - x, (p.y - y) / AR) < MIND)) continue;   // aspect-aware spacing
       pts.push({ x, y });
     }
     // Two experts = the points nearest the centre (so they sit in the heart of the crowd).
@@ -728,15 +731,18 @@
 
     // Measure each expert's start offset: from its place in the crowd to the panel centre,
     // side by side. Placed without a transition so they simply appear there, big.
+    // Measure each expert's natural spot, then offset to a framed, side-by-side pair at the
+    // panel centre. Reset --sx/--sy to 0 FIRST so the measurement isn't thrown off by the
+    // offsets left over from the previous play (that caused the pair to overlap on replay).
     const heroes = scene.querySelectorAll('.cv-hero-ic');
     const people = scene.querySelector('.cv-people');
+    heroes.forEach(h => { h.style.transition = 'none'; h.style.setProperty('--sx', '0px'); h.style.setProperty('--sy', '0px'); });
     void scene.offsetWidth;
     const pr = people.getBoundingClientRect();
-    const cx = pr.left + pr.width / 2, cy = pr.top + pr.height * 0.46;
+    const cx = pr.left + pr.width / 2, cy = pr.top + pr.height * 0.56;
     heroes.forEach((h, k) => {
-      h.style.transition = 'none';
       const r = h.getBoundingClientRect();
-      const off = (k === 0 ? -1 : 1) * Math.min(74, pr.width * 0.075);
+      const off = (k === 0 ? -1 : 1) * Math.min(120, pr.width * 0.2);
       h.style.setProperty('--sx', (cx - (r.left + r.width / 2) + off) + 'px');
       h.style.setProperty('--sy', (cy - (r.top + r.height / 2)) + 'px');
     });
