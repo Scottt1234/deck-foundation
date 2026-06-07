@@ -355,7 +355,7 @@
     .cv-narrate, .cv-rtitle { font-family: var(--font-display); font-weight: 700;
       font-size: clamp(17px, 2.4vw, 25px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
     .cv-narrate { position: absolute; top: 8%; left: 6%; right: 6%; white-space: nowrap; }
-    .cv-narrate.wipe { clip-path: inset(0 0 0 0); animation: cvWipe 0.55s ease forwards; }
+    .cv-narrate.wipe { clip-path: inset(0 0 0 0); animation: cvWipe 0.77s ease forwards; }
     .cv-rtitle { position: absolute; top: 8%; left: 16px; right: 16px; color: var(--sf-blue-l); }
     .cv-hl { color: var(--sf-blue-l); }
     .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
@@ -365,7 +365,7 @@
     .cv-crowd { position: absolute; inset: 24% 4% 5% 4%; }
     .cv-dot, .cv-hero-ic { position: absolute; width: 9.6%; aspect-ratio: 1; transform: translate(-50%,-50%); }
     .cv-dot svg, .cv-hero-ic svg { width: 100%; height: 100%; display: block; fill: currentColor; }
-    .cv-dot { color: #fff; opacity: 0; }                              /* the wider org — white */
+    .cv-dot { color: #cdd6e1; opacity: 0; }                           /* the wider org — slightly grey so it doesn't clash with the white text */
     .cv-dot svg { animation: cvFloat 3s ease-in-out infinite; animation-delay: calc(var(--d,0) * 1s); }
     .cv-scene.revealed .cv-dot { animation: cvFade 1.1s calc(var(--i,0) * 0.05s) ease forwards; }   /* slow fade-in */
 
@@ -710,7 +710,7 @@
       let ci = 0;
       const type = () => {
         txt.textContent = q.slice(0, ci++);
-        if (ci <= q.length) { timers.push(setTimeout(type, 26)); }
+        if (ci <= q.length) { timers.push(setTimeout(type, 36)); }
         else {
           caret.remove();
           const tick = document.createElement('span'); tick.className = 'cv-tick'; tick.textContent = '✓'; b.appendChild(tick);
@@ -767,23 +767,23 @@
     heroes.forEach(h => { h.style.transition = ''; });
 
     scene.classList.add('playing');                      // blank stage
-    const CPS = 48;
+    const CPS = 67;                                       // ~40% slower typing
     const T = (fn, ms) => scene._cvTimers.push(setTimeout(fn, ms));
 
     // 1) "It used to take an expert" types on the left; experts appear once it finishes.
     typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }], CPS, () => scene.classList.add('experts'));
-    // 2) hold, then wipe the line away.
-    T(() => narrate.classList.add('wipe'), 3300);
-    // 3) experts slowly shrink + crowd slowly fades in, while "Now anyone can ask." types.
+    // 2) hold (a second longer), then wipe the line away.
+    T(() => narrate.classList.add('wipe'), 4800);
+    // 3) experts slowly shrink + crowd slowly fades in, while "Now anyone can ask for anything" types.
     T(() => {
       narrate.classList.remove('wipe'); narrate.innerHTML = '';
       scene.classList.add('revealed');
-      typeLine(scene, narrate, [{ t: 'Now anyone can ask.' }], CPS);
-    }, 3900);
+      typeLine(scene, narrate, [{ t: 'Now anyone can ask for anything.' }], CPS);
+    }, 5650);
     // 4) after a pause, "In their own words." types on the right (light blue).
-    T(() => typeLine(scene, rtitle, [{ t: 'In their own words.' }], CPS), 5800);
+    T(() => typeLine(scene, rtitle, [{ t: 'In their own words.' }], CPS), 8600);
     // 5) then the questions stream in.
-    T(() => startConvoQuestions(scene), 7100);
+    T(() => startConvoQuestions(scene), 10100);
   }
   function stopConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
