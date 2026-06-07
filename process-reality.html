@@ -211,6 +211,12 @@
   for (let i = 0; i < CLOUD_N; i++)
     nodes.push({ label:'', color:CLOUD_COLORS[i % CLOUD_COLORS.length], kind:'cloud', r:6+rnd()*2, a1:null, a2:null, a3:null });
   nodes.forEach(n => { n.a3 = { x:0.14 + rnd()*0.72, y:0.04 + rnd()*0.92 }; });
+  // Pin Process Start and Process End to the exact spots they sit in frames 1 & 2 — so
+  // when the transition to frame 3 happens, those two nodes stay still and everything else
+  // explodes into chaos around them. Reads as "the start and end are fixed, the middle is
+  // wildly more complex than the diagram on the wall said."
+  nodes[0].a3 = { ...nodes[0].a2 };  // Process Start — top of column
+  nodes[7].a3 = { ...nodes[7].a2 };  // Process End — bottom of column
   nodes.forEach(n => { if (n.kind === 'cloud') { n.a1 = {x:0.5,y:0.5}; n.a2 = {x:0.5,y:0.5}; } });
   nodes.forEach(n => {
     const s = n.a1;
