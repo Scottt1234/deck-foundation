@@ -71,7 +71,7 @@
     #rail-wrap { max-width: 1180px; margin: 22px auto 0; padding: 0 48px; }
     #rail { display: flex; gap: 18px; align-items: stretch; }
     .pi-card {
-      --c: #066AFE;
+      --c: #ffffff;
       flex: 1 1 0; min-width: 0; position: relative; cursor: pointer;
       border: 1px solid rgba(255,255,255,0.12);
       border-top: 2px solid color-mix(in srgb, var(--c) 65%, transparent);
@@ -114,42 +114,34 @@
       opacity: 0.6;
     }
     #pillar {
-      --c: #066AFE; cursor: pointer; position: relative; overflow: hidden;
-      display: flex; align-items: center; gap: 16px;
-      border: 1px solid rgba(6,106,254,0.32); border-radius: 13px;
-      background: linear-gradient(180deg, rgba(6,106,254,0.20), rgba(6,106,254,0.06));
-      padding: 13px 18px; opacity: 0.62;
+      --c: #ffffff; cursor: pointer; position: relative;
+      display: flex; align-items: center; gap: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-top: 2px solid color-mix(in srgb, var(--c) 65%, transparent);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      padding: 9px 16px; opacity: 0.5;
       transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2,0.8,0.2,1),
-                  box-shadow 0.35s ease, border-color 0.35s ease;
+                  box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
     }
-    #pillar .pi-ci-ic {
-      flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(6,106,254,0.18); color: var(--sf-blue-l); border: 1px solid rgba(6,106,254,0.4);
+    /* text styled identically to the rail cards */
+    #pillar .pi-num { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--c); opacity: 0.9; }
+    #pillar .pi-name { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.2; }
+    #pillar .pi-tag {
+      margin-left: auto; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 2px 8px;
     }
-    #pillar .pi-ci-text { flex: 1 1 auto; min-width: 0; }
-    #pillar .pi-ci-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sf-blue-l); }
-    #pillar .pi-ci-name { font-size: 15px; font-weight: 700; color: #fff; margin-top: 2px; }
-    #pillar .pi-ci-q {
-      flex: 0 0 auto; max-width: 46%; font-size: 12.5px; color: rgba(255,255,255,0.82);
-      font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      border-left: 1px solid rgba(255,255,255,0.18); padding-left: 16px;
-    }
-    #pillar .pi-caret {
-      display: inline-block; width: 2px; height: 1em; vertical-align: -2px; margin-left: 1px;
-      background: var(--sf-blue-l); animation: caretBlink 1s steps(1) infinite; opacity: 0;
-    }
-    #pillar.active .pi-caret { opacity: 1; }
-    @keyframes caretBlink { 50% { opacity: 0; } }
     #pillar.active {
       opacity: 1; transform: translateY(-3px);
-      border-color: rgba(6,106,254,0.6);
-      box-shadow: 0 14px 36px -10px rgba(6,106,254,0.7);
+      border-color: color-mix(in srgb, var(--c) 55%, transparent);
+      border-top-color: var(--c);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(255,255,255,0.03));
+      box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--c) 60%, transparent);
     }
 
     /* ── Big card stage (bottom half) ── */
     .pi-big {
-      --c: #066AFE; position: absolute; inset: 4px 48px 84px;
+      --c: #ffffff; position: absolute; inset: 4px 48px 84px;
       max-width: 1180px; margin: 0 auto; left: 0; right: 0;
       display: flex; flex-direction: column;
       border: 1px solid rgba(255,255,255,0.12);
@@ -181,10 +173,10 @@
       border: 1px solid color-mix(in srgb, var(--c) 50%, transparent); border-radius: 999px; padding: 4px 11px;
     }
 
-    /* animation slot fills the remainder of the big card */
+    /* animation slot fills the whole big card (no header/text) */
     .pi-big-stage {
       flex: 1 1 auto; min-height: 0; position: relative;
-      margin: 0 18px 18px; border-radius: 12px; overflow: hidden;
+      margin: 12px; border-radius: 12px; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
     }
 
@@ -242,7 +234,7 @@
       width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25);
       transition: background 0.3s ease, transform 0.3s ease;
     }
-    #dots .dot.on { background: var(--sf-blue-l); transform: scale(1.25); }
+    #dots .dot.on { background: #fff; transform: scale(1.25); }
     #dots .dot.done { background: rgba(255,255,255,0.55); }
     #prog-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
 
@@ -258,18 +250,21 @@
     #nav button:active { transform: scale(0.94); }
     #nav button:disabled { opacity: 0.3; cursor: default; }
 
-    /* ═══════════ Black box animation (Task Mining) — adapted from blackbox-preview.html ═══════════
-       Scoped under .bb-scene; fills the big-card stage. Trigger by toggling .playing. */
-    .bb-scene { position: relative; height: 100%; aspect-ratio: 16 / 9; max-width: 100%; max-height: 100%; }
+    /* ═══════════ Task Mining animation — siloed systems → unified ═══════════
+       Adapted/expanded from blackbox-preview.html. Fills the whole big-card
+       stage: a sealed cover dissolves to reveal six siloed system windows,
+       which then stream their data along connectors into one unified hub.
+       Scoped under .bb-scene; trigger by toggling .playing. */
+    .bb-scene { position: relative; width: 100%; height: 100%; }
     .bb-stage {
       position: relative; width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08);
     }
     .bb-inside {
-      position: absolute; inset: 0; padding: 6%;
+      position: absolute; inset: 0;
       background:
         linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.05)),
-        radial-gradient(60% 80% at 50% 50%, rgba(20,86,220,0.18), transparent);
+        radial-gradient(50% 60% at 50% 50%, rgba(20,86,220,0.22), transparent 70%);
     }
     .win {
       position: absolute; border-radius: 7px; background: rgba(255,255,255,0.07);
@@ -277,53 +272,66 @@
       opacity: 0; transform: translateY(10px) scale(0.97);
     }
     .win-bar {
-      height: 18px; border-radius: 6px 6px 0 0; display: flex; align-items: center;
-      padding: 0 8px; gap: 5px; background: rgba(255,255,255,0.10);
+      height: 20px; border-radius: 6px 6px 0 0; display: flex; align-items: center;
+      padding: 0 9px; gap: 5px; background: rgba(255,255,255,0.10);
       border-bottom: 1px solid rgba(255,255,255,0.10);
     }
     .win-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.35); }
     .win-dot:nth-child(1) { background: rgba(255,120,120,0.6); }
     .win-dot:nth-child(2) { background: rgba(255,200,90,0.55); }
     .win-dot:nth-child(3) { background: rgba(120,220,160,0.55); }
-    .win-title { font-size: 10px; color: rgba(255,255,255,0.78); margin-left: 6px; font-weight: 600; letter-spacing: 0.02em; }
-    .win-body { padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 5px; }
+    .win-title { font-size: 11px; color: rgba(255,255,255,0.82); margin-left: 7px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .win-body { padding: 11px 11px 12px; display: flex; flex-direction: column; gap: 6px; }
     .win-line { height: 5px; border-radius: 2px; background: rgba(255,255,255,0.14); }
     .win-line.short   { width: 60%; }
     .win-line.shorter { width: 40%; }
     .win-line.long    { width: 90%; }
-    .win-pega    { top: 10%; left:  6%; width: 38%; height: 46%; }
-    .win-outlook { top:  6%; left: 38%; width: 38%; height: 56%; }
-    .win-excel   { top: 36%; left: 56%; width: 38%; height: 50%; }
-    .win-portal  { top: 52%; left: 16%; width: 34%; height: 38%; }
+    /* six siloed systems spread across the full stage */
+    .win-pega       { top:  6%; left:  3%; width: 28%; height: 30%; }
+    .win-guidewire  { top:  5%; left: 36%; width: 28%; height: 26%; }
+    .win-outlook    { top:  7%; left: 69%; width: 28%; height: 31%; }
+    .win-excel      { top: 64%; left:  3%; width: 28%; height: 30%; }
+    .win-sharepoint { top: 70%; left: 36%; width: 28%; height: 25%; }
+    .win-portal     { top: 63%; left: 69%; width: 28%; height: 31%; }
+
+    /* connectors + unified hub (SVG fills the stage) */
     .bb-flow { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
     .bb-flow svg { width: 100%; height: 100%; display: block; }
-    .bb-flow path { stroke: #ff8da3; stroke-width: 1.6; fill: none; stroke-dasharray: 5 5; opacity: 0.7; }
-    .bb-flow circle { fill: #ff8da3; opacity: 0.85; }
+    .bb-flow .flow-line { stroke: #8fb8ff; stroke-width: 1.4; fill: none; stroke-dasharray: 5 6; opacity: 0.5; }
+    .bb-flow .flow-node { fill: #8fb8ff; opacity: 0.85; }
+    .bb-flow .flow-dot  { fill: #dbecff; opacity: 0.95; }
+    .bb-hub-ring  { fill: none; stroke: #8fb8ff; stroke-width: 1.5; }
+    .bb-hub-glow  { fill: rgba(143,184,255,0.16); }
+    .bb-hub-core  { fill: #e6f1ff; }
+    .bb-hub-edge  { fill: none; stroke: #ffffff; stroke-width: 1.5; opacity: 0.85; }
+
     .bb-cover {
       position: absolute; inset: 0; z-index: 5;
       background: radial-gradient(80% 60% at 50% 50%, #0a1830 0%, #04102f 100%);
       display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
     }
     .bb-cover::before {
-      content: ''; position: absolute; inset: 12px; border: 1.5px dashed rgba(143,184,255,0.32);
+      content: ''; position: absolute; inset: 14px; border: 1.5px dashed rgba(143,184,255,0.32);
       border-radius: 10px; pointer-events: none;
     }
     .bb-cover-icon {
-      width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;
+      width: 72px; height: 72px; display: flex; align-items: center; justify-content: center;
       border-radius: 50%; background: rgba(143,184,255,0.10); color: #8fb8ff; border: 1px solid rgba(143,184,255,0.4);
     }
-    .bb-cover-label { font-size: 13px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
-    .bb-cover-sub { font-size: 11px; color: rgba(255,255,255,0.42); margin-top: -6px; letter-spacing: 0.04em; font-style: italic; }
+    .bb-cover-label { font-size: 14px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.62); }
+    .bb-cover-sub { font-size: 12px; color: rgba(255,255,255,0.44); margin-top: -6px; letter-spacing: 0.04em; font-style: italic; }
 
-    @keyframes bbCoverFade { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.02); } }
+    @keyframes bbCoverFade { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.03); } }
     @keyframes bbWinPop { 0% { opacity: 0; transform: translateY(10px) scale(0.97); } 100% { opacity: 1; transform: none; } }
     @keyframes bbFlowIn { to { opacity: 1; } }
-    .bb-scene.playing .bb-cover    { animation: bbCoverFade 1.0s 0.9s cubic-bezier(0.4,0,0.2,1) forwards; }
-    .bb-scene.playing .win-pega    { animation: bbWinPop 0.5s 1.5s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-outlook { animation: bbWinPop 0.5s 1.7s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-excel   { animation: bbWinPop 0.5s 1.9s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-portal  { animation: bbWinPop 0.5s 2.1s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .bb-flow     { animation: bbFlowIn 0.7s 2.9s ease forwards; }
+    .bb-scene.playing .bb-cover       { animation: bbCoverFade 1.0s 0.8s cubic-bezier(0.4,0,0.2,1) forwards; }
+    .bb-scene.playing .win-pega       { animation: bbWinPop 0.5s 1.40s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-guidewire  { animation: bbWinPop 0.5s 1.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-outlook    { animation: bbWinPop 0.5s 1.70s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-excel      { animation: bbWinPop 0.5s 1.85s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-sharepoint { animation: bbWinPop 0.5s 2.00s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-portal     { animation: bbWinPop 0.5s 2.15s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .bb-flow        { animation: bbFlowIn 0.8s 2.70s ease forwards; }
 
     @media (prefers-reduced-motion: reduce) {
       .bb-scene .bb-cover { opacity: 0 !important; animation: none !important; }
@@ -336,7 +344,6 @@
       #rail { flex-wrap: wrap; }
       .pi-card { flex: 1 1 28%; }
       .pi-card:not(:last-child)::after { display: none; }
-      #pillar .pi-ci-q { display: none; }
     }
     @media (max-width: 720px) {
       #bottom, .pi-big, #intro { padding-left: 18px; padding-right: 18px; }
@@ -358,7 +365,7 @@
     <div id="top">
       <div id="caption">
         <div id="cap-eyebrow">Process Intelligence</div>
-        <h1 id="cap-title">The layers of Process Intelligence.<br/><span class="hl">Seven layers. One platform.</span></h1>
+        <h1 id="cap-title">The layers of Process Intelligence.</h1>
         <p id="cap-sub"></p>
       </div>
 
@@ -401,70 +408,98 @@
   // Each layer becomes a rail card + a big card. `anim:'blackbox'` mounts the
   // live Task Mining animation; everything else gets a swappable placeholder.
   const LAYERS = [
-    { num:'01', name:'Process Mining',  tag:'System',  color:'#06A59A',
+    { num:'01', name:'Process Mining',  tag:'System',  color:'#ffffff',
       sub:'See how the process really runs &mdash; not how the diagram on the wall says it should.',
       desc:'Reconstructs how a process actually runs inside a system from event logs &mdash; every variant, bottleneck and rework loop.' },
-    { num:'02', name:'Task Mining',     tag:'Desktop', color:'#066AFE', anim:'blackbox',
+    { num:'02', name:'Task Mining',     tag:'Desktop', color:'#ffffff', anim:'blackbox',
       sub:'See the work <em>between</em> the systems &mdash; where process mining goes blind.',
       desc:'Captures the work between systems at the desktop &mdash; the rate look-ups, broker emails and manual referrals process mining alone cannot see.' },
-    { num:'03', name:'Analysis',        tag:'Insight', color:'#00B3FF',
+    { num:'03', name:'Analysis',        tag:'Insight', color:'#ffffff',
       sub:'Put a number on the waste &mdash; and on the prize.',
       desc:'Quantifies the cost of inefficiency and the value of recoverable waste, turning observation into a business case.' },
-    { num:'04', name:'Recommendation',  tag:'AI',      color:'#D17DFE',
+    { num:'04', name:'Recommendation',  tag:'AI',      color:'#ffffff',
       sub:'From problem to the specific fix &mdash; proposed by AI.',
       desc:'AI proposes the specific change to make &mdash; not just the problem, but the mechanism that fixes it.' },
-    { num:'05', name:'Simulation',      tag:'Proof',   color:'#E4A201',
+    { num:'05', name:'Simulation',      tag:'Proof',   color:'#ffffff',
       sub:'Prove the change works <em>before</em> you make it.',
       desc:'Validates the recommendation before you commit, modelling the impact across cost, time and risk.' },
-    { num:'06', name:'Monitor',         tag:'Live',    color:'#FF538A',
+    { num:'06', name:'Monitor',         tag:'Live',    color:'#ffffff',
       sub:'Keep it fixed &mdash; watch the process live and catch drift the moment it appears.',
       desc:'Watches the process in production, confirming the change held and catching drift the moment it appears.' },
   ];
-  const FOUNDATION = { num:'07', name:'Conversational Interface', tag:'Underpins all', color:'#066AFE',
+  const FOUNDATION = { num:'07', name:'Conversational Interface', tag:'Underpins all', color:'#ffffff',
     sub:'Ask anything in plain English &mdash; the layer that underpins them all.',
     desc:'The layer that underpins every other: ask any question in plain English and get an evidence-backed answer drawn from all six layers above.' };
 
   const STEPS = LAYERS.length + 1;            // 6 layers + conversational interface
   const ALL = LAYERS.concat([FOUNDATION]);    // index aligned with focus steps 1..7
 
-  // ── Black box animation markup (Task Mining) ───────────────────
+  // ── Task Mining animation markup (siloed systems → unified hub) ─
+  // Helper: a "system" window with a title bar + a few content lines.
+  const win = (cls, title, lines) => `
+    <div class="win ${cls}">
+      <div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">${title}</span></div>
+      <div class="win-body">${lines.map(c => `<div class="win-line ${c}"></div>`).join('')}</div>
+    </div>`;
+  // Helper: one connector from a window centre into the hub, with two streaming dots.
+  const conn = (x, y, b1, b2) => {
+    const d = `M${x},${y} L500,280`;
+    return `
+      <path class="flow-line" d="${d}" />
+      <circle class="flow-node" cx="${x}" cy="${y}" r="3.5" />
+      <circle class="flow-dot" r="3.4"><animateMotion dur="2.4s" begin="${b1}s" repeatCount="indefinite" path="${d}" /></circle>
+      <circle class="flow-dot" r="3.4"><animateMotion dur="2.4s" begin="${b2}s" repeatCount="indefinite" path="${d}" /></circle>`;
+  };
   const BLACKBOX = `
     <div class="bb-scene">
       <div class="bb-stage">
         <div class="bb-inside" aria-hidden="true">
-          <div class="win win-pega"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Pega · QW Commercial</span></div><div class="win-body"><div class="win-line long"></div><div class="win-line short"></div><div class="win-line"></div><div class="win-line shorter"></div></div></div>
-          <div class="win win-outlook"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Outlook · Broker thread</span></div><div class="win-body"><div class="win-line"></div><div class="win-line short"></div><div class="win-line long"></div><div class="win-line shorter"></div></div></div>
-          <div class="win win-excel"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Rate calc.xlsx</span></div><div class="win-body"><div class="win-line short"></div><div class="win-line"></div><div class="win-line shorter"></div></div></div>
-          <div class="win win-portal"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Broker portal</span></div><div class="win-body"><div class="win-line short"></div><div class="win-line shorter"></div></div></div>
+          ${win('win-pega',       'Pega · QW Commercial',   ['long','short','','shorter'])}
+          ${win('win-guidewire',  'Guidewire · Policy',     ['short','long','shorter'])}
+          ${win('win-outlook',    'Outlook · Broker thread',['','short','long','shorter'])}
+          ${win('win-excel',      'Rate calc.xlsx',         ['short','','shorter'])}
+          ${win('win-sharepoint', 'SharePoint · Docs',      ['long','short'])}
+          ${win('win-portal',     'Broker portal',          ['short','shorter','long'])}
         </div>
         <div class="bb-flow" aria-hidden="true">
-          <svg viewBox="0 0 760 428" preserveAspectRatio="none">
-            <path d="M 230 170 C 320 130, 420 150, 520 200" /><circle cx="230" cy="170" r="3" /><circle cx="520" cy="200" r="3" />
-            <path d="M 380 130 C 320 200, 240 220, 180 240" /><circle cx="380" cy="130" r="3" /><circle cx="180" cy="240" r="3" />
-            <path d="M 270 320 C 360 280, 480 280, 580 280" /><circle cx="270" cy="320" r="3" /><circle cx="580" cy="280" r="3" />
+          <svg viewBox="0 0 1000 560" preserveAspectRatio="none">
+            ${conn(170,118,0.0,1.2)}
+            ${conn(500,101,0.3,1.5)}
+            ${conn(830,126,0.6,1.8)}
+            ${conn(170,442,0.15,1.35)}
+            ${conn(500,462,0.45,1.65)}
+            ${conn(830,440,0.75,1.95)}
+            <g class="bb-hub">
+              <circle class="bb-hub-glow" cx="500" cy="280" r="28">
+                <animate attributeName="r" values="24;36;24" dur="3s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.55;0.12;0.55" dur="3s" repeatCount="indefinite" />
+              </circle>
+              <circle class="bb-hub-ring" cx="500" cy="280" r="22" />
+              <circle class="bb-hub-core" cx="500" cy="280" r="11" />
+              <circle class="bb-hub-edge" cx="500" cy="280" r="11" />
+            </g>
           </svg>
         </div>
         <div class="bb-cover">
           <div class="bb-cover-icon">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="6" width="24" height="20" rx="2"/><path d="M4 12h24"/>
               <circle cx="8" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="9" r="1" fill="currentColor" stroke="none"/>
               <path d="M11 18h10M11 22h6"/>
             </svg>
           </div>
           <div class="bb-cover-label">The Workstation</div>
-          <div class="bb-cover-sub">where the work between systems happens</div>
+          <div class="bb-cover-sub">where the work between siloed systems happens</div>
         </div>
       </div>
     </div>`;
 
-  const placeholderSlot = (name) => `
+  // Placeholder slot — no title or copy, just a centred marker (swap in the real animation later).
+  const placeholderSlot = () => `
     <div class="pi-slot">
       <div class="pi-slot-ic">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4"/></svg>
       </div>
-      <div class="pi-slot-label">Animation slot</div>
-      <div class="pi-slot-sub">${name} visual &mdash; coming soon</div>
     </div>`;
 
   // ── Build rail + pillar ────────────────────────────────────────
@@ -480,12 +515,8 @@
 
   const pillar = document.getElementById('pillar');
   pillar.dataset.step = STEPS;
-  pillar.innerHTML = `
-    <span class="pi-ci-ic" aria-hidden="true">
-      <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h22v15H14l-6 5v-5H5z"/><path d="M11 13h10M11 17h6"/></svg>
-    </span>
-    <span class="pi-ci-text"><span class="pi-ci-label">${FOUNDATION.num} · Underpins every layer</span><span class="pi-ci-name">${FOUNDATION.name}</span></span>
-    <span class="pi-ci-q"><span id="piQuery"></span><span class="pi-caret"></span></span>`;
+  // Text styled identically to the rail cards: number, name, tag.
+  pillar.innerHTML = `<div class="pi-num">${FOUNDATION.num}</div><div class="pi-name">${FOUNDATION.name}</div><div class="pi-tag">${FOUNDATION.tag}</div>`;
   pillar.addEventListener('click', () => goTo(STEPS));
 
   // ── Build big cards ────────────────────────────────────────────
@@ -494,16 +525,8 @@
   ALL.forEach((l) => {
     const el = document.createElement('div');
     el.className = 'pi-big'; el.style.setProperty('--c', l.color);
-    el.innerHTML = `
-      <div class="pi-big-head">
-        <div class="pi-big-num">${l.num}</div>
-        <div class="pi-big-headtext">
-          <div class="pi-big-name">${l.name}</div>
-          <div class="pi-big-desc">${l.desc}</div>
-        </div>
-        <div class="pi-big-tag">${l.tag}</div>
-      </div>
-      <div class="pi-big-stage">${l.anim === 'blackbox' ? BLACKBOX : placeholderSlot(l.name)}</div>`;
+    // No header/text — the whole card is the animation slot.
+    el.innerHTML = `<div class="pi-big-stage">${l.anim === 'blackbox' ? BLACKBOX : placeholderSlot()}</div>`;
     bottom.appendChild(el);
     bigs.push(el);
   });
@@ -518,27 +541,6 @@
   const navCount = document.getElementById('nav-count');
   const btnPrev = document.getElementById('prev');
   const btnNext = document.getElementById('next');
-
-  // ── Typing effect for the conversational pillar ────────────────
-  const QUERIES = [
-    'Where is the biggest delay in commercial underwriting?',
-    'How much rework happened last quarter?',
-    'Which broker requests slow us down most?',
-  ];
-  let typeTimer = null, qIndex = 0;
-  const qEl = () => document.getElementById('piQuery');
-  function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } const e = qEl(); if (e) e.textContent = ''; }
-  function typeQuery() {
-    stopTyping();
-    const text = QUERIES[qIndex % QUERIES.length]; qIndex++;
-    let i = 0;
-    (function tick() {
-      const e = qEl(); if (!e) return;
-      e.textContent = text.slice(0, i++);
-      if (i <= text.length) typeTimer = setTimeout(tick, 34);
-      else typeTimer = setTimeout(() => { typeTimer = setTimeout(typeQuery, 600); }, 2600);
-    })();
-  }
 
   // ── Navigation state ───────────────────────────────────────────
   let step = 0;            // 0 = overview; 1..STEPS = focus a layer / pillar
@@ -577,7 +579,6 @@
       c.classList.toggle('done', step > i + 1);
     });
     pillar.classList.toggle('active', step === STEPS);
-    if (step === STEPS) typeQuery(); else stopTyping();
 
     // big card / intro
     showBig(step);
