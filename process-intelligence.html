@@ -82,7 +82,7 @@
     #rail { display: flex; gap: 14px; align-items: stretch; }
     .pi-card {
       --c: #8fb8ff;
-      flex: 1 1 0; min-width: 0; position: relative; cursor: pointer;
+      flex: 1 1 0; min-width: 0; position: relative; cursor: pointer; text-align: center;
       border: 1px solid rgba(255,255,255,0.12);
       border-top: 2px solid rgba(143,184,255,0.6);
       border-radius: 8px;
@@ -95,7 +95,8 @@
       font-family: var(--font-display); font-size: 12px; font-weight: 700;
       letter-spacing: 0.08em; color: var(--c); opacity: 0.9;
     }
-    .pi-card .pi-name { font-size: 14px; font-weight: 700; color: #fff; margin-top: 4px; line-height: 1.2; }
+    /* card title in the deck's light blue */
+    .pi-card .pi-name { font-size: 14px; font-weight: 700; color: var(--sf-blue-l); margin-top: 4px; line-height: 1.2; }
     .pi-card .pi-tag {
       display: inline-block; margin-top: 6px; font-size: 9px; font-weight: 700;
       letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6);
@@ -125,7 +126,7 @@
     }
     #pillar {
       --c: #8fb8ff; cursor: pointer; position: relative;
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
       border: 1px solid rgba(255,255,255,0.12);
       border-top: 2px solid rgba(143,184,255,0.6);
       border-radius: 8px;
@@ -134,13 +135,8 @@
       transition: opacity 0.35s ease, transform 0.2s ease,
                   box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-    /* text styled identically to the rail cards */
-    #pillar .pi-num { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--c); opacity: 0.9; }
-    #pillar .pi-name { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.2; }
-    #pillar .pi-tag {
-      margin-left: auto; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 2px 8px;
-    }
+    /* just the (centred, light-blue) title — no number or tag */
+    #pillar .pi-name { font-size: 14px; font-weight: 700; color: var(--sf-blue-l); line-height: 1.2; text-align: center; }
     #pillar.active {
       opacity: 1; transform: translateY(-3px);
       border-color: rgba(143,184,255,0.5);
@@ -149,16 +145,17 @@
       box-shadow: 0 10px 24px -12px rgba(143,184,255,0.5);
     }
 
-    /* ── Big card stage (bottom half) ── */
+    /* ── Big animation card ── styled like the deck's slide-8 cards (clean & simple):
+       flat fill, 1px border, 2px electric-blue top accent, no resting shadow. The
+       electric-blue accent contrasts with the cloud-blue process cards above. */
     .pi-big {
       --c: #8fb8ff; position: absolute; inset: 24px 48px 84px;
       max-width: 944px; margin: 0 auto; left: 0; right: 0;
       display: flex; flex-direction: column;
       border: 1px solid rgba(255,255,255,0.12);
-      border-top: 2px solid rgba(143,184,255,0.6);
+      border-top: 2px solid rgba(6,106,254,0.42);
       border-radius: 8px; overflow: hidden;
       background: rgba(255,255,255,0.05);
-      box-shadow: var(--shadow-card);
       opacity: 0; transform: translateY(46px) scale(0.985); pointer-events: none;
       transition: opacity 0.5s cubic-bezier(0.2,0.8,0.2,1),
                   transform 0.6s cubic-bezier(0.2,0.8,0.2,1);
@@ -521,8 +518,8 @@
 
   const pillar = document.getElementById('pillar');
   pillar.dataset.step = STEPS;
-  // Text styled identically to the rail cards: number, name, tag.
-  pillar.innerHTML = `<div class="pi-num">${FOUNDATION.num}</div><div class="pi-name">${FOUNDATION.name}</div><div class="pi-tag">${FOUNDATION.tag}</div>`;
+  // Just the title — no number, no tag.
+  pillar.innerHTML = `<div class="pi-name">${FOUNDATION.name}</div>`;
   pillar.addEventListener('click', () => goTo(STEPS));
 
   // ── Build big cards ────────────────────────────────────────────
@@ -645,10 +642,12 @@
   window.addEventListener('message', (e) => {
     if (!e.data) return;
     switch (e.data.type) {
-      case 'deck-enter':       goTo(e.data.dir === 'rev' ? STEPS : 0); break;  // entered slide fwd/reverse
+      // Entered the slide (fwd/reverse). Set the step and ALWAYS render so the title
+      // bounces on entry too — goTo() would no-op if the step index is unchanged.
+      case 'deck-enter':       step = (e.data.dir === 'rev') ? STEPS : 0; render(); break;
       case 'deck-advance':     stepForward();  break;
       case 'deck-reverse':     stepBackward(); break;
-      case 'slide-activated':  goTo(0);        break;  // legacy reset hook
+      case 'slide-activated':  step = 0; render(); break;  // legacy reset hook
     }
   });
 
