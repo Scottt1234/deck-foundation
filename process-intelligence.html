@@ -51,7 +51,10 @@
     body.embed .brand { display: none; }
 
     /* ── Caption stack — mirrors process-reality.html / deck slide-body ── */
-    #caption { padding: 52px 48px 0; max-width: 1080px; margin: 0 auto; width: 100%; }
+    /* top padding matches process-reality.html's caption (56px) — the higher of the
+       deck's two patterns (foundation slide-body sits lower at 68px) — so an embedded
+       slide 6 lines up with the process-reality slide it follows. */
+    #caption { padding: 56px 48px 0; max-width: 1080px; margin: 0 auto; width: 100%; }
     #cap-eyebrow {
       font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--sf-blue-l); margin-bottom: 10px;
