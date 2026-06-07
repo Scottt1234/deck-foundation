@@ -343,51 +343,52 @@
     }
 
     /* ═══════════ Conversational Interface animation — the few → the many ═══════════
-       Left 2/3: two large "Data Scientists" fly into an organic, whole-organisation crowd
-       ("Everyone") shrinking as they go. Right 1/3: plain-English questions stream + answer. */
+       Narrated: "It used to take an expert" → two experts → they shrink into an organic
+       whole-org crowd as "Now anyone can ask." types; then "In their own words." + questions. */
     .cv-scene { position: absolute; inset: 0; display: flex; }
-    .cv-people { position: relative; flex: 2 1 0; overflow: hidden; }
-    .cv-questions { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end;
-      border-left: 1px solid rgba(255,255,255,0.10); padding: 16px; }
-    .cv-qlist { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+    .cv-people { position: relative; flex: 1.7 1 0; overflow: hidden; }
+    .cv-questions { position: relative; flex: 1.2 1 0; min-width: 0; display: flex; flex-direction: column;
+      justify-content: flex-end; border-left: 1px solid rgba(255,255,255,0.10); padding: 16px; }
+    .cv-qlist { display: flex; flex-direction: column; justify-content: flex-end; gap: 9px; }
 
-    /* big top title — cross-fades "Data Scientists" → "Everyone" */
-    .cv-titles { position: absolute; top: 7%; left: 0; right: 0; height: 1.3em; text-align: center; pointer-events: none; }
-    .cv-title { position: absolute; left: 0; right: 0; top: 0; font-family: var(--font-display);
-      font-weight: 700; font-size: clamp(22px, 3.3vw, 33px); letter-spacing: -0.01em;
-      color: var(--sf-blue-l); opacity: 0; transition: opacity 0.8s ease; }
-    .cv-scene.playing .cv-title-a { opacity: 1; }
-    .cv-scene.revealed .cv-title-a { opacity: 0; transition: opacity 0.6s ease; }
-    .cv-scene.revealed .cv-title-b { opacity: 1; transition: opacity 0.9s ease 0.5s; }
+    /* typed narration lines — left (cv-narrate) and right (cv-rtitle), same font + size */
+    .cv-narrate, .cv-rtitle { font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(17px, 2.4vw, 25px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
+    .cv-narrate { position: absolute; top: 8%; left: 6%; right: 6%; white-space: nowrap; }
+    .cv-narrate.wipe { clip-path: inset(0 0 0 0); animation: cvWipe 0.55s ease forwards; }
+    .cv-rtitle { position: absolute; top: 8%; left: 16px; right: 16px; color: var(--sf-blue-l); }
+    .cv-hl { color: var(--sf-blue-l); }
+    .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
+      margin-left: 2px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
 
     /* crowd cloud (organic, absolute positions set inline) */
-    .cv-crowd { position: absolute; inset: 22% 4% 5% 4%; }
-    .cv-dot, .cv-hero-ic { position: absolute; width: 12%; aspect-ratio: 1; transform: translate(-50%,-50%); }
+    .cv-crowd { position: absolute; inset: 24% 4% 5% 4%; }
+    .cv-dot, .cv-hero-ic { position: absolute; width: 9.6%; aspect-ratio: 1; transform: translate(-50%,-50%); }
     .cv-dot svg, .cv-hero-ic svg { width: 100%; height: 100%; display: block; fill: currentColor; }
     .cv-dot { color: #fff; opacity: 0; }                              /* the wider org — white */
     .cv-dot svg { animation: cvFloat 3s ease-in-out infinite; animation-delay: calc(var(--d,0) * 1s); }
-    .cv-scene.revealed .cv-dot { animation: cvPop 0.6s calc(var(--i,0) * 0.02s) cubic-bezier(0.22,1,0.36,1) forwards; }
+    .cv-scene.revealed .cv-dot { animation: cvFade 1.1s calc(var(--i,0) * 0.05s) ease forwards; }   /* slow fade-in */
 
-    /* the two experts — start large & centred, then fly to their crowd spots and shrink */
+    /* the two experts — appear large & centred (.experts), then slowly fly in & shrink (.revealed) */
     .cv-hero-ic { color: var(--sf-blue-l); opacity: 0; z-index: 4;
       filter: drop-shadow(0 0 12px rgba(0,179,255,0.6));
       transform: translate(-50%,-50%) translate(var(--sx,0), var(--sy,0)) scale(var(--hs,4.2));
-      transition: transform 1.6s cubic-bezier(0.4,0,0.2,1), opacity 0.9s ease; }
-    .cv-scene.playing .cv-hero-ic { opacity: 1; }
+      transition: transform 2.5s cubic-bezier(0.4,0,0.2,1), opacity 0.9s ease; }
+    .cv-scene.experts .cv-hero-ic { opacity: 1; }
     .cv-scene.revealed .cv-hero-ic { transform: translate(-50%,-50%) scale(1); }
     .cv-scene.revealed .cv-hero-ic svg { animation: cvFloat 3s ease-in-out infinite; }
 
-    /* question bubbles */
+    /* question bubbles (one size larger) */
     .cv-q { position: relative; align-self: flex-start; max-width: 100%;
       background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px 12px 12px 4px; padding: 9px 12px; font-size: 12.5px; line-height: 1.4;
+      border-radius: 12px 12px 12px 4px; padding: 10px 13px; font-size: 13.5px; line-height: 1.4;
       color: #fff; animation: cvQIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
     .cv-q .cv-tick { display: inline-block; margin-left: 6px; color: #04E1CB; font-weight: 700; opacity: 0; transition: opacity 0.3s ease; }
     .cv-q.answered .cv-tick { opacity: 1; }
-    .cv-q .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l); margin-left: 1px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
 
     @keyframes cvFloat { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(1.5px,-5px); } 50% { transform: translate(0,-9px); } 75% { transform: translate(-1.5px,-4px); } }
-    @keyframes cvPop   { from { opacity: 0; transform: translate(-50%,-50%) scale(0.3); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+    @keyframes cvFade  { from { opacity: 0; transform: translate(-50%,-50%) scale(0.7); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+    @keyframes cvWipe  { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 0 100%); } }
     @keyframes cvQIn   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
     @keyframes cvBlink { 50% { opacity: 0; } }
 
@@ -395,8 +396,7 @@
       .cv-scene .cv-dot { opacity: 1 !important; transform: translate(-50%,-50%) !important; animation: none !important; }
       .cv-scene .cv-dot svg { animation: none !important; }
       .cv-scene .cv-hero-ic { opacity: 1 !important; transform: translate(-50%,-50%) scale(1) !important; transition: none !important; }
-      .cv-scene .cv-title-a { opacity: 0 !important; }
-      .cv-scene .cv-title-b { opacity: 1 !important; }
+      .cv-narrate.wipe { animation: none !important; }
     }
 
     /* ── Responsive ── */
@@ -584,13 +584,13 @@
     scene.className = 'cv-scene';
     scene.innerHTML = `
       <div class="cv-people">
-        <div class="cv-titles">
-          <span class="cv-title cv-title-a">Data Scientists</span>
-          <span class="cv-title cv-title-b">Everyone</span>
-        </div>
+        <div class="cv-narrate"></div>
         <div class="cv-crowd"></div>
       </div>
-      <div class="cv-questions"><div class="cv-qlist"></div></div>`;
+      <div class="cv-questions">
+        <div class="cv-rtitle"></div>
+        <div class="cv-qlist"></div>
+      </div>`;
     const crowd = scene.querySelector('.cv-crowd');
     // Seeded RNG → a stable, organic cloud (not a grid).
     let s = 20260607;
@@ -720,45 +720,78 @@
       };
       type();
     };
-    timers.push(setTimeout(addBubble, 900));   // start after the crowd has begun to appear
+    timers.push(setTimeout(addBubble, 150));   // narration has already played; begin promptly
   }
+  // Typewriter for a narration line. `segments` = [{t, hl?}] so part of a line can be coloured.
+  function typeLine(scene, host, segments, cps, onDone) {
+    host.innerHTML = '';
+    const spans = segments.map(s => { const e = document.createElement('span'); if (s.hl) e.className = 'cv-hl'; host.appendChild(e); return e; });
+    if (reduceMotion()) { spans.forEach((e, i) => e.textContent = segments[i].t); onDone && onDone(); return; }
+    const caret = document.createElement('span'); caret.className = 'cv-caret'; host.appendChild(caret);
+    let si = 0, ci = 0;
+    const stepFn = () => {
+      if (si >= segments.length) { caret.remove(); onDone && onDone(); return; }
+      const seg = segments[si];
+      if (ci < seg.t.length) spans[si].textContent += seg.t[ci++];
+      else { si++; ci = 0; }
+      scene._cvTimers.push(setTimeout(stepFn, cps));
+    };
+    stepFn();
+  }
+
   function playConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
-    stopConvoQuestions(scene);
     if (scene._cvTimers) scene._cvTimers.forEach(clearTimeout);
-    const timers = []; scene._cvTimers = timers;
-    scene.classList.remove('playing', 'revealed');
+    scene._cvTimers = [];
+    stopConvoQuestions(scene);
+    scene.classList.remove('playing', 'experts', 'revealed');
+    const narrate = scene.querySelector('.cv-narrate');
+    const rtitle = scene.querySelector('.cv-rtitle');
+    narrate.classList.remove('wipe'); narrate.innerHTML = ''; rtitle.innerHTML = '';
 
-    // Measure each expert's start offset: from its place in the crowd to the panel centre,
-    // side by side. Placed without a transition so they simply appear there, big.
-    // Measure each expert's natural spot, then offset to a framed, side-by-side pair at the
-    // panel centre. Reset --sx/--sy to 0 FIRST so the measurement isn't thrown off by the
-    // offsets left over from the previous play (that caused the pair to overlap on replay).
+    // Frame the two experts as a side-by-side pair at the panel centre. Reset --sx/--sy to 0
+    // first so the measurement isn't thrown off by the previous play's offsets (replay fix).
     const heroes = scene.querySelectorAll('.cv-hero-ic');
     const people = scene.querySelector('.cv-people');
     heroes.forEach(h => { h.style.transition = 'none'; h.style.setProperty('--sx', '0px'); h.style.setProperty('--sy', '0px'); });
     void scene.offsetWidth;
     const pr = people.getBoundingClientRect();
-    const cx = pr.left + pr.width / 2, cy = pr.top + pr.height * 0.56;
+    const cx = pr.left + pr.width / 2, cy = pr.top + pr.height * 0.58;
     heroes.forEach((h, k) => {
       const r = h.getBoundingClientRect();
-      const off = (k === 0 ? -1 : 1) * Math.min(120, pr.width * 0.2);
+      const off = (k === 0 ? -1 : 1) * r.width * 0.52;   // spacing scales with the (large) start size
       h.style.setProperty('--sx', (cx - (r.left + r.width / 2) + off) + 'px');
       h.style.setProperty('--sy', (cy - (r.top + r.height / 2)) + 'px');
     });
-    void scene.offsetWidth;                         // commit the no-transition placement
+    void scene.offsetWidth;                              // commit placement before re-enabling transition
     heroes.forEach(h => { h.style.transition = ''; });
 
-    scene.classList.add('playing');                 // experts fade in (big, centred); title A fades in
-    const HOLD = 2600, QSTART = 5600;               // ~2x slower; questions wait until the team is revealed + a beat
-    timers.push(setTimeout(() => scene.classList.add('revealed'), HOLD));   // crowd pops, experts fly in & shrink, titles swap
-    timers.push(setTimeout(() => startConvoQuestions(scene), QSTART));
+    scene.classList.add('playing');                      // blank stage
+    const CPS = 48;
+    const T = (fn, ms) => scene._cvTimers.push(setTimeout(fn, ms));
+
+    // 1) "It used to take an expert" types on the left; experts appear once it finishes.
+    typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }], CPS, () => scene.classList.add('experts'));
+    // 2) hold, then wipe the line away.
+    T(() => narrate.classList.add('wipe'), 3300);
+    // 3) experts slowly shrink + crowd slowly fades in, while "Now anyone can ask." types.
+    T(() => {
+      narrate.classList.remove('wipe'); narrate.innerHTML = '';
+      scene.classList.add('revealed');
+      typeLine(scene, narrate, [{ t: 'Now anyone can ask.' }], CPS);
+    }, 3900);
+    // 4) after a pause, "In their own words." types on the right (light blue).
+    T(() => typeLine(scene, rtitle, [{ t: 'In their own words.' }], CPS), 5800);
+    // 5) then the questions stream in.
+    T(() => startConvoQuestions(scene), 7100);
   }
   function stopConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
     if (scene._cvTimers) { scene._cvTimers.forEach(clearTimeout); scene._cvTimers = null; }
     stopConvoQuestions(scene);
-    scene.classList.remove('playing', 'revealed');
+    const narrate = scene.querySelector('.cv-narrate'); if (narrate) { narrate.classList.remove('wipe'); narrate.innerHTML = ''; }
+    const rtitle = scene.querySelector('.cv-rtitle'); if (rtitle) rtitle.innerHTML = '';
+    scene.classList.remove('playing', 'experts', 'revealed');
   }
 
   function showBig(n) {
