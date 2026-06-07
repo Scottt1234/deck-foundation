@@ -1109,17 +1109,19 @@
 
     <!-- ("The Black Box" cut - Process Reality + Layers cover the same ground without the animation overlap) -->
 
-    <!-- ═══ SLIDE 5 · WHAT HAS CHANGED — placeholder ═══════════════ -->
-    <div class="slide sd" data-section="What Has Changed" style="--placeholder:1;">
-      <div class="slide-body" style="display:flex; align-items:center; justify-content:center; text-align:center;">
-        <div style="border:2px dashed rgba(255,255,255,0.22); border-radius:18px; padding:56px 48px; max-width:920px;">
-          <div class="eyebrow" style="opacity:0.6; letter-spacing:0.18em;">Placeholder · Slide 5</div>
-          <div class="section-title" style="margin-top:14px;">What has changed.<br/><span style="color:var(--sf-blue-l)">Why this isn't 2015 process mining.</span></div>
-          <div class="section-sub" style="margin-top:24px; opacity:0.78; max-width:760px; margin-left:auto; margin-right:auto;">
-            Answer the sceptic before they ask. Four beats: <strong>Conversational interface</strong>, <strong>Task Mining</strong>, <strong>Recommendation</strong>, <strong>Simulation</strong>. Close on the category claim — only platform doing all four end-to-end. Position before "The Layers" so Layers reads as proof of the new thing.
-          </div>
-        </div>
-      </div>
+    <!-- ═══ SLIDE 5 · PROCESS INTELLIGENCE LAYERS — arrow-key walkthrough (embedded) ═══
+         Self-contained in process-intelligence.html. The deck drives it via the generic
+         embed handshake below (deck-enter / deck-advance / deck-reverse ↔ deck-next /
+         deck-prev), so the layer count and all behaviour live entirely in that file —
+         no deck changes needed to add/remove layers or edit the animation.
+         NOTE: the old "The Layers · v3" slide below is superseded by this and will be
+         removed once this is signed off. -->
+    <div class="slide slide-embed" data-section="Process Intelligence">
+      <iframe
+        src="process-intelligence.html?embed=1"
+        title="The layers of Process Intelligence"
+        referrerpolicy="no-referrer"
+        style="position:absolute; inset:0; width:100%; height:100%; border:0; background:#04102f;"></iframe>
     </div>
 
     <!-- ═══ THE LAYERS · PROCESS INTELLIGENCE — living pipeline (bold/dark) ═══ -->
@@ -1353,6 +1355,13 @@
       slides[current].querySelectorAll('iframe').forEach(f => {
         try { f.contentWindow && f.contentWindow.postMessage({ type: 'set-act', act: prAct }, '*'); } catch (e) {}
       });
+      // Generic embed-nav slides (e.g. Process Intelligence layers) own their own internal
+      // step count. Tell the iframe to enter at its first step (forward) or last (reverse).
+      // layersDir is also re-sent on the iframe's 'embed-ready' handshake to survive load timing.
+      if (isLayers(current)) {
+        layersDir = opts.reverse ? 'rev' : 'fwd';
+        postIframe(slides[current], { type: 'deck-enter', dir: layersDir });
+      }
     }
 
     // ── Process Reality act-aware navigation ─────────────────────────
@@ -1369,10 +1378,25 @@
         try { f.contentWindow.postMessage({ type: 'set-act', act: n }, '*'); } catch (e) {}
       }
     };
+
+    // ── Generic embed-nav slides ─────────────────────────────────────
+    // Slides whose embedded page owns its own internal step sequence. The deck only sends
+    // intent (deck-advance / deck-reverse / deck-enter); the iframe replies with deck-next /
+    // deck-prev when it reaches its first/last step, at which point the deck changes slides.
+    // The step count lives entirely inside the embedded file.
+    let layersDir = 'fwd';
+    const isLayers = i => slides[i] && slides[i].dataset.section === 'Process Intelligence';
+    const postIframe = (slide, msg) => {
+      const f = slide.querySelector('iframe');
+      if (f && f.contentWindow) { try { f.contentWindow.postMessage(msg, '*'); } catch (e) {} }
+    };
+
     function advance() {
       if (isProcessReality(current) && prAct < PR_ACTS) {
         prAct++;
         setIframeAct(slides[current], prAct);
+      } else if (isLayers(current)) {
+        postIframe(slides[current], { type: 'deck-advance' });   // iframe steps, or replies deck-next
       } else {
         go(current + 1);
       }
@@ -1381,6 +1405,8 @@
       if (isProcessReality(current) && prAct > 1) {
         prAct--;
         setIframeAct(slides[current], prAct);
+      } else if (isLayers(current)) {
+        postIframe(slides[current], { type: 'deck-reverse' });   // iframe steps, or replies deck-prev
       } else {
         // {reverse:true} tells go() to set the new slide's act to the LAST one,
         // so reversing into the Process Reality slide lands on Reality, not Designed.
@@ -1397,9 +1423,20 @@
     // Iframe relays arrow keys up here when it has focus (e.g. after click-trace),
     // so the deck-wide flow keeps working even when the user has clicked inside it.
     window.addEventListener('message', e => {
-      if (!e.data || e.data.type !== 'arrow') return;
-      if (e.data.key === 'ArrowRight' || e.data.key === 'ArrowDown') advance();
-      if (e.data.key === 'ArrowLeft'  || e.data.key === 'ArrowUp')   reverse();
+      if (!e.data) return;
+      // Process Reality relays raw arrow keys when it has focus.
+      if (e.data.type === 'arrow') {
+        if (e.data.key === 'ArrowRight' || e.data.key === 'ArrowDown') advance();
+        if (e.data.key === 'ArrowLeft'  || e.data.key === 'ArrowUp')   reverse();
+        return;
+      }
+      // Generic embed-nav: the iframe hit its first/last step and is handing control back.
+      if (e.data.type === 'deck-next') { go(current + 1); return; }
+      if (e.data.type === 'deck-prev') { go(current - 1, { reverse: true }); return; }
+      // The embed finished loading after we already navigated onto it — (re)send the enter.
+      if (e.data.type === 'embed-ready' && isLayers(current)) {
+        postIframe(slides[current], { type: 'deck-enter', dir: layersDir });
+      }
     });
 
     go(0);

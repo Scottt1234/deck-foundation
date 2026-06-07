@@ -49,6 +49,9 @@
     .brand .x  { font-size: 13px; color: var(--gray-500); }
     .brand img { display: block; }
     body.embed .brand { display: none; }
+    /* In the deck, the parent supplies slide dots, counter and prev/next arrows, and the
+       active rail card signals the current layer — so hide our duplicate bottom chrome. */
+    body.embed #nav, body.embed #progress { display: none; }
 
     /* ── Caption stack — mirrors process-reality.html / deck slide-body ── */
     /* top padding matches process-reality.html's caption (56px) — the higher of the
@@ -610,34 +613,41 @@
   btnPrev.addEventListener('click', () => goTo(step - 1));
   btnNext.addEventListener('click', () => goTo(step + 1));
 
-  // ── Keyboard + deck bridge (mirrors process-reality.html) ──────
+  // ── Keyboard + deck bridge ─────────────────────────────────────
+  // Embedded in the deck (foundation.html), this file OWNS its own step sequence. The deck
+  // sends intent only — deck-enter / deck-advance / deck-reverse — and we reply deck-next /
+  // deck-prev when stepping past the first/last step so the deck changes slides. Because the
+  // step count lives here, layers can be added/removed without touching the deck.
+  const embedded = window.parent !== window;
+  const toParent = (msg) => { try { window.parent.postMessage(msg, '*'); } catch (err) {} };
   const isArrowKey = k => k === 'ArrowRight' || k === 'ArrowLeft' || k === 'ArrowDown' || k === 'ArrowUp';
   const isFwdKey   = k => k === 'ArrowRight' || k === 'ArrowDown';
 
+  function stepForward()  { if (step < STEPS) goTo(step + 1); else if (embedded) toParent({ type: 'deck-next' }); }
+  function stepBackward() { if (step > 0)     goTo(step - 1); else if (embedded) toParent({ type: 'deck-prev' }); }
+
+  // Local arrow keys — used standalone, and when the iframe itself holds focus inside the deck.
   window.addEventListener('keydown', (e) => {
     if (!isArrowKey(e.key)) return;
-    const atEdge = (isFwdKey(e.key) && step === STEPS) || (!isFwdKey(e.key) && step === 0);
-    if (window.parent !== window && atEdge) {
-      // Let the deck move to the prev/next slide once we've stepped off either end.
-      try { window.parent.postMessage({ type: 'arrow', key: e.key }, '*'); } catch (err) {}
-      return;
-    }
     e.preventDefault();
-    goTo(isFwdKey(e.key) ? step + 1 : step - 1);
+    isFwdKey(e.key) ? stepForward() : stepBackward();
   });
 
-  // Parent → iframe messages:
-  //   'slide-activated' — slide just became active; reset to overview.
-  //   'set-step'/'set-act' — explicit step from the deck's nav controller.
+  // Parent → iframe messages (the deck's embed handshake):
   window.addEventListener('message', (e) => {
     if (!e.data) return;
-    if (e.data.type === 'slide-activated') goTo(0);
-    else if ((e.data.type === 'set-step' || e.data.type === 'set-act') && typeof e.data.step === 'number') goTo(e.data.step);
-    else if ((e.data.type === 'set-step' || e.data.type === 'set-act') && typeof e.data.act === 'number') goTo(e.data.act);
+    switch (e.data.type) {
+      case 'deck-enter':       goTo(e.data.dir === 'rev' ? STEPS : 0); break;  // entered slide fwd/reverse
+      case 'deck-advance':     stepForward();  break;
+      case 'deck-reverse':     stepBackward(); break;
+      case 'slide-activated':  goTo(0);        break;  // legacy reset hook
+    }
   });
 
   // ── Boot ───────────────────────────────────────────────────────
   render();
+  // Tell the deck we're ready so it can (re)send deck-enter if it navigated here before load.
+  if (embedded) toParent({ type: 'embed-ready' });
 })();
 </script>
 </body>
