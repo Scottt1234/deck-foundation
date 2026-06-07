@@ -342,6 +342,73 @@
       .bb-scene .bb-flow { opacity: 1 !important; animation: none !important; }
     }
 
+    /* ═══════════ Conversational Interface animation — the few → the many ═══════════
+       Left 2/3: two highlighted "Data scientists" shrink away as a whole-organisation
+       crowd pops in ("Every team"). Right 1/3: plain-English questions stream + answer. */
+    .cv-scene { position: absolute; inset: 0; display: flex; }
+    .cv-people { position: relative; flex: 2 1 0; overflow: hidden; }
+    .cv-questions { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column;
+      border-left: 1px solid rgba(255,255,255,0.10); padding: 16px 16px 18px; }
+    .cv-qhead { flex: 0 0 auto; font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 12px; }
+    .cv-qlist { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+
+    /* person icons */
+    .cv-dot, .cv-hero svg { color: rgba(143,184,255,0.55); }
+    .cv-dot svg, .cv-hero svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+
+    /* crowd cloud */
+    .cv-crowd { position: absolute; inset: 9% 7% 20% 7%; display: flex; flex-wrap: wrap;
+      align-content: center; justify-content: center; gap: 2.4% 1.8%; }
+    .cv-dot { width: 7%; aspect-ratio: 1; opacity: 0; transform: scale(0.4); }
+    .cv-dot svg { animation: cvFloat 3.6s ease-in-out infinite; animation-delay: calc(var(--d,0) * 1s); }
+    .cv-dot.is-expert { color: var(--sf-blue-l); filter: drop-shadow(0 0 6px rgba(0,179,255,0.65)); }
+    .cv-scene.playing .cv-dot { animation: cvPop 0.5s calc(1.25s + var(--i,0) * 0.016s) cubic-bezier(0.22,1,0.36,1) forwards; }
+
+    /* hero experts (shrink away as the crowd appears) */
+    .cv-hero { position: absolute; left: 50%; top: 45%; transform: translate(-50%,-50%); display: flex; gap: 12px; opacity: 0; }
+    .cv-hero svg { width: 62px; height: 62px; color: var(--sf-blue-l); filter: drop-shadow(0 0 14px rgba(0,179,255,0.55)); }
+    .cv-scene.playing .cv-hero { animation: cvHero 3.1s ease both; }
+
+    /* labels (cross-fade in place) */
+    .cv-label { position: absolute; left: 0; right: 0; bottom: 8%; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 0.03em; }
+    .cv-label span { position: absolute; left: 0; right: 0; opacity: 0; }
+    .cv-label-a { color: var(--sf-blue-l); }
+    .cv-label-b { color: #fff; }
+    .cv-scene.playing .cv-label-a { animation: cvLabA 3.1s ease both; }
+    .cv-scene.playing .cv-label-b { animation: cvLabB 3.1s ease both; }
+
+    /* question bubbles */
+    .cv-q { position: relative; align-self: flex-start; max-width: 100%;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px 12px 12px 4px; padding: 9px 12px; font-size: 12.5px; line-height: 1.4;
+      color: #fff; animation: cvQIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    .cv-q .cv-tick { display: inline-block; margin-left: 6px; color: #04E1CB; font-weight: 700; opacity: 0; transition: opacity 0.3s ease; }
+    .cv-q.answered .cv-tick { opacity: 1; }
+    .cv-q .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l); margin-left: 1px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
+
+    @keyframes cvFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes cvPop   { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
+    @keyframes cvHero  {
+      0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
+      12%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+      38%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+      62%  { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
+      100% { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
+    }
+    @keyframes cvLabA { 0% { opacity: 0; transform: translateY(6px); } 14% { opacity: 1; transform: none; } 40% { opacity: 1; } 56% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes cvLabB { 0% { opacity: 0; } 56% { opacity: 0; transform: translateY(6px); } 72% { opacity: 1; transform: none; } 100% { opacity: 1; } }
+    @keyframes cvQIn  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    @keyframes cvBlink { 50% { opacity: 0; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cv-scene .cv-dot { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .cv-scene .cv-dot svg { animation: none !important; }
+      .cv-scene .cv-hero { opacity: 0 !important; animation: none !important; }
+      .cv-scene .cv-label-a { opacity: 0 !important; animation: none !important; }
+      .cv-scene .cv-label-b { opacity: 1 !important; animation: none !important; }
+    }
+
     /* ── Responsive ── */
     @media (max-width: 1000px) {
       #rail { flex-wrap: wrap; }
@@ -430,7 +497,7 @@
       sub:'Keep it fixed &mdash; watch the process live and catch drift the moment it appears.',
       desc:'Watches the process in production, confirming the change held and catching drift the moment it appears.' },
   ];
-  const FOUNDATION = { num:'07', name:'Conversational Interface', tag:'Underpins all', color:'#8fb8ff',
+  const FOUNDATION = { num:'07', name:'Conversational Interface', tag:'Underpins all', color:'#8fb8ff', anim:'convo',
     sub:'Ask anything in plain English &mdash; the layer that underpins them all.',
     desc:'The layer that underpins every other: ask any question in plain English and get an evidence-backed answer drawn from all six layers above.' };
 
@@ -505,6 +572,48 @@
       </div>
     </div>`;
 
+  // ── Conversational Interface animation (the few → the many) ─────
+  // Left 2/3: two "Data scientists" shrink away as a whole-organisation crowd pops in
+  // ("Every team"). Right 1/3: broad, plain-English questions stream in and get answered.
+  const CONVO_QUESTIONS = [
+    'How can I reduce call handling time?',
+    "Where's the bottleneck in onboarding?",
+    "What's driving claims rework this quarter?",
+    'Which process costs us the most?',
+    'How do I speed up new-policy approvals?',
+    'Where are customers dropping off?',
+    "What's slowing down our invoicing?",
+  ];
+  const personSVG = () => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.2" r="4"/><path d="M3.6 20.5c0-4.64 3.76-8 8.4-8s8.4 3.36 8.4 8z"/></svg>';
+
+  function buildConvo() {
+    const scene = document.createElement('div');
+    scene.className = 'cv-scene';
+    scene.innerHTML = `
+      <div class="cv-people">
+        <div class="cv-crowd"></div>
+        <div class="cv-hero">${personSVG()}${personSVG()}</div>
+        <div class="cv-label"><span class="cv-label-a">Data scientists</span><span class="cv-label-b">Every team</span></div>
+      </div>
+      <div class="cv-questions">
+        <div class="cv-qhead">Ask anything · plain English</div>
+        <div class="cv-qlist"></div>
+      </div>`;
+    // Build the crowd: a cloud of person icons, two flagged as the (now-included) experts.
+    const crowd = scene.querySelector('.cv-crowd');
+    const N = 54;
+    const experts = new Set([22, 31]);   // two highlighted icons near the middle of the cloud
+    for (let i = 0; i < N; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'cv-dot' + (experts.has(i) ? ' is-expert' : '');
+      dot.style.setProperty('--i', i);
+      dot.style.setProperty('--d', (Math.random() * 1.2).toFixed(2));   // float phase
+      dot.innerHTML = personSVG();
+      crowd.appendChild(dot);
+    }
+    return scene;
+  }
+
   // ── Build rail + pillar ────────────────────────────────────────
   const rail = document.getElementById('rail');
   LAYERS.forEach((l, i) => {
@@ -529,7 +638,11 @@
     const el = document.createElement('div');
     el.className = 'pi-big'; el.style.setProperty('--c', l.color);
     // No header/text — the whole card is the animation slot.
-    el.innerHTML = `<div class="pi-big-stage">${l.anim === 'blackbox' ? BLACKBOX : placeholderSlot()}</div>`;
+    const stage = document.createElement('div'); stage.className = 'pi-big-stage';
+    if (l.anim === 'blackbox')   stage.innerHTML = BLACKBOX;
+    else if (l.anim === 'convo') stage.appendChild(buildConvo());
+    else                         stage.innerHTML = placeholderSlot();
+    el.appendChild(stage);
     bottom.appendChild(el);
     bigs.push(el);
   });
@@ -552,6 +665,8 @@
   let currentBig = null;
   let swapTimer = null;
 
+  const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function playBlackbox(el) {
     const scene = el.querySelector('.bb-scene');
     if (!scene) return;
@@ -560,19 +675,75 @@
     scene.classList.add('playing');
   }
 
+  // ── Conversational Interface: play people animation + stream questions ──
+  function stopConvoQuestions(scene) {
+    if (scene._qTimers) { scene._qTimers.forEach(clearTimeout); scene._qTimers = null; }
+    const list = scene.querySelector('.cv-qlist'); if (list) list.innerHTML = '';
+  }
+  function startConvoQuestions(scene) {
+    stopConvoQuestions(scene);
+    const list = scene.querySelector('.cv-qlist'); if (!list) return;
+    const timers = []; scene._qTimers = timers;
+    let qi = 0;
+    const addBubble = () => {
+      const b = document.createElement('div'); b.className = 'cv-q';
+      const txt = document.createElement('span'); b.appendChild(txt);
+      list.appendChild(b);
+      while (list.children.length > 4) list.removeChild(list.firstChild);   // keep it a rolling feed
+      const q = CONVO_QUESTIONS[qi++ % CONVO_QUESTIONS.length];
+      if (reduceMotion()) {
+        txt.textContent = q;
+        const tick = document.createElement('span'); tick.className = 'cv-tick'; tick.textContent = '✓'; b.appendChild(tick);
+        b.classList.add('answered');
+        timers.push(setTimeout(addBubble, 2200));
+        return;
+      }
+      const caret = document.createElement('span'); caret.className = 'cv-caret'; b.appendChild(caret);
+      let ci = 0;
+      const type = () => {
+        txt.textContent = q.slice(0, ci++);
+        if (ci <= q.length) { timers.push(setTimeout(type, 26)); }
+        else {
+          caret.remove();
+          const tick = document.createElement('span'); tick.className = 'cv-tick'; tick.textContent = '✓'; b.appendChild(tick);
+          timers.push(setTimeout(() => b.classList.add('answered'), 220));
+          timers.push(setTimeout(addBubble, 1500));
+        }
+      };
+      type();
+    };
+    timers.push(setTimeout(addBubble, 900));   // start after the crowd has begun to appear
+  }
+  function playConvo(el) {
+    const scene = el.querySelector('.cv-scene'); if (!scene) return;
+    scene.classList.remove('playing');
+    void scene.offsetWidth;                 // reflow so the people timeline re-fires
+    scene.classList.add('playing');
+    startConvoQuestions(scene);
+  }
+  function stopConvo(el) {
+    const scene = el.querySelector('.cv-scene'); if (!scene) return;
+    stopConvoQuestions(scene);
+    scene.classList.remove('playing');
+  }
+
   function showBig(n) {
     const next = (n >= 1 && n <= STEPS) ? bigs[n - 1] : null;
     if (next === currentBig) return;
     const prev = currentBig;
     currentBig = next;
     if (swapTimer) { clearTimeout(swapTimer); swapTimer = null; }
-    if (prev) { prev.classList.remove('active'); prev.classList.add('closing'); }
+    if (prev) {
+      prev.classList.remove('active'); prev.classList.add('closing');
+      if (prev.querySelector('.cv-scene')) stopConvo(prev);   // halt question timers immediately
+    }
     const delay = prev ? 280 : 0;           // close the last card, then raise the new one
     swapTimer = setTimeout(() => {
       if (prev) prev.classList.remove('closing');
       if (next) {
         next.classList.add('active');
         if (next.querySelector('.bb-scene')) playBlackbox(next);
+        else if (next.querySelector('.cv-scene')) playConvo(next);
       }
     }, delay);
   }
