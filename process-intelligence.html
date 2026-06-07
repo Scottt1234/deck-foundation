@@ -71,15 +71,15 @@
     #rail-wrap { max-width: 1180px; margin: 22px auto 0; padding: 0 48px; }
     #rail { display: flex; gap: 18px; align-items: stretch; }
     .pi-card {
-      --c: #ffffff;
+      --c: #8fb8ff;
       flex: 1 1 0; min-width: 0; position: relative; cursor: pointer;
       border: 1px solid rgba(255,255,255,0.12);
-      border-top: 2px solid color-mix(in srgb, var(--c) 65%, transparent);
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border-top: 3px solid rgba(143,184,255,0.6);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
       padding: 12px 14px; opacity: 0.5;
-      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2,0.8,0.2,1),
-                  box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+      transition: opacity 0.35s ease, transform 0.2s ease,
+                  box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
     .pi-card .pi-num {
       font-family: var(--font-display); font-size: 12px; font-weight: 700;
@@ -97,11 +97,11 @@
       font-size: 18px; line-height: 1; font-weight: 400; color: rgba(255,255,255,0.35); z-index: 3;
     }
     .pi-card.active {
-      opacity: 1; transform: translateY(-5px);
-      border-color: color-mix(in srgb, var(--c) 55%, transparent);
-      border-top-color: var(--c);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(255,255,255,0.03));
-      box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--c) 60%, transparent);
+      opacity: 1; transform: translateY(-4px);
+      border-color: rgba(143,184,255,0.5);
+      border-top-color: rgba(143,184,255,0.85);
+      background: rgba(143,184,255,0.08);
+      box-shadow: 0 10px 24px -12px rgba(143,184,255,0.5);
     }
     .pi-card.done { opacity: 0.78; }
 
@@ -114,15 +114,15 @@
       opacity: 0.6;
     }
     #pillar {
-      --c: #ffffff; cursor: pointer; position: relative;
+      --c: #8fb8ff; cursor: pointer; position: relative;
       display: flex; align-items: center; gap: 12px;
       border: 1px solid rgba(255,255,255,0.12);
-      border-top: 2px solid color-mix(in srgb, var(--c) 65%, transparent);
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border-top: 3px solid rgba(143,184,255,0.6);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
       padding: 9px 16px; opacity: 0.5;
-      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2,0.8,0.2,1),
-                  box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+      transition: opacity 0.35s ease, transform 0.2s ease,
+                  box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
     /* text styled identically to the rail cards */
     #pillar .pi-num { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--c); opacity: 0.9; }
@@ -133,28 +133,25 @@
     }
     #pillar.active {
       opacity: 1; transform: translateY(-3px);
-      border-color: color-mix(in srgb, var(--c) 55%, transparent);
-      border-top-color: var(--c);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(255,255,255,0.03));
-      box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--c) 60%, transparent);
+      border-color: rgba(143,184,255,0.5);
+      border-top-color: rgba(143,184,255,0.85);
+      background: rgba(143,184,255,0.08);
+      box-shadow: 0 10px 24px -12px rgba(143,184,255,0.5);
     }
 
     /* ── Big card stage (bottom half) ── */
     .pi-big {
-      --c: #ffffff; position: absolute; inset: 4px 48px 84px;
-      max-width: 1180px; margin: 0 auto; left: 0; right: 0;
+      --c: #8fb8ff; position: absolute; inset: 24px 48px 84px;
+      max-width: 1040px; margin: 0 auto; left: 0; right: 0;
       display: flex; flex-direction: column;
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 18px; overflow: hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
-      box-shadow: 0 30px 70px -20px rgba(0,0,0,0.6);
+      border-top: 3px solid rgba(143,184,255,0.6);
+      border-radius: 8px; overflow: hidden;
+      background: rgba(255,255,255,0.05);
+      box-shadow: var(--shadow-card);
       opacity: 0; transform: translateY(46px) scale(0.985); pointer-events: none;
       transition: opacity 0.5s cubic-bezier(0.2,0.8,0.2,1),
                   transform 0.6s cubic-bezier(0.2,0.8,0.2,1);
-    }
-    .pi-big::before {
-      content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px;
-      background: var(--c);
     }
     .pi-big.active { opacity: 1; transform: none; pointer-events: auto; }
     .pi-big.closing { opacity: 0; transform: translateY(34px) scale(0.99); }
@@ -206,7 +203,7 @@
 
     /* ── Intro overlay (step 0) ── */
     #intro {
-      position: absolute; inset: 4px 48px 84px; max-width: 1180px; margin: 0 auto; left: 0; right: 0;
+      position: absolute; inset: 24px 48px 84px; max-width: 1040px; margin: 0 auto; left: 0; right: 0;
       display: flex; align-items: center; justify-content: center; text-align: center;
       opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
     }
@@ -234,7 +231,7 @@
       width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25);
       transition: background 0.3s ease, transform 0.3s ease;
     }
-    #dots .dot.on { background: #fff; transform: scale(1.25); }
+    #dots .dot.on { background: #8fb8ff; transform: scale(1.25); }
     #dots .dot.done { background: rgba(255,255,255,0.55); }
     #prog-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
 
@@ -257,8 +254,7 @@
        Scoped under .bb-scene; trigger by toggling .playing. */
     .bb-scene { position: relative; width: 100%; height: 100%; }
     .bb-stage {
-      position: relative; width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08);
+      position: relative; width: 100%; height: 100%; border-radius: 6px; overflow: hidden;
     }
     .bb-inside {
       position: absolute; inset: 0;
@@ -303,7 +299,7 @@
     .bb-hub-ring  { fill: none; stroke: #8fb8ff; stroke-width: 1.5; }
     .bb-hub-glow  { fill: rgba(143,184,255,0.16); }
     .bb-hub-core  { fill: #e6f1ff; }
-    .bb-hub-edge  { fill: none; stroke: #ffffff; stroke-width: 1.5; opacity: 0.85; }
+    .bb-hub-edge  { fill: none; stroke: #8fb8ff; stroke-width: 1.5; opacity: 0.85; }
 
     .bb-cover {
       position: absolute; inset: 0; z-index: 5;
@@ -347,8 +343,8 @@
     }
     @media (max-width: 720px) {
       #bottom, .pi-big, #intro { padding-left: 18px; padding-right: 18px; }
-      .pi-big { inset: 4px 18px 84px; }
-      #intro { inset: 4px 18px 84px; }
+      .pi-big { inset: 24px 18px 84px; }
+      #intro { inset: 24px 18px 84px; }
       #caption, #rail-wrap, #pillar-wrap { padding-left: 18px; padding-right: 18px; }
     }
   </style>
@@ -408,26 +404,26 @@
   // Each layer becomes a rail card + a big card. `anim:'blackbox'` mounts the
   // live Task Mining animation; everything else gets a swappable placeholder.
   const LAYERS = [
-    { num:'01', name:'Process Mining',  tag:'System',  color:'#ffffff',
+    { num:'01', name:'Process Mining',  tag:'System',  color:'#8fb8ff',
       sub:'See how the process really runs &mdash; not how the diagram on the wall says it should.',
       desc:'Reconstructs how a process actually runs inside a system from event logs &mdash; every variant, bottleneck and rework loop.' },
-    { num:'02', name:'Task Mining',     tag:'Desktop', color:'#ffffff', anim:'blackbox',
+    { num:'02', name:'Task Mining',     tag:'Desktop', color:'#8fb8ff', anim:'blackbox',
       sub:'See the work <em>between</em> the systems &mdash; where process mining goes blind.',
       desc:'Captures the work between systems at the desktop &mdash; the rate look-ups, broker emails and manual referrals process mining alone cannot see.' },
-    { num:'03', name:'Analysis',        tag:'Insight', color:'#ffffff',
+    { num:'03', name:'Analysis',        tag:'Insight', color:'#8fb8ff',
       sub:'Put a number on the waste &mdash; and on the prize.',
       desc:'Quantifies the cost of inefficiency and the value of recoverable waste, turning observation into a business case.' },
-    { num:'04', name:'Recommendation',  tag:'AI',      color:'#ffffff',
+    { num:'04', name:'Recommendation',  tag:'AI',      color:'#8fb8ff',
       sub:'From problem to the specific fix &mdash; proposed by AI.',
       desc:'AI proposes the specific change to make &mdash; not just the problem, but the mechanism that fixes it.' },
-    { num:'05', name:'Simulation',      tag:'Proof',   color:'#ffffff',
+    { num:'05', name:'Simulation',      tag:'Proof',   color:'#8fb8ff',
       sub:'Prove the change works <em>before</em> you make it.',
       desc:'Validates the recommendation before you commit, modelling the impact across cost, time and risk.' },
-    { num:'06', name:'Monitor',         tag:'Live',    color:'#ffffff',
+    { num:'06', name:'Monitor',         tag:'Live',    color:'#8fb8ff',
       sub:'Keep it fixed &mdash; watch the process live and catch drift the moment it appears.',
       desc:'Watches the process in production, confirming the change held and catching drift the moment it appears.' },
   ];
-  const FOUNDATION = { num:'07', name:'Conversational Interface', tag:'Underpins all', color:'#ffffff',
+  const FOUNDATION = { num:'07', name:'Conversational Interface', tag:'Underpins all', color:'#8fb8ff',
     sub:'Ask anything in plain English &mdash; the layer that underpins them all.',
     desc:'The layer that underpins every other: ask any question in plain English and get an evidence-backed answer drawn from all six layers above.' };
 
