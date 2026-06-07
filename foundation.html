@@ -1232,6 +1232,7 @@
   <div class="section-label" id="section-label"></div>
   <div class="slide-dots" id="dots"></div>
   <div class="slide-controls">
+    <button class="slide-btn" id="replay-embed" title="Replay animation" style="display:none;">&#8635;</button>
     <button class="slide-btn" id="prev" title="Previous (←)">&#8592;</button>
     <span class="slide-counter" id="counter">1 / 9</span>
     <button class="slide-btn" id="next" title="Next (→)">&#8594;</button>
@@ -1288,6 +1289,8 @@
         layersDir = opts.reverse ? 'rev' : 'fwd';
         postIframe(slides[current], { type: 'deck-enter', dir: layersDir });
       }
+      // Replay button is only meaningful on embedded-animation slides.
+      replayBtn.style.display = isLayers(current) ? 'flex' : 'none';
     }
 
     // ── Process Reality act-aware navigation ─────────────────────────
@@ -1339,6 +1342,9 @@
         go(current - 1, { reverse: true });
       }
     }
+
+    const replayBtn = document.getElementById('replay-embed');
+    replayBtn.addEventListener('click', () => postIframe(slides[current], { type: 'replay' }));
 
     prevBtn.addEventListener('click', reverse);
     nextBtn.addEventListener('click', advance);

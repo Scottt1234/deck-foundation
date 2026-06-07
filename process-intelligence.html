@@ -343,40 +343,38 @@
     }
 
     /* ═══════════ Conversational Interface animation — the few → the many ═══════════
-       Left 2/3: two highlighted "Data scientists" shrink away as a whole-organisation
-       crowd pops in ("Every team"). Right 1/3: plain-English questions stream + answer. */
+       Left 2/3: two large "Data Scientists" fly into an organic, whole-organisation crowd
+       ("Everyone") shrinking as they go. Right 1/3: plain-English questions stream + answer. */
     .cv-scene { position: absolute; inset: 0; display: flex; }
     .cv-people { position: relative; flex: 2 1 0; overflow: hidden; }
-    .cv-questions { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column;
-      border-left: 1px solid rgba(255,255,255,0.10); padding: 16px 16px 18px; }
-    .cv-qhead { flex: 0 0 auto; font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 12px; }
-    .cv-qlist { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+    .cv-questions { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end;
+      border-left: 1px solid rgba(255,255,255,0.10); padding: 16px; }
+    .cv-qlist { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
 
-    /* person icons */
-    .cv-dot, .cv-hero svg { color: rgba(143,184,255,0.55); }
-    .cv-dot svg, .cv-hero svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+    /* big top title — cross-fades "Data Scientists" → "Everyone" */
+    .cv-titles { position: absolute; top: 7%; left: 0; right: 0; height: 1.3em; text-align: center; pointer-events: none; }
+    .cv-title { position: absolute; left: 0; right: 0; top: 0; font-family: var(--font-display);
+      font-weight: 700; font-size: clamp(22px, 3.3vw, 33px); letter-spacing: -0.01em;
+      color: var(--sf-blue-l); opacity: 0; transition: opacity 0.8s ease; }
+    .cv-scene.playing .cv-title-a { opacity: 1; }
+    .cv-scene.revealed .cv-title-a { opacity: 0; transition: opacity 0.6s ease; }
+    .cv-scene.revealed .cv-title-b { opacity: 1; transition: opacity 0.9s ease 0.5s; }
 
-    /* crowd cloud */
-    .cv-crowd { position: absolute; inset: 9% 7% 20% 7%; display: flex; flex-wrap: wrap;
-      align-content: center; justify-content: center; gap: 2.4% 1.8%; }
-    .cv-dot { width: 7%; aspect-ratio: 1; opacity: 0; transform: scale(0.4); }
-    .cv-dot svg { animation: cvFloat 3.6s ease-in-out infinite; animation-delay: calc(var(--d,0) * 1s); }
-    .cv-dot.is-expert { color: var(--sf-blue-l); filter: drop-shadow(0 0 6px rgba(0,179,255,0.65)); }
-    .cv-scene.playing .cv-dot { animation: cvPop 0.5s calc(1.25s + var(--i,0) * 0.016s) cubic-bezier(0.22,1,0.36,1) forwards; }
+    /* crowd cloud (organic, absolute positions set inline) */
+    .cv-crowd { position: absolute; inset: 26% 6% 8% 6%; }
+    .cv-dot, .cv-hero-ic { position: absolute; width: 6.4%; aspect-ratio: 1; transform: translate(-50%,-50%); }
+    .cv-dot svg, .cv-hero-ic svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+    .cv-dot { color: #fff; opacity: 0; }                              /* the wider org — white */
+    .cv-dot svg { animation: cvFloat 4s ease-in-out infinite; animation-delay: calc(var(--d,0) * 1s); }
+    .cv-scene.revealed .cv-dot { animation: cvPop 0.6s calc(var(--i,0) * 0.02s) cubic-bezier(0.22,1,0.36,1) forwards; }
 
-    /* hero experts (shrink away as the crowd appears) */
-    .cv-hero { position: absolute; left: 50%; top: 45%; transform: translate(-50%,-50%); display: flex; gap: 12px; opacity: 0; }
-    .cv-hero svg { width: 62px; height: 62px; color: var(--sf-blue-l); filter: drop-shadow(0 0 14px rgba(0,179,255,0.55)); }
-    .cv-scene.playing .cv-hero { animation: cvHero 3.1s ease both; }
-
-    /* labels (cross-fade in place) */
-    .cv-label { position: absolute; left: 0; right: 0; bottom: 8%; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 0.03em; }
-    .cv-label span { position: absolute; left: 0; right: 0; opacity: 0; }
-    .cv-label-a { color: var(--sf-blue-l); }
-    .cv-label-b { color: #fff; }
-    .cv-scene.playing .cv-label-a { animation: cvLabA 3.1s ease both; }
-    .cv-scene.playing .cv-label-b { animation: cvLabB 3.1s ease both; }
+    /* the two experts — start large & centred, then fly to their crowd spots and shrink */
+    .cv-hero-ic { color: var(--sf-blue-l); opacity: 0; z-index: 4;
+      filter: drop-shadow(0 0 9px rgba(0,179,255,0.6));
+      transform: translate(-50%,-50%) translate(var(--sx,0), var(--sy,0)) scale(var(--hs,3.4));
+      transition: transform 1.5s cubic-bezier(0.4,0,0.2,1), opacity 0.8s ease; }
+    .cv-scene.playing .cv-hero-ic { opacity: 1; }
+    .cv-scene.revealed .cv-hero-ic { transform: translate(-50%,-50%) scale(1); }
 
     /* question bubbles */
     .cv-q { position: relative; align-self: flex-start; max-width: 100%;
@@ -388,25 +386,16 @@
     .cv-q .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l); margin-left: 1px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
 
     @keyframes cvFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-    @keyframes cvPop   { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: scale(1); } }
-    @keyframes cvHero  {
-      0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.8); }
-      12%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-      38%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-      62%  { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
-      100% { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
-    }
-    @keyframes cvLabA { 0% { opacity: 0; transform: translateY(6px); } 14% { opacity: 1; transform: none; } 40% { opacity: 1; } 56% { opacity: 0; } 100% { opacity: 0; } }
-    @keyframes cvLabB { 0% { opacity: 0; } 56% { opacity: 0; transform: translateY(6px); } 72% { opacity: 1; transform: none; } 100% { opacity: 1; } }
-    @keyframes cvQIn  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    @keyframes cvPop   { from { opacity: 0; transform: translate(-50%,-50%) scale(0.3); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+    @keyframes cvQIn   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
     @keyframes cvBlink { 50% { opacity: 0; } }
 
     @media (prefers-reduced-motion: reduce) {
-      .cv-scene .cv-dot { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .cv-scene .cv-dot { opacity: 1 !important; transform: translate(-50%,-50%) !important; animation: none !important; }
       .cv-scene .cv-dot svg { animation: none !important; }
-      .cv-scene .cv-hero { opacity: 0 !important; animation: none !important; }
-      .cv-scene .cv-label-a { opacity: 0 !important; animation: none !important; }
-      .cv-scene .cv-label-b { opacity: 1 !important; animation: none !important; }
+      .cv-scene .cv-hero-ic { opacity: 1 !important; transform: translate(-50%,-50%) scale(1) !important; transition: none !important; }
+      .cv-scene .cv-title-a { opacity: 0 !important; }
+      .cv-scene .cv-title-b { opacity: 1 !important; }
     }
 
     /* ── Responsive ── */
@@ -461,6 +450,9 @@
   </div>
 
   <div id="nav">
+    <button id="replay" aria-label="Replay animation" title="Replay animation">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v5h-5"/></svg>
+    </button>
     <button id="prev" aria-label="Previous">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
@@ -591,26 +583,38 @@
     scene.className = 'cv-scene';
     scene.innerHTML = `
       <div class="cv-people">
+        <div class="cv-titles">
+          <span class="cv-title cv-title-a">Data Scientists</span>
+          <span class="cv-title cv-title-b">Everyone</span>
+        </div>
         <div class="cv-crowd"></div>
-        <div class="cv-hero">${personSVG()}${personSVG()}</div>
-        <div class="cv-label"><span class="cv-label-a">Data scientists</span><span class="cv-label-b">Every team</span></div>
       </div>
-      <div class="cv-questions">
-        <div class="cv-qhead">Ask anything · plain English</div>
-        <div class="cv-qlist"></div>
-      </div>`;
-    // Build the crowd: a cloud of person icons, two flagged as the (now-included) experts.
+      <div class="cv-questions"><div class="cv-qlist"></div></div>`;
     const crowd = scene.querySelector('.cv-crowd');
-    const N = 54;
-    const experts = new Set([22, 31]);   // two highlighted icons near the middle of the cloud
-    for (let i = 0; i < N; i++) {
-      const dot = document.createElement('span');
-      dot.className = 'cv-dot' + (experts.has(i) ? ' is-expert' : '');
-      dot.style.setProperty('--i', i);
-      dot.style.setProperty('--d', (Math.random() * 1.2).toFixed(2));   // float phase
-      dot.innerHTML = personSVG();
-      crowd.appendChild(dot);
+    // Seeded RNG → a stable, organic cloud (not a grid).
+    let s = 20260607;
+    const rnd = () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const N = 52, pts = [];
+    let guard = 0;
+    while (pts.length < N && guard++ < 6000) {
+      const x = 50 + (rnd() * 2 - 1) * 47;
+      const y = 50 + (rnd() * 2 - 1) * 45;
+      if (((x - 50) / 47) ** 2 + ((y - 50) / 45) ** 2 > 1) continue;     // inside an ellipse
+      if (pts.some(p => Math.hypot(p.x - x, p.y - y) < 7)) continue;     // light spacing
+      pts.push({ x, y });
     }
+    // Two experts = the points nearest the centre (so they sit in the heart of the crowd).
+    pts.sort((a, b) => Math.hypot(a.x - 50, a.y - 50) - Math.hypot(b.x - 50, b.y - 50));
+    pts.forEach((p, i) => {
+      const isExpert = i < 2;
+      const el = document.createElement('span');
+      el.className = isExpert ? 'cv-hero-ic' : 'cv-dot';
+      el.style.left = p.x + '%';
+      el.style.top = p.y + '%';
+      if (!isExpert) { el.style.setProperty('--i', i); el.style.setProperty('--d', (rnd() * 1.4).toFixed(2)); }
+      el.innerHTML = personSVG();
+      crowd.appendChild(el);
+    });
     return scene;
   }
 
@@ -659,6 +663,7 @@
   const navCount = document.getElementById('nav-count');
   const btnPrev = document.getElementById('prev');
   const btnNext = document.getElementById('next');
+  const btnReplay = document.getElementById('replay');
 
   // ── Navigation state ───────────────────────────────────────────
   let step = 0;            // 0 = overview; 1..STEPS = focus a layer / pillar
@@ -716,15 +721,38 @@
   }
   function playConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
-    scene.classList.remove('playing');
-    void scene.offsetWidth;                 // reflow so the people timeline re-fires
-    scene.classList.add('playing');
-    startConvoQuestions(scene);
+    stopConvoQuestions(scene);
+    if (scene._cvTimers) scene._cvTimers.forEach(clearTimeout);
+    const timers = []; scene._cvTimers = timers;
+    scene.classList.remove('playing', 'revealed');
+
+    // Measure each expert's start offset: from its place in the crowd to the panel centre,
+    // side by side. Placed without a transition so they simply appear there, big.
+    const heroes = scene.querySelectorAll('.cv-hero-ic');
+    const people = scene.querySelector('.cv-people');
+    void scene.offsetWidth;
+    const pr = people.getBoundingClientRect();
+    const cx = pr.left + pr.width / 2, cy = pr.top + pr.height * 0.46;
+    heroes.forEach((h, k) => {
+      h.style.transition = 'none';
+      const r = h.getBoundingClientRect();
+      const off = (k === 0 ? -1 : 1) * Math.min(74, pr.width * 0.075);
+      h.style.setProperty('--sx', (cx - (r.left + r.width / 2) + off) + 'px');
+      h.style.setProperty('--sy', (cy - (r.top + r.height / 2)) + 'px');
+    });
+    void scene.offsetWidth;                         // commit the no-transition placement
+    heroes.forEach(h => { h.style.transition = ''; });
+
+    scene.classList.add('playing');                 // experts fade in (big, centred); title A fades in
+    const HOLD = 2600, QSTART = 5600;               // ~2x slower; questions wait until the team is revealed + a beat
+    timers.push(setTimeout(() => scene.classList.add('revealed'), HOLD));   // crowd pops, experts fly in & shrink, titles swap
+    timers.push(setTimeout(() => startConvoQuestions(scene), QSTART));
   }
   function stopConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
+    if (scene._cvTimers) { scene._cvTimers.forEach(clearTimeout); scene._cvTimers = null; }
     stopConvoQuestions(scene);
-    scene.classList.remove('playing');
+    scene.classList.remove('playing', 'revealed');
   }
 
   function showBig(n) {
@@ -746,6 +774,14 @@
         else if (next.querySelector('.cv-scene')) playConvo(next);
       }
     }, delay);
+  }
+
+  // Replay the animation in the currently-open card (driven by the in-iframe replay
+  // button and the deck's replay button via the 'replay' message).
+  function replayCurrent() {
+    const el = currentBig; if (!el) return;
+    if (el.querySelector('.bb-scene')) playBlackbox(el);
+    else if (el.querySelector('.cv-scene')) playConvo(el);
   }
 
   function render() {
@@ -786,6 +822,7 @@
 
   btnPrev.addEventListener('click', () => goTo(step - 1));
   btnNext.addEventListener('click', () => goTo(step + 1));
+  btnReplay.addEventListener('click', replayCurrent);
 
   // ── Keyboard + deck bridge ─────────────────────────────────────
   // Embedded in the deck (foundation.html), this file OWNS its own step sequence. The deck
@@ -816,6 +853,7 @@
       case 'deck-enter':       step = (e.data.dir === 'rev') ? STEPS : 0; render(); break;
       case 'deck-advance':     stepForward();  break;
       case 'deck-reverse':     stepBackward(); break;
+      case 'replay':           replayCurrent(); break;     // deck replay button
       case 'slide-activated':  step = 0; render(); break;  // legacy reset hook
     }
   });
