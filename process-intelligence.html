@@ -755,12 +755,12 @@
     const path = document.createElementNS(NS_SVG, 'path'); path.setAttribute('d', d); path.setAttribute('class', 'cv-pulse-line');
     const c = document.createElementNS(NS_SVG, 'circle'); c.setAttribute('r', '3.4'); c.setAttribute('class', 'cv-pulse-dot');
     const am = document.createElementNS(NS_SVG, 'animateMotion');
-    am.setAttribute('dur', '0.7s'); am.setAttribute('path', d); am.setAttribute('fill', 'freeze');
+    am.setAttribute('dur', '1.4s'); am.setAttribute('path', d); am.setAttribute('fill', 'freeze');
     am.setAttribute('calcMode', 'spline'); am.setAttribute('keyPoints', '0;1'); am.setAttribute('keyTimes', '0;1'); am.setAttribute('keySplines', '0.4 0 0.2 1');
     c.appendChild(am); svg.appendChild(path); svg.appendChild(c); layer.appendChild(svg);
     const tm = scene._cvTimers || (scene._cvTimers = []);
-    tm.push(setTimeout(() => { svg.style.opacity = '0'; }, 720));
-    tm.push(setTimeout(() => svg.remove(), 1150));
+    tm.push(setTimeout(() => { svg.style.opacity = '0'; }, 1450));
+    tm.push(setTimeout(() => svg.remove(), 1950));
   }
 
   // ── Conversational Interface: play people animation + stream questions ──
