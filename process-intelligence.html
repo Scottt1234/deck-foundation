@@ -64,11 +64,11 @@
     }
     #cap-title {
       font-family: var(--font-body);
-      font-size: clamp(24px, 2.8vw, 36px); font-weight: 700; line-height: 1.14;
-      letter-spacing: -0.025em; color: #fff; margin: 0 0 10px;
+      font-size: clamp(26px, 3vw, 38px); font-weight: 700; line-height: 1.15;
+      letter-spacing: -0.025em; color: #fff; margin: 0 0 12px;
     }
     #cap-sub {
-      font-size: 15px; line-height: 1.6; color: rgba(255,255,255,0.66);
+      font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.66);
       max-width: 920px; margin: 0; min-height: 24px;
       transition: opacity 0.35s ease;
     }
@@ -93,10 +93,10 @@
     }
     .pi-card .pi-num {
       font-family: var(--font-display); font-size: 12px; font-weight: 700;
-      letter-spacing: 0.08em; color: var(--c); opacity: 0.9;
+      letter-spacing: 0.08em; color: var(--sf-blue-l); opacity: 0.55;
     }
-    /* card title in the deck's light blue */
-    .pi-card .pi-name { font-size: 14px; font-weight: 700; color: var(--sf-blue-l); margin-top: 4px; line-height: 1.2; }
+    /* card title — white, slightly larger (matches slide 3: blue number, white title) */
+    .pi-card .pi-name { font-size: 16px; font-weight: 700; color: #fff; margin-top: 4px; line-height: 1.2; }
     .pi-card .pi-tag {
       display: inline-block; margin-top: 6px; font-size: 9px; font-weight: 700;
       letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6);
@@ -135,8 +135,8 @@
       transition: opacity 0.35s ease, transform 0.2s ease,
                   box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-    /* just the (centred, light-blue) title — no number or tag */
-    #pillar .pi-name { font-size: 14px; font-weight: 700; color: var(--sf-blue-l); line-height: 1.2; text-align: center; }
+    /* just the (centred, white) title — no number or tag */
+    #pillar .pi-name { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.2; text-align: center; }
     #pillar.active {
       opacity: 1; transform: translateY(-3px);
       border-color: rgba(143,184,255,0.5);
@@ -510,7 +510,7 @@
   LAYERS.forEach((l, i) => {
     const el = document.createElement('div');
     el.className = 'pi-card'; el.style.setProperty('--c', l.color); el.dataset.step = i + 1;
-    el.innerHTML = `<div class="pi-num">${l.num}</div><div class="pi-name">${l.name}</div><div class="pi-tag">${l.tag}</div>`;
+    el.innerHTML = `<div class="pi-num">${l.num}</div><div class="pi-name">${l.name}</div>`;
     el.addEventListener('click', () => goTo(i + 1));
     rail.appendChild(el);
   });
