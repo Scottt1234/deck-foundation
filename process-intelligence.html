@@ -401,9 +401,11 @@
     /* crowd → question pulses (a token travels from a person to each new question) */
     .cv-link-layer { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
     .cv-pulse-svg { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity 0.45s ease; }
-    .cv-pulse-line { fill: none; stroke: rgba(143,184,255,0.45); stroke-width: 1.3; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
-    .cv-pulse-dot  { fill: #eaf6ff; filter: drop-shadow(0 0 6px rgba(0,179,255,1)); }
-    .cv-pulse-halo { fill: rgba(0,179,255,0.22); }
+    .cv-pulse-line  { fill: none; stroke: rgba(143,184,255,0.45); stroke-width: 1.3; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+    .cv-pulse-token { position: absolute; left: 0; top: 0; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+      border-radius: 50%; background: #eaf6ff; box-shadow: 0 0 9px 2px rgba(0,179,255,0.95); }
+    .cv-pulse-halo  { position: absolute; left: 0; top: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px;
+      border-radius: 50%; background: radial-gradient(circle, rgba(0,179,255,0.38), transparent 70%); }
 
     /* question bubbles (one size larger) */
     .cv-q { position: relative; align-self: flex-start; max-width: 100%;
@@ -760,26 +762,32 @@
     const br = bubbleEl.getBoundingClientRect();
     const x1 = src.left + src.width / 2 - lr.left, y1 = src.top + src.height / 2 - lr.top;
     const x2 = br.left - lr.left + 6, y2 = br.top + br.height / 2 - lr.top;
+    // Static guide line (plain SVG, no animation).
     const d = `M ${x1} ${y1} C ${(x1 + x2) / 2} ${y1}, ${(x1 + x2) / 2} ${y2}, ${x2} ${y2}`;
     const svg = document.createElementNS(NS_SVG, 'svg');
     svg.setAttribute('class', 'cv-pulse-svg'); svg.setAttribute('viewBox', `0 0 ${lr.width} ${lr.height}`); svg.setAttribute('preserveAspectRatio', 'none');
     const path = document.createElementNS(NS_SVG, 'path'); path.setAttribute('d', d); path.setAttribute('class', 'cv-pulse-line');
-    const mkDot = (cls, r) => {
-      const c = document.createElementNS(NS_SVG, 'circle'); c.setAttribute('r', r); c.setAttribute('class', cls);
-      const am = document.createElementNS(NS_SVG, 'animateMotion');
-      am.setAttribute('dur', '1.4s'); am.setAttribute('path', d); am.setAttribute('fill', 'freeze');
-      am.setAttribute('calcMode', 'spline'); am.setAttribute('keyPoints', '0;1'); am.setAttribute('keyTimes', '0;1'); am.setAttribute('keySplines', '0.4 0 0.2 1');
-      c.appendChild(am); return c;
-    };
-    svg.appendChild(path);
-    svg.appendChild(mkDot('cv-pulse-halo', '9'));   // soft comet halo
-    svg.appendChild(mkDot('cv-pulse-dot', '4.5'));  // bright core
-    layer.appendChild(svg);
+    svg.appendChild(path); layer.appendChild(svg);
+
+    // Moving token + halo — driven by the Web Animations API along a gentle arc (no SMIL).
+    const midx = (x1 + x2) / 2, midy = Math.min(y1, y2) - Math.max(18, Math.abs(x2 - x1) * 0.1);
+    const frames = [
+      { transform: `translate(${x1}px, ${y1}px)`, opacity: 0 },
+      { opacity: 1, offset: 0.15 },
+      { transform: `translate(${midx}px, ${midy}px)`, offset: 0.5 },
+      { opacity: 1, offset: 0.85 },
+      { transform: `translate(${x2}px, ${y2}px)`, opacity: 0 },
+    ];
+    const opts = { duration: 1400, easing: 'ease-in-out', fill: 'forwards' };
+    const halo = document.createElement('div'); halo.className = 'cv-pulse-halo'; layer.appendChild(halo);
+    const tok = document.createElement('div'); tok.className = 'cv-pulse-token'; layer.appendChild(tok);
+    if (halo.animate) { halo.animate(frames, opts); tok.animate(frames, opts); }
+
     dotEl.classList.add('asking');                  // the asker lights up cyan as the question flies
     const tm = scene._cvTimers || (scene._cvTimers = []);
     tm.push(setTimeout(() => dotEl.classList.remove('asking'), 1000));
-    tm.push(setTimeout(() => { svg.style.opacity = '0'; }, 1550));
-    tm.push(setTimeout(() => svg.remove(), 2050));
+    tm.push(setTimeout(() => { svg.style.opacity = '0'; }, 1500));
+    tm.push(setTimeout(() => { svg.remove(); halo.remove(); tok.remove(); }, 2050));
   }
 
   // ── Conversational Interface: play people animation + stream questions ──
