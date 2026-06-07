@@ -51,7 +51,7 @@
     body.embed .brand { display: none; }
 
     /* ── Caption stack — mirrors process-reality.html / deck slide-body ── */
-    #caption { padding: 52px 48px 0; max-width: 1180px; margin: 0 auto; width: 100%; }
+    #caption { padding: 52px 48px 0; max-width: 1080px; margin: 0 auto; width: 100%; }
     #cap-eyebrow {
       font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--sf-blue-l); margin-bottom: 10px;
@@ -68,8 +68,8 @@
     }
 
     /* ── Layer rail ── */
-    #rail-wrap { max-width: 1180px; margin: 22px auto 0; padding: 0 48px; }
-    #rail { display: flex; gap: 18px; align-items: stretch; }
+    #rail-wrap { max-width: 1080px; margin: 22px auto 0; padding: 0 48px; }
+    #rail { display: flex; gap: 14px; align-items: stretch; }
     .pi-card {
       --c: #8fb8ff;
       flex: 1 1 0; min-width: 0; position: relative; cursor: pointer;
@@ -77,7 +77,7 @@
       border-top: 3px solid rgba(143,184,255,0.6);
       border-radius: 8px;
       background: rgba(255,255,255,0.05);
-      padding: 12px 14px; opacity: 0.5;
+      padding: 10px 12px; opacity: 0.5;
       transition: opacity 0.35s ease, transform 0.2s ease,
                   box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
@@ -85,15 +85,15 @@
       font-family: var(--font-display); font-size: 12px; font-weight: 700;
       letter-spacing: 0.08em; color: var(--c); opacity: 0.9;
     }
-    .pi-card .pi-name { font-size: 14px; font-weight: 700; color: #fff; margin-top: 5px; line-height: 1.2; }
+    .pi-card .pi-name { font-size: 14px; font-weight: 700; color: #fff; margin-top: 4px; line-height: 1.2; }
     .pi-card .pi-tag {
-      display: inline-block; margin-top: 8px; font-size: 9px; font-weight: 700;
+      display: inline-block; margin-top: 6px; font-size: 9px; font-weight: 700;
       letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6);
       border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 2px 8px;
     }
     /* flow connector between cards */
     .pi-card:not(:last-child)::after {
-      content: '\203A'; position: absolute; right: -13px; top: 50%; transform: translateY(-50%);
+      content: '\203A'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
       font-size: 18px; line-height: 1; font-weight: 400; color: rgba(255,255,255,0.35); z-index: 3;
     }
     .pi-card.active {
@@ -106,7 +106,7 @@
     .pi-card.done { opacity: 0.78; }
 
     /* ── Conversational Interface pillar (the foundation) ── */
-    #pillar-wrap { max-width: 1180px; margin: 16px auto 0; padding: 0 48px; position: relative; }
+    #pillar-wrap { max-width: 1080px; margin: 16px auto 0; padding: 0 48px; position: relative; }
     /* little bracket showing it underpins the rail above */
     #pillar-wrap::before {
       content: ''; position: absolute; left: 48px; right: 48px; top: -9px; height: 8px;
@@ -142,7 +142,7 @@
     /* ── Big card stage (bottom half) ── */
     .pi-big {
       --c: #8fb8ff; position: absolute; inset: 24px 48px 84px;
-      max-width: 1040px; margin: 0 auto; left: 0; right: 0;
+      max-width: 944px; margin: 0 auto; left: 0; right: 0;
       display: flex; flex-direction: column;
       border: 1px solid rgba(255,255,255,0.12);
       border-top: 3px solid rgba(143,184,255,0.6);
@@ -203,7 +203,7 @@
 
     /* ── Intro overlay (step 0) ── */
     #intro {
-      position: absolute; inset: 24px 48px 84px; max-width: 1040px; margin: 0 auto; left: 0; right: 0;
+      position: absolute; inset: 24px 48px 84px; max-width: 944px; margin: 0 auto; left: 0; right: 0;
       display: flex; align-items: center; justify-content: center; text-align: center;
       opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
     }
