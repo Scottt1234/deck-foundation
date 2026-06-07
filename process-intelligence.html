@@ -72,6 +72,10 @@
       max-width: 920px; margin: 0; min-height: 24px;
       transition: opacity 0.35s ease;
     }
+    /* Title bounce on every step transition — matches process-reality.html's capIn
+       (only the title animates; cards and other content do not). */
+    @keyframes piTitleIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    #cap-title.bounce { animation: piTitleIn 0.7s cubic-bezier(0,0,0.2,1) both; }
 
     /* ── Layer rail ── */
     #rail-wrap { max-width: 1080px; margin: 22px auto 0; padding: 0 48px; }
@@ -80,7 +84,7 @@
       --c: #8fb8ff;
       flex: 1 1 0; min-width: 0; position: relative; cursor: pointer;
       border: 1px solid rgba(255,255,255,0.12);
-      border-top: 3px solid rgba(143,184,255,0.6);
+      border-top: 2px solid rgba(143,184,255,0.6);
       border-radius: 8px;
       background: rgba(255,255,255,0.05);
       padding: 10px 12px; opacity: 0.5;
@@ -123,7 +127,7 @@
       --c: #8fb8ff; cursor: pointer; position: relative;
       display: flex; align-items: center; gap: 12px;
       border: 1px solid rgba(255,255,255,0.12);
-      border-top: 3px solid rgba(143,184,255,0.6);
+      border-top: 2px solid rgba(143,184,255,0.6);
       border-radius: 8px;
       background: rgba(255,255,255,0.05);
       padding: 9px 16px; opacity: 0.5;
@@ -151,7 +155,7 @@
       max-width: 944px; margin: 0 auto; left: 0; right: 0;
       display: flex; flex-direction: column;
       border: 1px solid rgba(255,255,255,0.12);
-      border-top: 3px solid rgba(143,184,255,0.6);
+      border-top: 2px solid rgba(143,184,255,0.6);
       border-radius: 8px; overflow: hidden;
       background: rgba(255,255,255,0.05);
       box-shadow: var(--shadow-card);
@@ -538,6 +542,7 @@
   for (let i = 0; i < STEPS; i++) { const d = document.createElement('div'); d.className = 'dot'; dotsWrap.appendChild(d); }
   const dots = Array.from(dotsWrap.children);
   const intro = document.getElementById('intro');
+  const capTitle = document.getElementById('cap-title');
   const capSub = document.getElementById('cap-sub');
   const progLabel = document.getElementById('prog-label');
   const navCount = document.getElementById('nav-count');
@@ -575,6 +580,9 @@
   }
 
   function render() {
+    // title bounce on every transition (reflow to re-fire the animation)
+    capTitle.classList.remove('bounce'); void capTitle.offsetWidth; capTitle.classList.add('bounce');
+
     // rail + pillar highlight
     railCards.forEach((c, i) => {
       c.classList.toggle('active', step === i + 1);
