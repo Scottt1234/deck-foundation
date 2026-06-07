@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Layers of Process Intelligence · Apromore × Salesforce</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    /* ───────────────────────────────────────────────────────────────
+       The Layers of Process Intelligence — arrow-key walkthrough.
+       Single-file, no external JS libraries. Built on the Salesforce
+       2026 token palette (tokens.css), matching the deck's dark slides
+       and the process-reality.html interaction model.
+
+       Six slim layer cards (Process Mining → Monitor) sit above a
+       full-width Conversational Interface pillar that underpins them
+       all. Arrow keys step through 7 focus states; each one closes the
+       previous large card and raises the next, with a reserved
+       animation slot inside. Task Mining hosts the live "black box"
+       animation; every other slot is a clean, swappable placeholder.
+       ─────────────────────────────────────────────────────────────── */
+    html, body { margin: 0; }
+    html { height: 100%; }
+    body {
+      height: 100%; overflow: hidden;
+      /* Match the deck's .sd slide background — same gradient stack used on every dark slide. */
+      background:
+        radial-gradient(80% 60% at 82% -4%, rgba(20,86,220,0.42), transparent 60%),
+        radial-gradient(70% 60% at 4% 104%, rgba(10,60,200,0.32), transparent 60%),
+        linear-gradient(165deg, #04102f 0%, #061d52 60%, #0a3aa0 130%);
+      background-attachment: fixed;
+      font-family: var(--font-body); color: #fff;
+    }
+    .hl { color: var(--sf-blue-l); }
+
+    /* ── App shell: top (caption + rail) / bottom (big card stage) ── */
+    #app { position: fixed; inset: 0; display: flex; flex-direction: column; z-index: 1; }
+    #top { flex: 0 0 auto; }
+    #bottom { flex: 1 1 auto; position: relative; min-height: 0; padding: 4px 48px 84px; }
+
+    /* ── Brand pill (hidden in embed mode — deck shows its own) ── */
+    .brand {
+      position: fixed; top: 26px; left: 30px; z-index: 8;
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.94); border-radius: 40px; padding: 7px 15px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.35);
+    }
+    .brand .nm { font-size: 12px; font-weight: 700; color: #5B3BD0; }
+    .brand .x  { font-size: 13px; color: var(--gray-500); }
+    .brand img { display: block; }
+    body.embed .brand { display: none; }
+
+    /* ── Caption stack — mirrors process-reality.html / deck slide-body ── */
+    #caption { padding: 52px 48px 0; max-width: 1180px; margin: 0 auto; width: 100%; }
+    #cap-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--sf-blue-l); margin-bottom: 10px;
+    }
+    #cap-title {
+      font-family: var(--font-body);
+      font-size: clamp(24px, 2.8vw, 36px); font-weight: 700; line-height: 1.14;
+      letter-spacing: -0.025em; color: #fff; margin: 0 0 10px;
+    }
+    #cap-sub {
+      font-size: 15px; line-height: 1.6; color: rgba(255,255,255,0.66);
+      max-width: 920px; margin: 0; min-height: 24px;
+      transition: opacity 0.35s ease;
+    }
+
+    /* ── Layer rail ── */
+    #rail-wrap { max-width: 1180px; margin: 22px auto 0; padding: 0 48px; }
+    #rail { display: flex; gap: 18px; align-items: stretch; }
+    .pi-card {
+      --c: #066AFE;
+      flex: 1 1 0; min-width: 0; position: relative; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-top: 2px solid color-mix(in srgb, var(--c) 65%, transparent);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      padding: 12px 14px; opacity: 0.5;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2,0.8,0.2,1),
+                  box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+    }
+    .pi-card .pi-num {
+      font-family: var(--font-display); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em; color: var(--c); opacity: 0.9;
+    }
+    .pi-card .pi-name { font-size: 14px; font-weight: 700; color: #fff; margin-top: 5px; line-height: 1.2; }
+    .pi-card .pi-tag {
+      display: inline-block; margin-top: 8px; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6);
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 2px 8px;
+    }
+    /* flow connector between cards */
+    .pi-card:not(:last-child)::after {
+      content: '\203A'; position: absolute; right: -13px; top: 50%; transform: translateY(-50%);
+      font-size: 18px; line-height: 1; font-weight: 400; color: rgba(255,255,255,0.35); z-index: 3;
+    }
+    .pi-card.active {
+      opacity: 1; transform: translateY(-5px);
+      border-color: color-mix(in srgb, var(--c) 55%, transparent);
+      border-top-color: var(--c);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(255,255,255,0.03));
+      box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--c) 60%, transparent);
+    }
+    .pi-card.done { opacity: 0.78; }
+
+    /* ── Conversational Interface pillar (the foundation) ── */
+    #pillar-wrap { max-width: 1180px; margin: 16px auto 0; padding: 0 48px; position: relative; }
+    /* little bracket showing it underpins the rail above */
+    #pillar-wrap::before {
+      content: ''; position: absolute; left: 48px; right: 48px; top: -9px; height: 8px;
+      border: 1px solid rgba(255,255,255,0.14); border-bottom: none; border-radius: 6px 6px 0 0;
+      opacity: 0.6;
+    }
+    #pillar {
+      --c: #066AFE; cursor: pointer; position: relative; overflow: hidden;
+      display: flex; align-items: center; gap: 16px;
+      border: 1px solid rgba(6,106,254,0.32); border-radius: 13px;
+      background: linear-gradient(180deg, rgba(6,106,254,0.20), rgba(6,106,254,0.06));
+      padding: 13px 18px; opacity: 0.62;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2,0.8,0.2,1),
+                  box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    #pillar .pi-ci-ic {
+      flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(6,106,254,0.18); color: var(--sf-blue-l); border: 1px solid rgba(6,106,254,0.4);
+    }
+    #pillar .pi-ci-text { flex: 1 1 auto; min-width: 0; }
+    #pillar .pi-ci-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sf-blue-l); }
+    #pillar .pi-ci-name { font-size: 15px; font-weight: 700; color: #fff; margin-top: 2px; }
+    #pillar .pi-ci-q {
+      flex: 0 0 auto; max-width: 46%; font-size: 12.5px; color: rgba(255,255,255,0.82);
+      font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      border-left: 1px solid rgba(255,255,255,0.18); padding-left: 16px;
+    }
+    #pillar .pi-caret {
+      display: inline-block; width: 2px; height: 1em; vertical-align: -2px; margin-left: 1px;
+      background: var(--sf-blue-l); animation: caretBlink 1s steps(1) infinite; opacity: 0;
+    }
+    #pillar.active .pi-caret { opacity: 1; }
+    @keyframes caretBlink { 50% { opacity: 0; } }
+    #pillar.active {
+      opacity: 1; transform: translateY(-3px);
+      border-color: rgba(6,106,254,0.6);
+      box-shadow: 0 14px 36px -10px rgba(6,106,254,0.7);
+    }
+
+    /* ── Big card stage (bottom half) ── */
+    .pi-big {
+      --c: #066AFE; position: absolute; inset: 4px 48px 84px;
+      max-width: 1180px; margin: 0 auto; left: 0; right: 0;
+      display: flex; flex-direction: column;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px; overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+      box-shadow: 0 30px 70px -20px rgba(0,0,0,0.6);
+      opacity: 0; transform: translateY(46px) scale(0.985); pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.2,0.8,0.2,1),
+                  transform 0.6s cubic-bezier(0.2,0.8,0.2,1);
+    }
+    .pi-big::before {
+      content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px;
+      background: var(--c);
+    }
+    .pi-big.active { opacity: 1; transform: none; pointer-events: auto; }
+    .pi-big.closing { opacity: 0; transform: translateY(34px) scale(0.99); }
+
+    .pi-big-head { flex: 0 0 auto; display: flex; align-items: center; gap: 16px; padding: 18px 24px 14px; }
+    .pi-big-num {
+      font-family: var(--font-display); font-size: 22px; font-weight: 700;
+      color: var(--c); letter-spacing: 0.04em; line-height: 1;
+    }
+    .pi-big-headtext { flex: 1 1 auto; min-width: 0; }
+    .pi-big-name { font-size: 19px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .pi-big-desc { font-size: 13px; color: rgba(255,255,255,0.66); line-height: 1.5; margin-top: 4px; max-width: 760px; }
+    .pi-big-tag {
+      flex: 0 0 auto; align-self: flex-start; font-size: 9.5px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--c);
+      border: 1px solid color-mix(in srgb, var(--c) 50%, transparent); border-radius: 999px; padding: 4px 11px;
+    }
+
+    /* animation slot fills the remainder of the big card */
+    .pi-big-stage {
+      flex: 1 1 auto; min-height: 0; position: relative;
+      margin: 0 18px 18px; border-radius: 12px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Placeholder animation slot ── */
+    .pi-slot {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px; text-align: center;
+      border: 1.5px dashed color-mix(in srgb, var(--c) 40%, rgba(255,255,255,0.18));
+      border-radius: 12px;
+      background:
+        radial-gradient(60% 80% at 50% 45%, color-mix(in srgb, var(--c) 12%, transparent), transparent 70%),
+        rgba(255,255,255,0.015);
+    }
+    .pi-slot-ic {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+      animation: slotPulse 2.6s ease-in-out infinite;
+    }
+    @keyframes slotPulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 40%, transparent); }
+      50%      { box-shadow: 0 0 0 12px transparent; }
+    }
+    .pi-slot-label { font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.62); }
+    .pi-slot-sub { font-size: 12px; color: rgba(255,255,255,0.42); font-style: italic; }
+
+    /* ── Intro overlay (step 0) ── */
+    #intro {
+      position: absolute; inset: 4px 48px 84px; max-width: 1180px; margin: 0 auto; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+    }
+    #intro.show { opacity: 1; }
+    #intro .pi-intro-card {
+      border: 1px dashed rgba(255,255,255,0.22); border-radius: 16px;
+      padding: 30px 40px; background: rgba(255,255,255,0.02); max-width: 620px;
+    }
+    #intro .pi-intro-h { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: #fff; }
+    #intro .pi-intro-p { font-size: 13.5px; color: rgba(255,255,255,0.6); margin-top: 12px; line-height: 1.6; }
+    #intro .pi-intro-key {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 20px;
+      font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85);
+    }
+    #intro kbd {
+      font-family: var(--font-body); font-size: 12px; font-weight: 700; color: #fff;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 6px; padding: 3px 9px;
+    }
+
+    /* ── Bottom-left progress / bottom-right nav ── */
+    #progress { position: fixed; left: 30px; bottom: 28px; z-index: 6; display: flex; align-items: center; gap: 14px; }
+    #dots { display: flex; gap: 8px; }
+    #dots .dot {
+      width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    #dots .dot.on { background: var(--sf-blue-l); transform: scale(1.25); }
+    #dots .dot.done { background: rgba(255,255,255,0.55); }
+    #prog-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+
+    #nav { position: fixed; right: 30px; bottom: 24px; z-index: 6; display: flex; align-items: center; gap: 14px; }
+    #nav .nav-count { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+    #nav button {
+      appearance: none; cursor: pointer; width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.28); color: #fff;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+    }
+    #nav button:hover { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.5); }
+    #nav button:active { transform: scale(0.94); }
+    #nav button:disabled { opacity: 0.3; cursor: default; }
+
+    /* ═══════════ Black box animation (Task Mining) — adapted from blackbox-preview.html ═══════════
+       Scoped under .bb-scene; fills the big-card stage. Trigger by toggling .playing. */
+    .bb-scene { position: relative; height: 100%; aspect-ratio: 16 / 9; max-width: 100%; max-height: 100%; }
+    .bb-stage {
+      position: relative; width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .bb-inside {
+      position: absolute; inset: 0; padding: 6%;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.05)),
+        radial-gradient(60% 80% at 50% 50%, rgba(20,86,220,0.18), transparent);
+    }
+    .win {
+      position: absolute; border-radius: 7px; background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(3px);
+      opacity: 0; transform: translateY(10px) scale(0.97);
+    }
+    .win-bar {
+      height: 18px; border-radius: 6px 6px 0 0; display: flex; align-items: center;
+      padding: 0 8px; gap: 5px; background: rgba(255,255,255,0.10);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .win-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.35); }
+    .win-dot:nth-child(1) { background: rgba(255,120,120,0.6); }
+    .win-dot:nth-child(2) { background: rgba(255,200,90,0.55); }
+    .win-dot:nth-child(3) { background: rgba(120,220,160,0.55); }
+    .win-title { font-size: 10px; color: rgba(255,255,255,0.78); margin-left: 6px; font-weight: 600; letter-spacing: 0.02em; }
+    .win-body { padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 5px; }
+    .win-line { height: 5px; border-radius: 2px; background: rgba(255,255,255,0.14); }
+    .win-line.short   { width: 60%; }
+    .win-line.shorter { width: 40%; }
+    .win-line.long    { width: 90%; }
+    .win-pega    { top: 10%; left:  6%; width: 38%; height: 46%; }
+    .win-outlook { top:  6%; left: 38%; width: 38%; height: 56%; }
+    .win-excel   { top: 36%; left: 56%; width: 38%; height: 50%; }
+    .win-portal  { top: 52%; left: 16%; width: 34%; height: 38%; }
+    .bb-flow { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+    .bb-flow svg { width: 100%; height: 100%; display: block; }
+    .bb-flow path { stroke: #ff8da3; stroke-width: 1.6; fill: none; stroke-dasharray: 5 5; opacity: 0.7; }
+    .bb-flow circle { fill: #ff8da3; opacity: 0.85; }
+    .bb-cover {
+      position: absolute; inset: 0; z-index: 5;
+      background: radial-gradient(80% 60% at 50% 50%, #0a1830 0%, #04102f 100%);
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+    }
+    .bb-cover::before {
+      content: ''; position: absolute; inset: 12px; border: 1.5px dashed rgba(143,184,255,0.32);
+      border-radius: 10px; pointer-events: none;
+    }
+    .bb-cover-icon {
+      width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; background: rgba(143,184,255,0.10); color: #8fb8ff; border: 1px solid rgba(143,184,255,0.4);
+    }
+    .bb-cover-label { font-size: 13px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+    .bb-cover-sub { font-size: 11px; color: rgba(255,255,255,0.42); margin-top: -6px; letter-spacing: 0.04em; font-style: italic; }
+
+    @keyframes bbCoverFade { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.02); } }
+    @keyframes bbWinPop { 0% { opacity: 0; transform: translateY(10px) scale(0.97); } 100% { opacity: 1; transform: none; } }
+    @keyframes bbFlowIn { to { opacity: 1; } }
+    .bb-scene.playing .bb-cover    { animation: bbCoverFade 1.0s 0.9s cubic-bezier(0.4,0,0.2,1) forwards; }
+    .bb-scene.playing .win-pega    { animation: bbWinPop 0.5s 1.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-outlook { animation: bbWinPop 0.5s 1.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-excel   { animation: bbWinPop 0.5s 1.9s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .win-portal  { animation: bbWinPop 0.5s 2.1s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .bb-scene.playing .bb-flow     { animation: bbFlowIn 0.7s 2.9s ease forwards; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bb-scene .bb-cover { opacity: 0 !important; animation: none !important; }
+      .bb-scene .win { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .bb-scene .bb-flow { opacity: 1 !important; animation: none !important; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1000px) {
+      #rail { flex-wrap: wrap; }
+      .pi-card { flex: 1 1 28%; }
+      .pi-card:not(:last-child)::after { display: none; }
+      #pillar .pi-ci-q { display: none; }
+    }
+    @media (max-width: 720px) {
+      #bottom, .pi-big, #intro { padding-left: 18px; padding-right: 18px; }
+      .pi-big { inset: 4px 18px 84px; }
+      #intro { inset: 4px 18px 84px; }
+      #caption, #rail-wrap, #pillar-wrap { padding-left: 18px; padding-right: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <script>if (new URLSearchParams(location.search).get('embed') === '1') document.body.classList.add('embed');</script>
+
+  <div class="brand">
+    <span class="nm">Apromore</span><span class="x">×</span>
+    <img src="assets/logos/Salesforce-Corporate-Logo-Cloud-RBG.svg" width="22" height="22" alt="Salesforce" onerror="this.style.display='none'"/>
+  </div>
+
+  <div id="app">
+    <div id="top">
+      <div id="caption">
+        <div id="cap-eyebrow">Process Intelligence</div>
+        <h1 id="cap-title">The layers of Process Intelligence.<br/><span class="hl">Seven layers. One platform.</span></h1>
+        <p id="cap-sub"></p>
+      </div>
+
+      <div id="rail-wrap"><div id="rail"></div></div>
+      <div id="pillar-wrap"><div id="pillar"></div></div>
+    </div>
+
+    <div id="bottom">
+      <div id="intro">
+        <div class="pi-intro-card">
+          <div class="pi-intro-h">Six layers, working as one.</div>
+          <div class="pi-intro-p">Process mining, task mining, analysis, recommendation, simulation and monitoring &mdash; underpinned by a conversational interface anyone can use.</div>
+          <div class="pi-intro-key">Step through with <kbd>&larr;</kbd> <kbd>&rarr;</kbd></div>
+        </div>
+      </div>
+      <!-- big cards injected here -->
+    </div>
+  </div>
+
+  <div id="progress">
+    <div id="dots"></div>
+    <div id="prog-label">Overview</div>
+  </div>
+
+  <div id="nav">
+    <button id="prev" aria-label="Previous">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="nav-count" id="nav-count">0 / 7</span>
+    <button id="next" aria-label="Next">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ── Layer data ─────────────────────────────────────────────────
+  // Each layer becomes a rail card + a big card. `anim:'blackbox'` mounts the
+  // live Task Mining animation; everything else gets a swappable placeholder.
+  const LAYERS = [
+    { num:'01', name:'Process Mining',  tag:'System',  color:'#06A59A',
+      sub:'See how the process really runs &mdash; not how the diagram on the wall says it should.',
+      desc:'Reconstructs how a process actually runs inside a system from event logs &mdash; every variant, bottleneck and rework loop.' },
+    { num:'02', name:'Task Mining',     tag:'Desktop', color:'#066AFE', anim:'blackbox',
+      sub:'See the work <em>between</em> the systems &mdash; where process mining goes blind.',
+      desc:'Captures the work between systems at the desktop &mdash; the rate look-ups, broker emails and manual referrals process mining alone cannot see.' },
+    { num:'03', name:'Analysis',        tag:'Insight', color:'#00B3FF',
+      sub:'Put a number on the waste &mdash; and on the prize.',
+      desc:'Quantifies the cost of inefficiency and the value of recoverable waste, turning observation into a business case.' },
+    { num:'04', name:'Recommendation',  tag:'AI',      color:'#D17DFE',
+      sub:'From problem to the specific fix &mdash; proposed by AI.',
+      desc:'AI proposes the specific change to make &mdash; not just the problem, but the mechanism that fixes it.' },
+    { num:'05', name:'Simulation',      tag:'Proof',   color:'#E4A201',
+      sub:'Prove the change works <em>before</em> you make it.',
+      desc:'Validates the recommendation before you commit, modelling the impact across cost, time and risk.' },
+    { num:'06', name:'Monitor',         tag:'Live',    color:'#FF538A',
+      sub:'Keep it fixed &mdash; watch the process live and catch drift the moment it appears.',
+      desc:'Watches the process in production, confirming the change held and catching drift the moment it appears.' },
+  ];
+  const FOUNDATION = { num:'07', name:'Conversational Interface', tag:'Underpins all', color:'#066AFE',
+    sub:'Ask anything in plain English &mdash; the layer that underpins them all.',
+    desc:'The layer that underpins every other: ask any question in plain English and get an evidence-backed answer drawn from all six layers above.' };
+
+  const STEPS = LAYERS.length + 1;            // 6 layers + conversational interface
+  const ALL = LAYERS.concat([FOUNDATION]);    // index aligned with focus steps 1..7
+
+  // ── Black box animation markup (Task Mining) ───────────────────
+  const BLACKBOX = `
+    <div class="bb-scene">
+      <div class="bb-stage">
+        <div class="bb-inside" aria-hidden="true">
+          <div class="win win-pega"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Pega · QW Commercial</span></div><div class="win-body"><div class="win-line long"></div><div class="win-line short"></div><div class="win-line"></div><div class="win-line shorter"></div></div></div>
+          <div class="win win-outlook"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Outlook · Broker thread</span></div><div class="win-body"><div class="win-line"></div><div class="win-line short"></div><div class="win-line long"></div><div class="win-line shorter"></div></div></div>
+          <div class="win win-excel"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Rate calc.xlsx</span></div><div class="win-body"><div class="win-line short"></div><div class="win-line"></div><div class="win-line shorter"></div></div></div>
+          <div class="win win-portal"><div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">Broker portal</span></div><div class="win-body"><div class="win-line short"></div><div class="win-line shorter"></div></div></div>
+        </div>
+        <div class="bb-flow" aria-hidden="true">
+          <svg viewBox="0 0 760 428" preserveAspectRatio="none">
+            <path d="M 230 170 C 320 130, 420 150, 520 200" /><circle cx="230" cy="170" r="3" /><circle cx="520" cy="200" r="3" />
+            <path d="M 380 130 C 320 200, 240 220, 180 240" /><circle cx="380" cy="130" r="3" /><circle cx="180" cy="240" r="3" />
+            <path d="M 270 320 C 360 280, 480 280, 580 280" /><circle cx="270" cy="320" r="3" /><circle cx="580" cy="280" r="3" />
+          </svg>
+        </div>
+        <div class="bb-cover">
+          <div class="bb-cover-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="6" width="24" height="20" rx="2"/><path d="M4 12h24"/>
+              <circle cx="8" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="9" r="1" fill="currentColor" stroke="none"/>
+              <path d="M11 18h10M11 22h6"/>
+            </svg>
+          </div>
+          <div class="bb-cover-label">The Workstation</div>
+          <div class="bb-cover-sub">where the work between systems happens</div>
+        </div>
+      </div>
+    </div>`;
+
+  const placeholderSlot = (name) => `
+    <div class="pi-slot">
+      <div class="pi-slot-ic">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+      </div>
+      <div class="pi-slot-label">Animation slot</div>
+      <div class="pi-slot-sub">${name} visual &mdash; coming soon</div>
+    </div>`;
+
+  // ── Build rail + pillar ────────────────────────────────────────
+  const rail = document.getElementById('rail');
+  LAYERS.forEach((l, i) => {
+    const el = document.createElement('div');
+    el.className = 'pi-card'; el.style.setProperty('--c', l.color); el.dataset.step = i + 1;
+    el.innerHTML = `<div class="pi-num">${l.num}</div><div class="pi-name">${l.name}</div><div class="pi-tag">${l.tag}</div>`;
+    el.addEventListener('click', () => goTo(i + 1));
+    rail.appendChild(el);
+  });
+  const railCards = Array.from(rail.children);
+
+  const pillar = document.getElementById('pillar');
+  pillar.dataset.step = STEPS;
+  pillar.innerHTML = `
+    <span class="pi-ci-ic" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h22v15H14l-6 5v-5H5z"/><path d="M11 13h10M11 17h6"/></svg>
+    </span>
+    <span class="pi-ci-text"><span class="pi-ci-label">${FOUNDATION.num} · Underpins every layer</span><span class="pi-ci-name">${FOUNDATION.name}</span></span>
+    <span class="pi-ci-q"><span id="piQuery"></span><span class="pi-caret"></span></span>`;
+  pillar.addEventListener('click', () => goTo(STEPS));
+
+  // ── Build big cards ────────────────────────────────────────────
+  const bottom = document.getElementById('bottom');
+  const bigs = [];
+  ALL.forEach((l) => {
+    const el = document.createElement('div');
+    el.className = 'pi-big'; el.style.setProperty('--c', l.color);
+    el.innerHTML = `
+      <div class="pi-big-head">
+        <div class="pi-big-num">${l.num}</div>
+        <div class="pi-big-headtext">
+          <div class="pi-big-name">${l.name}</div>
+          <div class="pi-big-desc">${l.desc}</div>
+        </div>
+        <div class="pi-big-tag">${l.tag}</div>
+      </div>
+      <div class="pi-big-stage">${l.anim === 'blackbox' ? BLACKBOX : placeholderSlot(l.name)}</div>`;
+    bottom.appendChild(el);
+    bigs.push(el);
+  });
+
+  // ── Progress dots ──────────────────────────────────────────────
+  const dotsWrap = document.getElementById('dots');
+  for (let i = 0; i < STEPS; i++) { const d = document.createElement('div'); d.className = 'dot'; dotsWrap.appendChild(d); }
+  const dots = Array.from(dotsWrap.children);
+  const intro = document.getElementById('intro');
+  const capSub = document.getElementById('cap-sub');
+  const progLabel = document.getElementById('prog-label');
+  const navCount = document.getElementById('nav-count');
+  const btnPrev = document.getElementById('prev');
+  const btnNext = document.getElementById('next');
+
+  // ── Typing effect for the conversational pillar ────────────────
+  const QUERIES = [
+    'Where is the biggest delay in commercial underwriting?',
+    'How much rework happened last quarter?',
+    'Which broker requests slow us down most?',
+  ];
+  let typeTimer = null, qIndex = 0;
+  const qEl = () => document.getElementById('piQuery');
+  function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } const e = qEl(); if (e) e.textContent = ''; }
+  function typeQuery() {
+    stopTyping();
+    const text = QUERIES[qIndex % QUERIES.length]; qIndex++;
+    let i = 0;
+    (function tick() {
+      const e = qEl(); if (!e) return;
+      e.textContent = text.slice(0, i++);
+      if (i <= text.length) typeTimer = setTimeout(tick, 34);
+      else typeTimer = setTimeout(() => { typeTimer = setTimeout(typeQuery, 600); }, 2600);
+    })();
+  }
+
+  // ── Navigation state ───────────────────────────────────────────
+  let step = 0;            // 0 = overview; 1..STEPS = focus a layer / pillar
+  let currentBig = null;
+  let swapTimer = null;
+
+  function playBlackbox(el) {
+    const scene = el.querySelector('.bb-scene');
+    if (!scene) return;
+    scene.classList.remove('playing');
+    void scene.offsetWidth;                 // reflow so the timeline re-fires
+    scene.classList.add('playing');
+  }
+
+  function showBig(n) {
+    const next = (n >= 1 && n <= STEPS) ? bigs[n - 1] : null;
+    if (next === currentBig) return;
+    const prev = currentBig;
+    currentBig = next;
+    if (swapTimer) { clearTimeout(swapTimer); swapTimer = null; }
+    if (prev) { prev.classList.remove('active'); prev.classList.add('closing'); }
+    const delay = prev ? 280 : 0;           // close the last card, then raise the new one
+    swapTimer = setTimeout(() => {
+      if (prev) prev.classList.remove('closing');
+      if (next) {
+        next.classList.add('active');
+        if (next.querySelector('.bb-scene')) playBlackbox(next);
+      }
+    }, delay);
+  }
+
+  function render() {
+    // rail + pillar highlight
+    railCards.forEach((c, i) => {
+      c.classList.toggle('active', step === i + 1);
+      c.classList.toggle('done', step > i + 1);
+    });
+    pillar.classList.toggle('active', step === STEPS);
+    if (step === STEPS) typeQuery(); else stopTyping();
+
+    // big card / intro
+    showBig(step);
+    intro.classList.toggle('show', step === 0);
+
+    // caption sub
+    capSub.style.opacity = '0';
+    setTimeout(() => {
+      capSub.innerHTML = step === 0
+        ? 'Six layers of process intelligence &mdash; underpinned by a conversational interface anyone can use.'
+        : ALL[step - 1].sub;
+      capSub.style.opacity = '1';
+    }, 120);
+
+    // progress
+    dots.forEach((d, i) => { d.classList.toggle('on', step === i + 1); d.classList.toggle('done', step > i + 1); });
+    progLabel.textContent = step === 0 ? 'Overview' : ALL[step - 1].name;
+    navCount.textContent = step + ' / ' + STEPS;
+    btnPrev.disabled = step === 0;
+    btnNext.disabled = step === STEPS;
+  }
+
+  function goTo(n) {
+    n = Math.max(0, Math.min(STEPS, n));
+    if (n === step) return;
+    step = n;
+    render();
+  }
+
+  btnPrev.addEventListener('click', () => goTo(step - 1));
+  btnNext.addEventListener('click', () => goTo(step + 1));
+
+  // ── Keyboard + deck bridge (mirrors process-reality.html) ──────
+  const isArrowKey = k => k === 'ArrowRight' || k === 'ArrowLeft' || k === 'ArrowDown' || k === 'ArrowUp';
+  const isFwdKey   = k => k === 'ArrowRight' || k === 'ArrowDown';
+
+  window.addEventListener('keydown', (e) => {
+    if (!isArrowKey(e.key)) return;
+    const atEdge = (isFwdKey(e.key) && step === STEPS) || (!isFwdKey(e.key) && step === 0);
+    if (window.parent !== window && atEdge) {
+      // Let the deck move to the prev/next slide once we've stepped off either end.
+      try { window.parent.postMessage({ type: 'arrow', key: e.key }, '*'); } catch (err) {}
+      return;
+    }
+    e.preventDefault();
+    goTo(isFwdKey(e.key) ? step + 1 : step - 1);
+  });
+
+  // Parent → iframe messages:
+  //   'slide-activated' — slide just became active; reset to overview.
+  //   'set-step'/'set-act' — explicit step from the deck's nav controller.
+  window.addEventListener('message', (e) => {
+    if (!e.data) return;
+    if (e.data.type === 'slide-activated') goTo(0);
+    else if ((e.data.type === 'set-step' || e.data.type === 'set-act') && typeof e.data.step === 'number') goTo(e.data.step);
+    else if ((e.data.type === 'set-step' || e.data.type === 'set-act') && typeof e.data.act === 'number') goTo(e.data.act);
+  });
+
+  // ── Boot ───────────────────────────────────────────────────────
+  render();
+})();
+</script>
+</body>
+</html>
