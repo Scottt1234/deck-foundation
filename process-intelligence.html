@@ -860,7 +860,7 @@
     T(() => {
       narrate.classList.remove('wipe'); narrate.innerHTML = '';
       scene.classList.add('revealed');
-      typeLine(scene, narrate, [{ t: 'Now anyone can ask for anything.' }], CPS);
+      typeLine(scene, narrate, [{ t: 'Now ' }, { t: 'anyone', hl: true }, { t: ' can ask for anything.' }], CPS);
     }, 5650);
     // 4) after a pause, "In their own words." types on the right (light blue).
     T(() => typeLine(scene, rtitle, [{ t: 'In their own words.' }], CPS), 8600);
