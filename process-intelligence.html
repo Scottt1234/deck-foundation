@@ -362,7 +362,7 @@
     /* typed narration lines — left (cv-narrate) and right (cv-rtitle), same font + size */
     .cv-narrate, .cv-rtitle { font-family: var(--font-display); font-weight: 700;
       font-size: clamp(16px, 2.3vw, 21px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
-    .cv-narrate { position: absolute; top: 8%; left: 6%; right: 6%; white-space: nowrap; }
+    .cv-narrate { position: absolute; top: 26px; left: 6%; right: 6%; white-space: nowrap; }   /* top matches the right title (cv-questions padding-top) */
     .cv-narrate.wipe { clip-path: inset(0 0 0 0); animation: cvWipe 0.77s ease forwards; }
     .cv-rtitle { color: var(--sf-blue-l); margin: 0 0 14px; }   /* in flow → questions start right beneath it */
     .cv-hl { color: var(--sf-blue-l); }
