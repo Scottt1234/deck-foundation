@@ -407,11 +407,17 @@
     .cv-pulse-halo  { position: absolute; left: 0; top: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px;
       border-radius: 50%; background: radial-gradient(circle, rgba(0,179,255,0.38), transparent 70%); }
 
-    /* question bubbles (one size larger) */
+    /* question bubbles (one size larger) — each with a small "asker" avatar */
     .cv-q { position: relative; align-self: flex-start; max-width: 100%;
+      display: flex; align-items: flex-start; gap: 9px;
       background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
       border-radius: 12px 12px 12px 4px; padding: 10px 13px; font-size: 13.5px; line-height: 1.4;
       color: #fff; animation: cvQIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    .cv-q-av { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: #cdd6e1; background: rgba(255,255,255,0.10); }
+    .cv-q-av svg { width: 13px; height: 13px; display: block; fill: currentColor; }
+    .cv-q-av.expert { color: var(--sf-blue-l); background: rgba(0,179,255,0.18); }
+    .cv-q-body { flex: 1 1 auto; min-width: 0; }
     .cv-q .cv-tick { display: inline-block; margin-left: 6px; color: #04E1CB; font-weight: 700; opacity: 0; transition: opacity 0.3s ease; }
     .cv-q.answered .cv-tick { opacity: 1; }
 
@@ -805,26 +811,30 @@
     let qi = 0;
     const addBubble = () => {
       const b = document.createElement('div'); b.className = 'cv-q';
-      const txt = document.createElement('span'); b.appendChild(txt);
+      b.style.maxWidth = (72 + Math.random() * 26).toFixed(0) + '%';        // slight width variation
+      const av = document.createElement('span');                            // who's asking
+      av.className = 'cv-q-av' + (Math.random() < 0.22 ? ' expert' : '');   // occasionally an expert
+      av.innerHTML = personSVG();
+      const body = document.createElement('span'); body.className = 'cv-q-body';
+      const txt = document.createElement('span'); body.appendChild(txt);
+      b.appendChild(av); b.appendChild(body);
       list.appendChild(b);
       while (list.children.length > 4) list.removeChild(list.firstChild);   // keep it a rolling feed
       firePulse(scene, b);                                                  // a person "asks" this question
       const q = CONVO_QUESTIONS[qi++ % CONVO_QUESTIONS.length];
+      const addTick = () => { const t = document.createElement('span'); t.className = 'cv-tick'; t.textContent = '✓'; body.appendChild(t); };
       if (reduceMotion()) {
-        txt.textContent = q;
-        const tick = document.createElement('span'); tick.className = 'cv-tick'; tick.textContent = '✓'; b.appendChild(tick);
-        b.classList.add('answered');
+        txt.textContent = q; addTick(); b.classList.add('answered');
         timers.push(setTimeout(addBubble, 2200));
         return;
       }
-      const caret = document.createElement('span'); caret.className = 'cv-caret'; b.appendChild(caret);
+      const caret = document.createElement('span'); caret.className = 'cv-caret'; body.appendChild(caret);
       let ci = 0;
       const type = () => {
         txt.textContent = q.slice(0, ci++);
         if (ci <= q.length) { timers.push(setTimeout(type, 36)); }
         else {
-          caret.remove();
-          const tick = document.createElement('span'); tick.className = 'cv-tick'; tick.textContent = '✓'; b.appendChild(tick);
+          caret.remove(); addTick();
           timers.push(setTimeout(() => b.classList.add('answered'), 220));
           timers.push(setTimeout(addBubble, 1500));
         }
