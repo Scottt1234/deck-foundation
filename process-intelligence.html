@@ -83,20 +83,20 @@
     .pi-card {
       --c: #8fb8ff;
       flex: 1 1 0; min-width: 0; position: relative; cursor: pointer; text-align: center;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-top: 2px solid rgba(143,184,255,0.6);
+      border: 1px solid rgba(143,184,255,0.55);
+      border-top: 2px solid rgba(143,184,255,0.55);
       border-radius: 8px;
-      background: rgba(255,255,255,0.05);
+      background: rgba(143,184,255,0.12);
       padding: 10px 12px; opacity: 0.5;
       transition: opacity 0.35s ease, transform 0.2s ease,
-                  box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+                  border-color 0.2s ease, background 0.2s ease;
     }
     .pi-card .pi-num {
       font-family: var(--font-display); font-size: 12px; font-weight: 700;
       letter-spacing: 0.08em; color: var(--sf-blue-l); opacity: 0.55;
     }
-    /* card title — white, slightly larger (matches slide 3: blue number, white title) */
-    .pi-card .pi-name { font-size: 16px; font-weight: 700; color: #fff; margin-top: 4px; line-height: 1.2; }
+    /* card title — white, centred; sized to keep "Recommendation" on a single line */
+    .pi-card .pi-name { font-size: 15px; font-weight: 700; color: #fff; margin-top: 4px; line-height: 1.2; text-align: center; }
     .pi-card .pi-tag {
       display: inline-block; margin-top: 6px; font-size: 9px; font-weight: 700;
       letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6);
@@ -109,10 +109,9 @@
     }
     .pi-card.active {
       opacity: 1; transform: translateY(-4px);
-      border-color: rgba(143,184,255,0.5);
-      border-top-color: rgba(143,184,255,0.85);
-      background: rgba(143,184,255,0.08);
-      box-shadow: 0 10px 24px -12px rgba(143,184,255,0.5);
+      border-color: rgba(143,184,255,0.95);
+      border-top-color: rgba(143,184,255,1);
+      background: rgba(143,184,255,0.28);
     }
     .pi-card.done { opacity: 0.78; }
 
@@ -127,22 +126,21 @@
     #pillar {
       --c: #8fb8ff; cursor: pointer; position: relative;
       display: flex; align-items: center; justify-content: center; gap: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-top: 2px solid rgba(143,184,255,0.6);
+      border: 1px solid rgba(143,184,255,0.55);
+      border-top: 2px solid rgba(143,184,255,0.55);
       border-radius: 8px;
-      background: rgba(255,255,255,0.05);
+      background: rgba(143,184,255,0.12);
       padding: 9px 16px; opacity: 0.5;
       transition: opacity 0.35s ease, transform 0.2s ease,
-                  box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+                  border-color 0.2s ease, background 0.2s ease;
     }
     /* just the (centred, white) title — no number or tag */
     #pillar .pi-name { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.2; text-align: center; }
     #pillar.active {
       opacity: 1; transform: translateY(-3px);
-      border-color: rgba(143,184,255,0.5);
-      border-top-color: rgba(143,184,255,0.85);
-      background: rgba(143,184,255,0.08);
-      box-shadow: 0 10px 24px -12px rgba(143,184,255,0.5);
+      border-color: rgba(143,184,255,0.95);
+      border-top-color: rgba(143,184,255,1);
+      background: rgba(143,184,255,0.28);
     }
 
     /* ── Big animation card ── styled like the deck's slide-8 cards (clean & simple):
@@ -763,13 +761,7 @@
     </div>
 
     <div id="bottom">
-      <div id="intro">
-        <div class="pi-intro-card">
-          <div class="pi-intro-h">Six layers, working as one.</div>
-          <div class="pi-intro-p">Process mining, task mining, analysis, recommendation, simulation and monitoring &mdash; underpinned by a conversational interface anyone can use.</div>
-          <div class="pi-intro-key">Step through with <kbd>&larr;</kbd> <kbd>&rarr;</kbd></div>
-        </div>
-      </div>
+      <div id="intro"></div>
       <!-- big cards injected here -->
     </div>
   </div>
@@ -1759,7 +1751,11 @@
     showBig(step);
     intro.classList.toggle('show', step === 0);
 
-    // caption: set the sub text, then bounce eyebrow + title + sub together
+    // caption: set the title + sub text, then bounce eyebrow + title + sub together.
+    // Step 0 poses the bridging question; steps 1+ revert to the structural title.
+    capTitle.innerHTML = step === 0
+      ? 'How does Process Intelligence solve this?'
+      : 'The layers of Process Intelligence.';
     capSub.innerHTML = step === 0
       ? 'Six layers of process intelligence &mdash; underpinned by a conversational interface anyone can use.'
       : ALL[step - 1].sub;
