@@ -66,7 +66,7 @@
     }
     #cap-title {
       font-family: var(--font-body);
-      font-size: clamp(26px, 3vw, 38px); font-weight: 700; line-height: 1.15;
+      font-size: clamp(22px, 2.4vw, 30px); font-weight: 700; line-height: 1.15;
       letter-spacing: -0.025em; color: #fff; margin: 0 0 12px;
     }
     #cap-title .hl { color: var(--sf-blue-l); }
@@ -77,7 +77,13 @@
     .cap-fade { animation: capIn 0.7s cubic-bezier(0,0,0.2,1) both; }
     @keyframes capIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
-    #stats { position: fixed; left: 30px; bottom: 28px; z-index: 5; display: flex; gap: 26px; pointer-events: none; }
+    /* Stats live inside the deck's 1080px content column rather than at the viewport
+       edge — same alignment as slide-body content and the caption block above. */
+    #stats {
+      position: fixed; left: 0; right: 0; bottom: 28px; z-index: 5;
+      max-width: 1080px; margin: 0 auto; padding: 0 48px; box-sizing: border-box;
+      display: flex; gap: 26px; pointer-events: none;
+    }
     .stat .v { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3vw, 34px); line-height: 1; letter-spacing: -0.01em; color: #fff; font-variant-numeric: tabular-nums; }
     .stat .v.hot { color: var(--sf-blue-l); }
     .stat .k { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 7px; }
@@ -148,17 +154,50 @@
     cv.width = W * DPR; cv.height = H * DPR;
     cv.style.width = W + 'px'; cv.style.height = H + 'px';
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    updatePadding();
   }
   window.addEventListener('resize', resize);
 
   const clamp = (v, a=0, b=1) => v < a ? a : v > b ? b : v;
   const easeOut = t => 1 - Math.pow(1 - t, 3);
 
-  // Normalised → pixel projection. PAD_TOP leaves clearance for the deck-style caption stack
-  // (eyebrow + 2-line title + sub) at typical 800–1100px viewport heights.
-  const PAD_X = 0.06, PAD_TOP = 0.34, PAD_BOT = 0.16;
-  const px = nx => (PAD_X + nx * (1 - 2 * PAD_X)) * W;
+  // Normalised → pixel projection.
+  //
+  // Horizontal: bound to a 1080px centred column matching the deck's .slide-body
+  // max-width. On wider screens the column has empty side margins (the gradient
+  // background fills the full viewport, but cloud / nodes / edges live in the same
+  // column the rest of the deck uses). Narrower screens shrink the column to fit
+  // with a 48px side padding mirroring slide-body's padding rhythm.
+  //
+  // Vertical: PAD_TOP / PAD_BOT are computed dynamically from the actual rendered
+  // caption + stats heights so the cloud fills whatever space remains, regardless
+  // of viewport size, browser zoom, or system display scaling.
+  const COL_MAX = 1080, COL_PAD = 48;
+  let PAD_TOP = 0.34, PAD_BOT = 0.16;
+  const px = nx => {
+    const colW = Math.min(W, COL_MAX);
+    const usableW = colW - 2 * COL_PAD;
+    const colLeft = (W - colW) / 2 + COL_PAD;
+    return colLeft + nx * usableW;
+  };
   const py = ny => (PAD_TOP + ny * (1 - PAD_TOP - PAD_BOT)) * H;
+
+  // Read the rendered caption / stats heights and convert to viewport-relative padding.
+  // Clamped to defensive min/max so a missing or weirdly-sized DOM doesn't break layout.
+  function updatePadding() {
+    if (!H) return;
+    const cap = document.getElementById('caption');
+    const stats = document.getElementById('stats');
+    if (cap) {
+      const captionBottomPx = cap.getBoundingClientRect().bottom + 24;
+      PAD_TOP = Math.max(0.16, Math.min(0.40, captionBottomPx / H));
+    }
+    if (stats) {
+      const statsTopPx = stats.getBoundingClientRect().top - 24;
+      const padBotPx = Math.max(0, H - statsTopPx);
+      PAD_BOT = Math.max(0.08, Math.min(0.22, padBotPx / H));
+    }
+  }
 
   // Seeded RNG so the "reality" layout is stable between runs
   function mulberry32(a) {
@@ -198,11 +237,13 @@
   const MAIN_X1 = 0.50, MAIN_X2 = 0.50;  // keep the stem fixed in frame 1 → frame 2
   MAIN.forEach((m, i) => nodes.push({ label:m.label, color:m.color, kind:'main', r:9,
     a1:{x:MAIN_X1, y:colY(i)}, a2:{x:MAIN_X2, y:colY(i)}, a3:null }));
+  // Branches pushed out to the column edges so frame 2 fills the deck's content
+  // column rather than clustering near the central spine.
   const bPlace = [
-    { x:0.30, y:(colY(1)+colY(2))/2 - 0.02 },
-    { x:0.82, y:(colY(2)+colY(3))/2 },
-    { x:0.30, y:(colY(4)+colY(5))/2 },
-    { x:0.30, y:colY(5)+0.04 },
+    { x:0.00, y:(colY(1)+colY(2))/2 - 0.02 },  // Refer to senior UW (left)
+    { x:1.00, y:(colY(2)+colY(3))/2 },          // Request broker info (right)
+    { x:0.00, y:(colY(4)+colY(5))/2 },          // Declined (left)
+    { x:0.00, y:colY(5)+0.04 },                 // Decline rationale (left)
   ];
   const bParent = [1,2,4,4];
   BRANCH.forEach((b, i) => nodes.push({ label:b.label, color:b.color, kind:'branch', r:8,
@@ -210,7 +251,8 @@
   const CLOUD_N = 17;
   for (let i = 0; i < CLOUD_N; i++)
     nodes.push({ label:'', color:CLOUD_COLORS[i % CLOUD_COLORS.length], kind:'cloud', r:6+rnd()*2, a1:null, a2:null, a3:null });
-  nodes.forEach(n => { n.a3 = { x:0.14 + rnd()*0.72, y:0.04 + rnd()*0.92 }; });
+  // Cloud x spans 90% of the column (was 0.14–0.86 of viewport-padded space).
+  nodes.forEach(n => { n.a3 = { x:0.05 + rnd()*0.90, y:0.04 + rnd()*0.92 }; });
   // Pin Process Start and Process End to the exact spots they sit in frames 1 & 2 — so
   // when the transition to frame 3 happens, those two nodes stay still and everything else
   // explodes into chaos around them. Reads as "the start and end are fixed, the middle is
@@ -387,6 +429,9 @@
     document.getElementById('cap-title').innerHTML = c.title;  // innerHTML to allow <span class="hl"> highlight
     document.getElementById('cap-sub').textContent = c.sub;
     wrap.classList.remove('cap-fade'); void wrap.offsetWidth; wrap.classList.add('cap-fade');
+    // Caption height changes with the text — re-measure on the next frame so the cloud
+    // padding stays in step with what's actually rendered.
+    requestAnimationFrame(updatePadding);
   }
 
   function goToAct(n) {
