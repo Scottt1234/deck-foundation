@@ -258,92 +258,100 @@
     #nav button:active { transform: scale(0.94); }
     #nav button:disabled { opacity: 0.3; cursor: default; }
 
-    /* ═══════════ Task Mining animation — siloed systems → unified ═══════════
-       Adapted/expanded from blackbox-preview.html. Fills the whole big-card
-       stage: a sealed cover dissolves to reveal six siloed system windows,
-       which then stream their data along connectors into one unified hub.
-       Scoped under .bb-scene; trigger by toggling .playing. */
-    .bb-scene { position: relative; width: 100%; height: 100%; }
-    .bb-stage {
-      position: relative; width: 100%; height: 100%; border-radius: 6px; overflow: hidden;
-    }
-    .bb-inside {
-      position: absolute; inset: 0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.05)),
-        radial-gradient(50% 60% at 50% 50%, rgba(20,86,220,0.22), transparent 70%);
-    }
-    .win {
-      position: absolute; border-radius: 7px; background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(3px);
-      opacity: 0; transform: translateY(10px) scale(0.97);
-    }
-    .win-bar {
-      height: 20px; border-radius: 6px 6px 0 0; display: flex; align-items: center;
-      padding: 0 9px; gap: 5px; background: rgba(255,255,255,0.10);
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-    }
-    .win-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.35); }
-    .win-dot:nth-child(1) { background: rgba(255,120,120,0.6); }
-    .win-dot:nth-child(2) { background: rgba(255,200,90,0.55); }
-    .win-dot:nth-child(3) { background: rgba(120,220,160,0.55); }
-    .win-title { font-size: 11px; color: rgba(255,255,255,0.82); margin-left: 7px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .win-body { padding: 11px 11px 12px; display: flex; flex-direction: column; gap: 6px; }
-    .win-line { height: 5px; border-radius: 2px; background: rgba(255,255,255,0.14); }
-    .win-line.short   { width: 60%; }
-    .win-line.shorter { width: 40%; }
-    .win-line.long    { width: 90%; }
-    /* six siloed systems spread across the full stage */
-    .win-pega       { top:  6%; left:  3%; width: 28%; height: 30%; }
-    .win-guidewire  { top:  5%; left: 36%; width: 28%; height: 26%; }
-    .win-outlook    { top:  7%; left: 69%; width: 28%; height: 31%; }
-    .win-excel      { top: 64%; left:  3%; width: 28%; height: 30%; }
-    .win-sharepoint { top: 70%; left: 36%; width: 28%; height: 25%; }
-    .win-portal     { top: 63%; left: 69%; width: 28%; height: 31%; }
+    /* ═══════════ Task Mining animation — the work between the systems ═══════════
+       Self-contained: opens on a single source system (echoing Process Mining),
+       then generic app windows fade in around it. Faint "between-tool" activity
+       (a dashed rim with ghost tokens) surfaces the desktop work the single-system
+       view misses; a central intelligence element then ignites and captures it —
+       every source spoked inward with bright inflow. All in one SVG so windows,
+       rim, spokes and hub share a coordinate space. Scoped under .tm-scene; the
+       structural timeline is a CSS cascade fired by toggling .playing. */
+    .tm-scene { position: absolute; inset: 0; overflow: hidden; }
+    .tm-scene::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(48% 58% at 50% 52%, rgba(20,86,220,0.22), transparent 70%); }
+    .tm-svg { position: relative; width: 100%; height: 100%; display: block; }
 
-    /* connectors + unified hub (SVG fills the stage) */
-    .bb-flow { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
-    .bb-flow svg { width: 100%; height: 100%; display: block; }
-    .bb-flow .flow-line { stroke: #8fb8ff; stroke-width: 1.4; fill: none; stroke-dasharray: 5 6; opacity: 0.5; }
-    .bb-flow .flow-node { fill: #8fb8ff; opacity: 0.85; }
-    .bb-flow .flow-dot  { fill: #dbecff; opacity: 0.95; }
-    .bb-hub-ring  { fill: none; stroke: #8fb8ff; stroke-width: 1.5; }
-    .bb-hub-glow  { fill: rgba(143,184,255,0.16); }
-    .bb-hub-core  { fill: #e6f1ff; }
-    .bb-hub-edge  { fill: none; stroke: #8fb8ff; stroke-width: 1.5; opacity: 0.85; }
+    /* typed narration — same treatment as the other cards */
+    .tm-narrate { position: absolute; top: 20px; left: 28px; right: 28px; z-index: 4;
+      font-family: var(--font-display); font-weight: 700; font-size: clamp(15px, 2.1vw, 20px);
+      letter-spacing: -0.01em; line-height: 1.25; color: #fff; white-space: nowrap; pointer-events: none; }
+    .tm-narrate.wipe { animation: tmWipe 0.6s ease forwards; }
+    .tm-hl { color: var(--sf-blue-l); }
+    .tm-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
+      margin-left: 2px; vertical-align: -2px; animation: tmBlink 1s step-end infinite; }
+    @keyframes tmBlink { 50% { opacity: 0; } }
+    @keyframes tmWipe { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 0 100%); } }
 
-    .bb-cover {
-      position: absolute; inset: 0; z-index: 5;
-      background: radial-gradient(80% 60% at 50% 50%, #0a1830 0%, #04102f 100%);
-      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
-    }
-    .bb-cover::before {
-      content: ''; position: absolute; inset: 14px; border: 1.5px dashed rgba(143,184,255,0.32);
-      border-radius: 10px; pointer-events: none;
-    }
-    .bb-cover-icon {
-      width: 72px; height: 72px; display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; background: rgba(143,184,255,0.10); color: #8fb8ff; border: 1px solid rgba(143,184,255,0.4);
-    }
-    .bb-cover-label { font-size: 14px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.62); }
-    .bb-cover-sub { font-size: 12px; color: rgba(255,255,255,0.44); margin-top: -6px; letter-spacing: 0.04em; font-style: italic; }
+    /* ── windows: generic apps + the single (emphasised) system ── */
+    .tm-win { opacity: 0; transform-box: fill-box; transform-origin: center; transform: translateY(8px) scale(0.94); }
+    .tm-win-box   { fill: rgba(255,255,255,0.05); stroke: rgba(255,255,255,0.18); stroke-width: 1.2; }
+    .tm-sys-box   { fill: rgba(143,184,255,0.07); stroke: rgba(143,184,255,0.38); stroke-width: 1.5; }
+    .tm-win-rule  { stroke: rgba(255,255,255,0.12); stroke-width: 1; }
+    .tm-win-glyph { fill: none; stroke: #9db8ff; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .tm-win-dot   { fill: rgba(255,255,255,0.28); }
+    .tm-win-line  { fill: rgba(255,255,255,0.14); }
+    .tm-row       { fill: rgba(143,184,255,0.6); transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
+    .tm-tag       { fill: rgba(143,184,255,0.85); font: 700 9.5px var(--font-body); letter-spacing: 0.16em; opacity: 0; }
+    .tm-hubtag    { fill: #dbe8ff; font: 700 11px var(--font-body); letter-spacing: 0.20em; opacity: 0; }
 
-    @keyframes bbCoverFade { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.03); } }
-    @keyframes bbWinPop { 0% { opacity: 0; transform: translateY(10px) scale(0.97); } 100% { opacity: 1; transform: none; } }
-    @keyframes bbFlowIn { to { opacity: 1; } }
-    .bb-scene.playing .bb-cover       { animation: bbCoverFade 1.0s 0.8s cubic-bezier(0.4,0,0.2,1) forwards; }
-    .bb-scene.playing .win-pega       { animation: bbWinPop 0.5s 1.40s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-guidewire  { animation: bbWinPop 0.5s 1.55s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-outlook    { animation: bbWinPop 0.5s 1.70s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-excel      { animation: bbWinPop 0.5s 1.85s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-sharepoint { animation: bbWinPop 0.5s 2.00s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .win-portal     { animation: bbWinPop 0.5s 2.15s cubic-bezier(0.22,1,0.36,1) forwards; }
-    .bb-scene.playing .bb-flow        { animation: bbFlowIn 0.8s 2.70s ease forwards; }
+    /* ── between-tool rim (the hidden activity) ── */
+    .tm-rim   { fill: none; stroke: #6f86c0; stroke-width: 1.5; stroke-dasharray: 4 5; opacity: 0; }
+    .tm-ghost { fill: #aebfe6; }
+    .tm-ghosts { opacity: 0; }
+
+    /* ── capture: spokes inward + bright inflow ── */
+    .tm-spoke { fill: none; stroke: #7aa0ff; stroke-width: 2.2; stroke-linecap: round;
+      stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0;
+      filter: drop-shadow(0 0 3px rgba(122,160,255,0.5)); }
+    .tm-flow  { fill: #e6f1ff; filter: drop-shadow(0 0 5px rgba(143,184,255,0.95)); }
+    .tm-flows { opacity: 0; }
+
+    /* ── central intelligence element ── */
+    .tm-hub { opacity: 0; }
+    .tm-hub-glow { fill: rgba(143,184,255,0.20); transform-box: fill-box; transform-origin: center; }
+    .tm-hub-ring { fill: none; stroke: #8fb8ff; stroke-width: 1.6; }
+    .tm-hub-spin { fill: none; stroke: #bcd4ff; stroke-width: 1.6; stroke-dasharray: 6 9; opacity: 0.8;
+      transform-box: fill-box; transform-origin: center; }
+    .tm-hub-coreglow { fill: none; stroke: #e6f1ff; stroke-width: 1.4; opacity: 0.85; }
+    .tm-hub-core { fill: #eaf3ff; }
+    .tm-sweep { fill: none; stroke: #bcd4ff; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+
+    /* ── timeline (fires on .playing; per-element delays live inline) ── */
+    .tm-scene.playing .tm-win   { animation: tmWinIn 0.55s cubic-bezier(.22,1,.36,1) both; }
+    .tm-scene.playing .tm-row   { animation: tmRow 0.4s ease both; }
+    .tm-scene.playing .tm-tag, .tm-scene.playing .tm-syslabel { animation: tmFade 0.6s 1.4s ease both; }
+    .tm-scene.playing .tm-rim   { animation: tmFaint 0.8s 3.2s ease both, tmRimDim 1.0s 8.2s ease forwards; }
+    .tm-scene.playing .tm-ghosts { animation: tmGhostIn 0.8s 3.6s ease both, tmGhostDim 1.0s 8.2s ease forwards; }
+    .tm-scene.playing .tm-hub    { animation: tmFade 0.7s 5.8s ease both; }
+    .tm-scene.playing .tm-hub-glow { animation: tmHubPulse 2.6s 6.4s ease-in-out infinite; }
+    .tm-scene.playing .tm-hub-spin { animation: tmSpin 9s 5.8s linear infinite; }
+    .tm-scene.playing .tm-sweep  { animation: tmSweep 1.1s 6.0s ease-out forwards; }
+    .tm-scene.playing .tm-spoke  { animation: tmDraw 0.7s ease both; }
+    .tm-scene.playing .tm-flows  { animation: tmFade 0.8s 7.4s ease both; }
+    .tm-scene.playing .tm-hubtag { animation: tmFade 0.7s 8.7s ease both; }
+
+    @keyframes tmWinIn { from { opacity: 0; transform: translateY(8px) scale(0.94); } to { opacity: 1; transform: none; } }
+    @keyframes tmRow   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes tmFade  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes tmFaint { from { opacity: 0; } to { opacity: 0.34; } }
+    @keyframes tmRimDim { to { opacity: 0.12; } }
+    @keyframes tmGhostIn { from { opacity: 0; } to { opacity: 0.72; } }
+    @keyframes tmGhostDim { to { opacity: 0.18; } }
+    @keyframes tmDraw  { 0% { opacity: 1; stroke-dashoffset: 1; } 100% { opacity: 0.9; stroke-dashoffset: 0; } }
+    @keyframes tmHubPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.18); opacity: 0.5; } }
+    @keyframes tmSpin { to { transform: rotate(360deg); } }
+    @keyframes tmSweep { 0% { opacity: 0; transform: scale(0.2); } 14% { opacity: 0.7; } 100% { opacity: 0; transform: scale(4.2); } }
 
     @media (prefers-reduced-motion: reduce) {
-      .bb-scene .bb-cover { opacity: 0 !important; animation: none !important; }
-      .bb-scene .win { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .bb-scene .bb-flow { opacity: 1 !important; animation: none !important; }
+      .tm-scene .tm-win, .tm-scene .tm-tag, .tm-scene .tm-syslabel, .tm-scene .tm-hubtag,
+      .tm-scene .tm-hub, .tm-scene .tm-flows { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .tm-scene .tm-row   { transform: scaleX(1) !important; animation: none !important; }
+      .tm-scene .tm-rim   { opacity: 0.3 !important; animation: none !important; }
+      .tm-scene .tm-ghosts { opacity: 0.5 !important; animation: none !important; }
+      .tm-scene .tm-spoke { opacity: 0.9 !important; stroke-dashoffset: 0 !important; animation: none !important; }
+      .tm-scene .tm-hub-glow, .tm-scene .tm-hub-spin { animation: none !important; }
+      .tm-scene .tm-sweep { opacity: 0 !important; animation: none !important; }
+      .tm-scene .tm-narrate.wipe { animation: none !important; }
     }
 
     /* ═══════════ Conversational Interface animation — the few → the many ═══════════
@@ -600,13 +608,13 @@
   'use strict';
 
   // ── Layer data ─────────────────────────────────────────────────
-  // Each layer becomes a rail card + a big card. `anim:'blackbox'` mounts the
-  // live Task Mining animation; everything else gets a swappable placeholder.
+  // Each layer becomes a rail card + a big card. `anim` selects its animation
+  // ('mining', 'tasks', 'convo'); anything else gets a swappable placeholder.
   const LAYERS = [
     { num:'01', name:'Process Mining',  tag:'System',  color:'#8fb8ff', anim:'mining',
       sub:'See how the process really runs &mdash; not how the diagram on the wall says it should.',
       desc:'Reconstructs how a process actually runs inside a system from event logs &mdash; every variant, bottleneck and rework loop.' },
-    { num:'02', name:'Task Mining',     tag:'Desktop', color:'#8fb8ff', anim:'blackbox',
+    { num:'02', name:'Task Mining',     tag:'Desktop', color:'#8fb8ff', anim:'tasks',
       sub:'See the work <em>between</em> the systems &mdash; where process mining goes blind.',
       desc:'Captures the work between systems at the desktop &mdash; the look-ups, emails and manual hand-offs that process mining alone cannot see.' },
     { num:'03', name:'Analysis',        tag:'Insight', color:'#8fb8ff',
@@ -629,65 +637,98 @@
   const STEPS = LAYERS.length + 1;            // 6 layers + conversational interface
   const ALL = LAYERS.concat([FOUNDATION]);    // index aligned with focus steps 1..7
 
-  // ── Task Mining animation markup (siloed systems → unified hub) ─
-  // Helper: a "system" window with a title bar + a few content lines.
-  const win = (cls, title, lines) => `
-    <div class="win ${cls}">
-      <div class="win-bar"><div class="win-dot"></div><div class="win-dot"></div><div class="win-dot"></div><span class="win-title">${title}</span></div>
-      <div class="win-body">${lines.map(c => `<div class="win-line ${c}"></div>`).join('')}</div>
-    </div>`;
-  // Helper: one connector from a window centre into the hub, with two streaming dots.
-  const conn = (x, y, b1, b2) => {
-    const d = `M${x},${y} L500,280`;
-    return `
-      <path class="flow-line" d="${d}" />
-      <circle class="flow-node" cx="${x}" cy="${y}" r="3.5" />
-      <circle class="flow-dot" r="3.4"><animateMotion dur="2.4s" begin="${b1}s" repeatCount="indefinite" path="${d}" /></circle>
-      <circle class="flow-dot" r="3.4"><animateMotion dur="2.4s" begin="${b2}s" repeatCount="indefinite" path="${d}" /></circle>`;
+  // ── Task Mining animation (the work between the systems) ────────
+  // One SVG (viewBox 1000×560). A single source system opens centre-top (echoing
+  // Process Mining), generic app windows fade in around it, faint between-tool
+  // activity (a dashed rim with ghost tokens) surfaces, then a central intelligence
+  // element ignites and captures it — every source spoked inward with bright inflow.
+  // Geometry is generated here; the CSS cascade (.playing) runs the timeline and
+  // playTM() types the narration. All sources sit on a ring around the hub.
+  const TM_HUB = { x: 500, y: 288 };
+  const TM_SRC = [
+    { x: 500, y:  98, sys: true, g: 'db',   d: 0.20 },   // the single system (prominent, opens first)
+    { x: 732, y: 185,            g: 'grid', d: 2.05 },
+    { x: 732, y: 392,            g: 'web',  d: 2.20 },
+    { x: 500, y: 470,            g: 'doc',  d: 2.35 },
+    { x: 268, y: 392,            g: 'chat', d: 2.50 },
+    { x: 268, y: 185,            g: 'cal',  d: 2.65 },
+  ];
+  // Generic, unnamed app glyphs (drawn in a ~14px local box).
+  const TM_GLYPHS = {
+    db:   '<ellipse cx="7" cy="2.6" rx="6.4" ry="2.4"/><path d="M0.6,2.6 V11 a6.4,2.4 0 0 0 12.8,0 V2.6"/><path d="M0.6,6.8 a6.4,2.4 0 0 0 12.8,0"/>',
+    grid: '<rect x="0.6" y="0.6" width="12.8" height="12.8" rx="1.4"/><path d="M0.6,5 H13.4 M0.6,9 H13.4 M5,0.6 V13.4 M9,0.6 V13.4"/>',
+    web:  '<rect x="0.6" y="1.4" width="12.8" height="11.2" rx="1.4"/><path d="M0.6,5 H13.4"/><circle cx="2.6" cy="3.2" r="0.5"/><circle cx="4.3" cy="3.2" r="0.5"/>',
+    doc:  '<rect x="2.4" y="0.6" width="9.2" height="12.8" rx="1.2"/><path d="M4.4,4 H9.6 M4.4,6.6 H9.6 M4.4,9.2 H8"/>',
+    chat: '<path d="M1,3 a2,2 0 0 1 2,-2 H11 a2,2 0 0 1 2,2 V8.4 a2,2 0 0 1 -2,2 H6.2 L3,13 V10.4 a2,2 0 0 1 -2,-2 z"/><path d="M4,5.6 H10 M4,7.8 H8"/>',
+    cal:  '<rect x="0.7" y="1.6" width="12.6" height="11.7" rx="1.4"/><path d="M0.7,5 H13.3 M4,0.6 V3 M10,0.6 V3"/>',
   };
-  const BLACKBOX = `
-    <div class="bb-scene">
-      <div class="bb-stage">
-        <div class="bb-inside" aria-hidden="true">
-          ${win('win-pega',       'CRM',         ['long','short','','shorter'])}
-          ${win('win-guidewire',  'Core system', ['short','long','shorter'])}
-          ${win('win-outlook',    'Email',       ['','short','long','shorter'])}
-          ${win('win-excel',      'Spreadsheet', ['short','','shorter'])}
-          ${win('win-sharepoint', 'Documents',   ['long','short'])}
-          ${win('win-portal',     'Web portal',  ['short','shorter','long'])}
-        </div>
-        <div class="bb-flow" aria-hidden="true">
-          <svg viewBox="0 0 1000 560" preserveAspectRatio="none">
-            ${conn(170,118,0.0,1.2)}
-            ${conn(500,101,0.3,1.5)}
-            ${conn(830,126,0.6,1.8)}
-            ${conn(170,442,0.15,1.35)}
-            ${conn(500,462,0.45,1.65)}
-            ${conn(830,440,0.75,1.95)}
-            <g class="bb-hub">
-              <circle class="bb-hub-glow" cx="500" cy="280" r="28">
-                <animate attributeName="r" values="24;36;24" dur="3s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.55;0.12;0.55" dur="3s" repeatCount="indefinite" />
-              </circle>
-              <circle class="bb-hub-ring" cx="500" cy="280" r="22" />
-              <circle class="bb-hub-core" cx="500" cy="280" r="11" />
-              <circle class="bb-hub-edge" cx="500" cy="280" r="11" />
-            </g>
-          </svg>
-        </div>
-        <div class="bb-cover">
-          <div class="bb-cover-icon">
-            <svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="4" y="6" width="24" height="20" rx="2"/><path d="M4 12h24"/>
-              <circle cx="8" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="9" r="1" fill="currentColor" stroke="none"/>
-              <path d="M11 18h10M11 22h6"/>
-            </svg>
-          </div>
-          <div class="bb-cover-label">The Workstation</div>
-          <div class="bb-cover-sub">where the work between siloed systems happens</div>
-        </div>
-      </div>
-    </div>`;
+  const tmEdge = (from, to, dist) => {                   // a point `dist` px from `from` toward `to`
+    const dx = to.x - from.x, dy = to.y - from.y, L = Math.hypot(dx, dy) || 1;
+    return { x: from.x + dx / L * dist, y: from.y + dy / L * dist };
+  };
+  // One window (the system is larger, brighter and streams log rows like card 1).
+  function tmWin(s) {
+    const w = s.sys ? 150 : 124, h = s.sys ? 104 : 86;
+    const x = s.x - w / 2, y = s.y - h / 2, barH = s.sys ? 24 : 22;
+    const boxCls = s.sys ? 'tm-win-box tm-sys-box' : 'tm-win-box';
+    let body;
+    if (s.sys) {
+      const ry = y + barH + 12;
+      const rows = [[118, ry], [88, ry + 14], [118, ry + 28], [72, ry + 42]];
+      body = rows.map((r, i) => `<rect class="tm-row" x="${x + 18}" y="${r[1]}" width="${r[0]}" height="7" rx="3" style="animation-delay:${(0.5 + i * 0.14).toFixed(2)}s"/>`).join('');
+    } else {
+      body = `<rect class="tm-win-line" x="${x + 16}" y="${y + barH + 12}" width="92" height="6" rx="3"/>`
+           + `<rect class="tm-win-line" x="${x + 16}" y="${y + barH + 26}" width="58" height="6" rx="3"/>`
+           + `<circle class="tm-win-dot" cx="${x + w - 14}" cy="${y + 11}" r="1.7"/><circle class="tm-win-dot" cx="${x + w - 22}" cy="${y + 11}" r="1.7"/>`;
+    }
+    return `<g class="tm-win" style="animation-delay:${s.d}s">
+        <rect class="${boxCls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="9"/>
+        <line class="tm-win-rule" x1="${x}" y1="${y + barH}" x2="${x + w}" y2="${y + barH}"/>
+        <g class="tm-win-glyph" transform="translate(${x + 13},${y + (barH - 14) / 2})">${TM_GLYPHS[s.g]}</g>
+        ${body}
+      </g>`;
+  }
+  function buildTaskMining() {
+    const W = [], RIM = [], GH = [], SP = [], FL = [];
+    TM_SRC.forEach(s => W.push(tmWin(s)));
+    // rim chords between neighbours = the hidden between-tool activity
+    TM_SRC.forEach((s, i) => {
+      const n = TM_SRC[(i + 1) % TM_SRC.length];
+      const fwd = i % 2 === 0;                            // alternate direction for an organic feel
+      const d = fwd ? `M${s.x},${s.y} L${n.x},${n.y}` : `M${n.x},${n.y} L${s.x},${s.y}`;
+      RIM.push(`<path class="tm-rim" d="M${s.x},${s.y} L${n.x},${n.y}"/>`);
+      GH.push(`<circle class="tm-ghost" r="3"><animateMotion dur="${(3.6 + i * 0.25).toFixed(2)}s" begin="${(i * 0.6).toFixed(2)}s" repeatCount="indefinite" path="${d}"/></circle>`);
+    });
+    // spokes inward + bright inflow = the capture into the central intelligence element
+    TM_SRC.forEach((s, i) => {
+      const p1 = tmEdge(s, TM_HUB, s.sys ? 58 : 48), p2 = tmEdge(TM_HUB, s, 44);
+      const d = `M${p1.x.toFixed(1)},${p1.y.toFixed(1)} L${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+      SP.push(`<path class="tm-spoke" pathLength="1" style="animation-delay:${(6.8 + i * 0.15).toFixed(2)}s" d="${d}"/>`);
+      FL.push(`<circle class="tm-flow" r="3.6"><animateMotion dur="2.2s" begin="${(i * 0.32).toFixed(2)}s" repeatCount="indefinite" path="${d}"/></circle>`);
+    });
+    const { x: hx, y: hy } = TM_HUB;
+    const hub = `<g class="tm-hub">
+        <circle class="tm-hub-glow" cx="${hx}" cy="${hy}" r="34"/>
+        <circle class="tm-hub-ring" cx="${hx}" cy="${hy}" r="29"/>
+        <circle class="tm-hub-spin" cx="${hx}" cy="${hy}" r="21"/>
+        <circle class="tm-hub-coreglow" cx="${hx}" cy="${hy}" r="12"/>
+        <circle class="tm-hub-core" cx="${hx}" cy="${hy}" r="8"/>
+      </g>`;
+    const sweep = `<circle class="tm-sweep" cx="${hx}" cy="${hy}" r="58"/>`;
+    const labels = `<text class="tm-tag tm-syslabel" x="500" y="168" text-anchor="middle">SINGLE SYSTEM</text>`
+                 + `<text class="tm-hubtag" x="${hx}" y="${hy + 54}" text-anchor="middle">CAPTURED</text>`;
+    const scene = document.createElement('div');
+    scene.className = 'tm-scene';
+    scene.innerHTML = `<div class="tm-narrate"></div>
+      <svg class="tm-svg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        ${SP.join('')}${RIM.join('')}
+        <g class="tm-ghosts">${GH.join('')}</g>
+        <g class="tm-flows">${FL.join('')}</g>
+        ${hub}${sweep}
+        ${W.join('')}${labels}
+      </svg>`;
+    return scene;
+  }
 
   // ── Process Mining animation (data → the real process map) ──────
   // One SVG holds it all so the source panel, the graph and the labels share a
@@ -891,9 +932,9 @@
     el.className = 'pi-big'; el.style.setProperty('--c', l.color);
     // No header/text — the whole card is the animation slot.
     const stage = document.createElement('div'); stage.className = 'pi-big-stage';
-    if (l.anim === 'blackbox')   stage.innerHTML = BLACKBOX;
-    else if (l.anim === 'mining') stage.innerHTML = PROCESS_MINING;
-    else if (l.anim === 'convo') stage.appendChild(buildConvo());
+    if (l.anim === 'mining')      stage.innerHTML = PROCESS_MINING;
+    else if (l.anim === 'tasks')  stage.appendChild(buildTaskMining());
+    else if (l.anim === 'convo')  stage.appendChild(buildConvo());
     else                         stage.innerHTML = placeholderSlot();
     el.appendChild(stage);
     bottom.appendChild(el);
@@ -921,12 +962,52 @@
 
   const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function playBlackbox(el) {
-    const scene = el.querySelector('.bb-scene');
-    if (!scene) return;
+  // ── Task Mining: fire the CSS timeline, then type the three narration beats ──
+  function typeTM(scene, host, segments, cps, startDelay) {
+    const run = () => {
+      host.innerHTML = '';
+      const spans = segments.map(s => { const e = document.createElement('span'); if (s.hl) e.className = 'tm-hl'; host.appendChild(e); return e; });
+      if (reduceMotion()) { spans.forEach((e, i) => e.textContent = segments[i].t); return; }
+      const caret = document.createElement('span'); caret.className = 'tm-caret'; host.appendChild(caret);
+      let si = 0, ci = 0;
+      const stepFn = () => {
+        if (si >= segments.length) { caret.remove(); return; }
+        const seg = segments[si];
+        if (ci < seg.t.length) spans[si].textContent += seg.t[ci++];
+        else { si++; ci = 0; }
+        scene._tmTimers.push(setTimeout(stepFn, cps));
+      };
+      stepFn();
+    };
+    scene._tmTimers.push(setTimeout(run, startDelay));
+  }
+  function playTM(el) {
+    const scene = el.querySelector('.tm-scene'); if (!scene) return;
+    if (scene._tmTimers) scene._tmTimers.forEach(clearTimeout);
+    scene._tmTimers = [];
+    const nar = scene.querySelector('.tm-narrate');
     scene.classList.remove('playing');
-    void scene.offsetWidth;                 // reflow so the timeline re-fires
+    if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
+    void scene.offsetWidth;                 // reflow so the CSS timeline re-fires from frame 0
     scene.classList.add('playing');
+    const CPS = 46;
+    const T = (fn, ms) => scene._tmTimers.push(setTimeout(fn, ms));
+    // Beat 1: the single system opens → "Logs see one system."
+    typeTM(scene, nar, [{ t: 'Logs see ' }, { t: 'one system', hl: true }, { t: '.' }], CPS, 350);
+    // Beat 2: apps + the dim rim surface → "The real work happens between them."
+    if (nar) T(() => nar.classList.add('wipe'), 3700);
+    T(() => { if (!nar) return; nar.classList.remove('wipe'); nar.innerHTML = '';
+      typeTM(scene, nar, [{ t: 'The real work happens ' }, { t: 'between them', hl: true }, { t: '.' }], CPS, 0); }, 4400);
+    // Beat 3: the central intelligence element captures it → "Task Mining captures it."
+    if (nar) T(() => nar.classList.add('wipe'), 7900);
+    T(() => { if (!nar) return; nar.classList.remove('wipe'); nar.innerHTML = '';
+      typeTM(scene, nar, [{ t: 'Task Mining ' }, { t: 'captures it', hl: true }, { t: '.' }], CPS, 0); }, 8700);
+  }
+  function stopTM(el) {
+    const scene = el.querySelector('.tm-scene'); if (!scene) return;
+    if (scene._tmTimers) { scene._tmTimers.forEach(clearTimeout); scene._tmTimers = null; }
+    const nar = scene.querySelector('.tm-narrate'); if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
+    scene.classList.remove('playing');
   }
 
   // ── Process Mining: fire the CSS timeline, then type the two narration beats ──
@@ -1148,14 +1229,15 @@
       prev.classList.remove('active'); prev.classList.add('closing');
       if (prev.querySelector('.cv-scene')) stopConvo(prev);   // halt question timers immediately
       else if (prev.querySelector('.pm-scene')) stopPM(prev); // halt narration + reset the map
+      else if (prev.querySelector('.tm-scene')) stopTM(prev); // halt narration + reset the cluster
     }
     const delay = prev ? 280 : 0;           // close the last card, then raise the new one
     swapTimer = setTimeout(() => {
       if (prev) prev.classList.remove('closing');
       if (next) {
         next.classList.add('active');
-        if (next.querySelector('.bb-scene')) playBlackbox(next);
-        else if (next.querySelector('.pm-scene')) playPM(next);
+        if (next.querySelector('.pm-scene')) playPM(next);
+        else if (next.querySelector('.tm-scene')) playTM(next);
         else if (next.querySelector('.cv-scene')) playConvo(next);
       }
     }, delay);
@@ -1165,8 +1247,8 @@
   // button and the deck's replay button via the 'replay' message).
   function replayCurrent() {
     const el = currentBig; if (!el) return;
-    if (el.querySelector('.bb-scene')) playBlackbox(el);
-    else if (el.querySelector('.pm-scene')) playPM(el);
+    if (el.querySelector('.pm-scene')) playPM(el);
+    else if (el.querySelector('.tm-scene')) playTM(el);
     else if (el.querySelector('.cv-scene')) playConvo(el);
   }
 
