@@ -358,6 +358,9 @@
        Narrated: "It used to take an expert" → two experts → they shrink into an organic
        whole-org crowd as "Now anyone can ask." types; then "In their own words." + questions. */
     .cv-scene { position: absolute; inset: 0; display: flex; }
+    /* same soft radial atmosphere the other cards carry over the navy fill */
+    .cv-scene::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(52% 60% at 50% 52%, rgba(20,86,220,0.18), transparent 70%); }
     .cv-people { position: relative; flex: 1.7 1 0; overflow: hidden; }
     /* soft cloud-blue glow behind the crowd (atmosphere / depth) */
     .cv-people::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
@@ -1691,20 +1694,26 @@
     const CPS = 67;                                       // ~40% slower typing
     const T = (fn, ms) => scene._cvTimers.push(setTimeout(fn, ms));
 
-    // 1) "It used to take an expert" types on the left; experts appear once it finishes.
-    typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }, { t: ' to get an answer' }], CPS, () => scene.classList.add('experts'));
-    // 2) hold (a second longer), then wipe the line away.
+    // All three beats type in the same left slot (same size + alignment), in sequence.
+    // 1) "It used to take an expert to get an answer." — experts appear once it finishes.
+    typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }, { t: ' to get an answer.' }], CPS, () => scene.classList.add('experts'));
+    // 2) hold, then wipe the line away.
     T(() => narrate.classList.add('wipe'), 4800);
-    // 3) experts slowly shrink + crowd slowly fades in, while "Now anyone can ask for anything" types.
+    // 3) experts shrink + crowd fades in while "Now everyone can get the answers they need" types.
     T(() => {
       narrate.classList.remove('wipe'); narrate.innerHTML = '';
       scene.classList.add('revealed');
       typeLine(scene, narrate, [{ t: 'Now ' }, { t: 'everyone', hl: true }, { t: ' can get the answers they need' }], CPS);
     }, 5650);
-    // 4) after a pause, "In their own words." types on the right (light blue).
-    T(() => typeLine(scene, rtitle, [{ t: 'Simply by asking in their own words' }], CPS), 8600);
-    // 5) then the questions stream in.
-    T(() => startConvoQuestions(scene), 10100);
+    // 4) hold line 2, then wipe it.
+    T(() => narrate.classList.add('wipe'), 8600);
+    // 5) a small beat, then the final line types in the same slot; the questions wait until
+    //    it has finished typing before they (and their pulses) begin to stream in.
+    T(() => {
+      narrate.classList.remove('wipe'); narrate.innerHTML = '';
+      typeLine(scene, narrate, [{ t: 'Simply by asking in ' }, { t: 'their own words', hl: true }], CPS,
+        () => { if (scene._cvTimers) scene._cvTimers.push(setTimeout(() => startConvoQuestions(scene), 650)); });
+    }, 9550);
   }
   function stopConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
