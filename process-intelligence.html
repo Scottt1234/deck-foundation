@@ -353,18 +353,18 @@
       opacity: 0; transition: opacity 1.4s ease; }
     .cv-scene.revealed .cv-people::before { opacity: 1; }
     .cv-questions { position: relative; flex: 1.2 1 0; min-width: 0; display: flex; flex-direction: column;
-      justify-content: flex-end; padding: 16px; }
+      justify-content: flex-start; padding: 26px 16px 16px; }
     /* softened divider — a gradient hairline that fades at top & bottom */
     .cv-questions::before { content: ''; position: absolute; left: 0; top: 9%; bottom: 9%; width: 1px; pointer-events: none;
       background: linear-gradient(180deg, transparent, rgba(255,255,255,0.16) 22%, rgba(255,255,255,0.16) 78%, transparent); }
-    .cv-qlist { display: flex; flex-direction: column; justify-content: flex-end; gap: 9px; }
+    .cv-qlist { display: flex; flex-direction: column; justify-content: flex-start; gap: 9px; }
 
     /* typed narration lines — left (cv-narrate) and right (cv-rtitle), same font + size */
     .cv-narrate, .cv-rtitle { font-family: var(--font-display); font-weight: 700;
       font-size: clamp(16px, 2.3vw, 21px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
     .cv-narrate { position: absolute; top: 8%; left: 6%; right: 6%; white-space: nowrap; }
     .cv-narrate.wipe { clip-path: inset(0 0 0 0); animation: cvWipe 0.77s ease forwards; }
-    .cv-rtitle { position: absolute; top: 8%; left: 16px; right: 16px; color: var(--sf-blue-l); }
+    .cv-rtitle { color: var(--sf-blue-l); margin: 0 0 14px; }   /* in flow → questions start right beneath it */
     .cv-hl { color: var(--sf-blue-l); }
     .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
       margin-left: 2px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
@@ -377,7 +377,7 @@
     .cv-scene.revealed .cv-spotlight { opacity: 0; transition: opacity 0.8s ease; }
 
     /* crowd cloud (organic, absolute positions + per-person depth set inline) */
-    .cv-crowd { position: absolute; inset: 24% 4% 5% 4%; }
+    .cv-crowd { position: absolute; inset: 22% 3% 6% 3%; }
     /* constellation — faint links between near neighbours, behind the people */
     .cv-net { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0; transition: opacity 1.6s ease; }
     .cv-scene.revealed .cv-net { opacity: 1; }
@@ -681,7 +681,7 @@
       el.innerHTML = personSVG();
       if (!isExpert) {
         const dz = rnd();                                                  // 0 = back, 1 = front
-        el.style.width = (7.5 + dz * 4).toFixed(1) + '%';                  // 7.5%..11.5%
+        el.style.width = (8 + dz * 4.5).toFixed(1) + '%';                  // 8%..12.5% (slightly larger)
         el.style.color = 'rgba(205,214,225,' + (0.4 + dz * 0.5).toFixed(2) + ')';   // dimmer at the back
         el.style.zIndex = String(1 + Math.round(dz * 8));
         el.style.setProperty('--i', i);
