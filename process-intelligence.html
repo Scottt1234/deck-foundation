@@ -379,7 +379,7 @@
       font-size: clamp(15px, 2.2vw, 20px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
     .cv-narrate { position: absolute; top: 26px; left: 6%; right: 6%; white-space: nowrap; }   /* top matches the right title (cv-questions padding-top) */
     .cv-narrate.wipe { clip-path: inset(0 0 0 0); animation: cvWipe 0.77s ease forwards; }
-    .cv-rtitle { color: var(--sf-blue-l); margin: 0 0 14px; }   /* in flow → questions start right beneath it */
+    .cv-rtitle { color: var(--sf-blue-l); margin: 0 0 14px; white-space: nowrap; }   /* one line, top at 26px → same height as the left narration */
     .cv-hl { color: var(--sf-blue-l); }
     .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
       margin-left: 2px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
@@ -1694,26 +1694,21 @@
     const CPS = 67;                                       // ~40% slower typing
     const T = (fn, ms) => scene._cvTimers.push(setTimeout(fn, ms));
 
-    // All three beats type in the same left slot (same size + alignment), in sequence.
-    // 1) "It used to take an expert to get an answer." — experts appear once it finishes.
+    // 1) "It used to take an expert to get an answer." on the left; experts appear once it finishes.
     typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }, { t: ' to get an answer.' }], CPS, () => scene.classList.add('experts'));
     // 2) hold, then wipe the line away.
     T(() => narrate.classList.add('wipe'), 4800);
-    // 3) experts shrink + crowd fades in while "Now everyone can get the answers they need" types.
+    // 3) experts shrink + crowd fades in while "Now everyone can get the answers they need" types
+    //    on the left (and then stays there).
     T(() => {
       narrate.classList.remove('wipe'); narrate.innerHTML = '';
       scene.classList.add('revealed');
       typeLine(scene, narrate, [{ t: 'Now ' }, { t: 'everyone', hl: true }, { t: ' can get the answers they need' }], CPS);
     }, 5650);
-    // 4) hold line 2, then wipe it.
-    T(() => narrate.classList.add('wipe'), 8600);
-    // 5) a small beat, then the final line types in the same slot; the questions wait until
-    //    it has finished typing before they (and their pulses) begin to stream in.
-    T(() => {
-      narrate.classList.remove('wipe'); narrate.innerHTML = '';
-      typeLine(scene, narrate, [{ t: 'Simply by asking in ' }, { t: 'their own words', hl: true }], CPS,
-        () => { if (scene._cvTimers) scene._cvTimers.push(setTimeout(() => startConvoQuestions(scene), 650)); });
-    }, 9550);
+    // 4) after a small beat, the right-hand title types at the same height; the questions (and
+    //    their pulses) wait until it has finished typing before they begin to stream in.
+    T(() => typeLine(scene, rtitle, [{ t: 'Simply by asking in their own words' }], CPS,
+      () => { if (scene._cvTimers) scene._cvTimers.push(setTimeout(() => startConvoQuestions(scene), 650)); }), 9300);
   }
   function stopConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
