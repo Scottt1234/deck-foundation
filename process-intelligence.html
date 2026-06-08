@@ -361,7 +361,7 @@
 
     /* typed narration lines — left (cv-narrate) and right (cv-rtitle), same font + size */
     .cv-narrate, .cv-rtitle { font-family: var(--font-display); font-weight: 700;
-      font-size: clamp(17px, 2.4vw, 25px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
+      font-size: clamp(16px, 2.3vw, 21px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
     .cv-narrate { position: absolute; top: 8%; left: 6%; right: 6%; white-space: nowrap; }
     .cv-narrate.wipe { clip-path: inset(0 0 0 0); animation: cvWipe 0.77s ease forwards; }
     .cv-rtitle { position: absolute; top: 8%; left: 16px; right: 16px; color: var(--sf-blue-l); }
@@ -883,7 +883,7 @@
     const T = (fn, ms) => scene._cvTimers.push(setTimeout(fn, ms));
 
     // 1) "It used to take an expert" types on the left; experts appear once it finishes.
-    typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }], CPS, () => scene.classList.add('experts'));
+    typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }, { t: ' to get an answer' }], CPS, () => scene.classList.add('experts'));
     // 2) hold (a second longer), then wipe the line away.
     T(() => narrate.classList.add('wipe'), 4800);
     // 3) experts slowly shrink + crowd slowly fades in, while "Now anyone can ask for anything" types.
