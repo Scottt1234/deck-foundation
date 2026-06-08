@@ -539,6 +539,192 @@
       .pm-scene .pm-narrate.wipe { animation: none !important; }
     }
 
+    /* ═══════════ Shared scaffolding for cards 3–6 ═══════════
+       A common scene shell (navy glow + full-bleed SVG) and one typed-narration
+       treatment, so every remaining card matches cards 1–2 and the conversational
+       card without re-declaring the basics. Each card layers its own classes on top. */
+    .pi-cardscene { position: absolute; inset: 0; overflow: hidden; }
+    .pi-cardscene::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(52% 60% at 50% 52%, rgba(20,86,220,0.18), transparent 70%); }
+    .pi-cardsvg { position: relative; width: 100%; height: 100%; display: block; }
+    .pi-narr { position: absolute; top: 20px; left: 28px; right: 28px; z-index: 4;
+      font-family: var(--font-display); font-weight: 700; font-size: clamp(15px, 2.1vw, 20px);
+      letter-spacing: -0.01em; line-height: 1.25; color: #fff; white-space: nowrap; pointer-events: none; }
+    .pi-narr.wipe { animation: piNarrWipe 0.6s ease forwards; }
+    .pi-hl { color: var(--sf-blue-l); }
+    .pi-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
+      margin-left: 2px; vertical-align: -2px; animation: piNarrBlink 1s step-end infinite; }
+    @keyframes piNarrBlink { 50% { opacity: 0; } }
+    @keyframes piNarrWipe { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 0 100%); } }
+    @keyframes piFade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ═══════════ Analysis — measure into Cost / Resource / Time, flare the worst ═══════════ */
+    .an-node { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); }
+    .an-edge { stroke: #5f7fce; stroke-width: 2; opacity: 0; }
+    .an-scan { opacity: 0; }
+    .an-scan-line { stroke: #bcd4ff; stroke-width: 2.5; filter: drop-shadow(0 0 6px rgba(143,184,255,0.9)); }
+    .an-tile { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.12); stroke-width: 1; opacity: 0; }
+    .an-label { fill: rgba(255,255,255,0.62); font: 700 12px var(--font-body); letter-spacing: 0.14em; }
+    .an-num   { fill: #eaf3ff; font: 700 30px var(--font-display); }
+    .an-sub   { fill: rgba(255,255,255,0.5); font: 600 11px var(--font-body); letter-spacing: 0.04em; }
+    .an-gauge-track { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 8; }
+    .an-gauge-val { fill: none; stroke: #6f9bff; stroke-width: 8; stroke-linecap: round;
+      stroke-dasharray: 100; stroke-dashoffset: 100; transform-box: fill-box; transform-origin: center; transform: rotate(-90deg);
+      transition: stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1), stroke 0.6s ease; }
+    .an-scene.playing .an-gauge-val { stroke-dashoffset: calc(100 - var(--val, 0)); }
+    .an-glow { fill: rgba(255,140,70,0); }
+    .an-worsttag { fill: #ffce93; font: 700 10px var(--font-body); letter-spacing: 0.12em; opacity: 0; }
+    .an-scene.playing .an-node { animation: anPop 0.45s cubic-bezier(.22,1,.36,1) both; }
+    .an-scene.playing .an-edge { animation: piFade 0.5s both; }
+    .an-scene.playing .an-tile { animation: piFade 0.6s both; }
+    .an-scene.playing .an-scan { animation: anScan 2.4s 1.4s cubic-bezier(.4,0,.2,1) forwards; }
+    .an-scene.playing .an-glow       { animation: anGlowIn 0.8s 7.0s ease forwards, anGlowPulse 2.4s 7.8s ease-in-out infinite; }
+    .an-scene.playing .an-num--worst { animation: anWarmNum 0.8s 7.0s ease forwards; }
+    .an-scene.playing .an-gauge-val--worst { animation: anWarmArc 0.8s 7.0s ease forwards; }
+    .an-scene.playing .an-worsttag   { animation: piFade 0.6s 7.2s ease both; }
+    @keyframes anPop { 0% { opacity: 0; transform: scale(0.3); } 60% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes anScan { 0% { transform: translateX(0); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(600px); opacity: 0; } }
+    @keyframes anGlowIn { to { fill: rgba(255,140,70,0.16); } }
+    @keyframes anGlowPulse { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+    @keyframes anWarmNum { to { fill: #ff9a6a; } }
+    @keyframes anWarmArc { to { stroke: #ff7a5c; } }
+
+    /* ═══════════ Recommendation — set a priority, AI proposes, you decide ═══════════ */
+    .rc-chip { fill: rgba(255,255,255,0.04); stroke: rgba(255,255,255,0.14); stroke-width: 1; opacity: 0; }
+    .rc-chip--prio { fill: rgba(6,106,254,0.10); stroke: rgba(111,155,255,0.6); stroke-width: 1.4; }
+    .rc-chiplabel { fill: rgba(255,255,255,0.78); font: 700 12px var(--font-body); letter-spacing: 0.06em; }
+    .rc-bar-track { fill: rgba(255,255,255,0.10); }
+    .rc-bar-fill  { fill: #6f9bff; transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
+    .rc-bar-fill--prio { fill: #8fb8ff; }
+    .rc-priotag { fill: #bcd4ff; font: 700 8.5px var(--font-body); letter-spacing: 0.14em; opacity: 0; }
+    .rc-orb { opacity: 0; }
+    .rc-orb-glow { fill: rgba(111,155,255,0.22); transform-box: fill-box; transform-origin: center; }
+    .rc-orb-ring { fill: none; stroke: #8fb8ff; stroke-width: 1.5; }
+    .rc-orb-spin { fill: none; stroke: #bcd4ff; stroke-width: 1.4; stroke-dasharray: 5 8; opacity: 0.85; transform-box: fill-box; transform-origin: center; }
+    .rc-orb-core { fill: #eaf3ff; }
+    .rc-orb-label { fill: #04102f; font: 800 13px var(--font-display); letter-spacing: 0.04em; }
+    .rc-beam { stroke: #8fb8ff; stroke-width: 2; stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; filter: drop-shadow(0 0 3px rgba(143,184,255,0.6)); }
+    .rc-tok  { fill: #eaf3ff; opacity: 0; filter: drop-shadow(0 0 5px rgba(143,184,255,0.95)); }
+    .rc-card { fill: rgba(10,28,68,0.72); stroke: rgba(111,155,255,0.4); stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; transform: translateY(10px) scale(0.97); }
+    .rc-card-tag { fill: #bcd4ff; font: 700 9.5px var(--font-body); letter-spacing: 0.12em; opacity: 0; }
+    .rc-card-title { fill: #ffffff; font: 700 17px var(--font-display); opacity: 0; }
+    .rc-eff-label { fill: rgba(255,255,255,0.66); font: 600 12px var(--font-body); opacity: 0; }
+    .rc-eff-val   { fill: #5fe3a0; font: 700 13px var(--font-body); opacity: 0; }
+    .rc-eff-val--prio { fill: #7CFFC4; }
+    .rc-eff-bar-t { fill: rgba(255,255,255,0.10); opacity: 0; }
+    .rc-eff-bar-f { fill: #36c98a; transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
+    .rc-btn { opacity: 0; }
+    .rc-btn-box { fill: none; stroke: rgba(255,255,255,0.4); stroke-width: 1.3; }
+    .rc-accept-box { fill: #1356d6; stroke: #6f9bff; stroke-width: 1.3; }
+    .rc-btn-label { fill: #fff; font: 700 12px var(--font-body); letter-spacing: 0.04em; }
+    .rc-cursor { opacity: 0; }
+    .rc-cursor path { fill: #ffffff; stroke: #04102f; stroke-width: 1; }
+    .rc-scene.playing .rc-chip { animation: piFade 0.5s both; }
+    .rc-scene.playing .rc-bar-fill { animation: rcBar 0.9s cubic-bezier(.4,0,.2,1) both; }
+    .rc-scene.playing .rc-priotag { animation: piFade 0.5s 2.4s ease both; }
+    .rc-scene.playing .rc-orb { animation: piFade 0.6s 0.4s ease both; }
+    .rc-scene.playing .rc-orb-glow { animation: rcOrbPulse 2.4s ease-in-out infinite; }
+    .rc-scene.playing .rc-orb-spin { animation: rcSpin 7s linear infinite; }
+    .rc-scene.playing .rc-beam { animation: rcDraw 0.6s 3.5s ease forwards; }
+    .rc-scene.playing .rc-tok  { animation: rcTok 0.7s 3.6s ease forwards; }
+    .rc-scene.playing .rc-card { animation: rcCardIn 0.6s 4.0s cubic-bezier(.22,1,.36,1) both; }
+    .rc-scene.playing .rc-card-tag   { animation: piFade 0.5s 4.4s ease both; }
+    .rc-scene.playing .rc-card-title { animation: rcRise 0.5s 4.6s ease both; }
+    .rc-scene.playing .rc-eff-label  { animation: piFade 0.5s ease both; }
+    .rc-scene.playing .rc-eff-val    { animation: piFade 0.5s ease both; }
+    .rc-scene.playing .rc-eff-bar-t  { animation: piFade 0.4s ease both; }
+    .rc-scene.playing .rc-eff-bar-f  { animation: rcBar 0.8s cubic-bezier(.4,0,.2,1) both; }
+    .rc-scene.playing .rc-btn { animation: piFade 0.5s 5.8s ease both; }
+    .rc-scene.playing .rc-accept-box { animation: rcAccept 1.8s 6.6s ease-in-out infinite; }
+    .rc-scene.playing .rc-cursor { animation: rcCursorIn 0.5s 6.2s ease forwards, rcCursorNudge 1.6s 7.0s ease-in-out infinite; }
+    @keyframes rcBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes rcOrbPulse { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.16); opacity: 0.5; } }
+    @keyframes rcSpin { to { transform: rotate(360deg); } }
+    @keyframes rcDraw { from { opacity: 1; stroke-dashoffset: 1; } to { opacity: 0.9; stroke-dashoffset: 0; } }
+    @keyframes rcTok { 0% { opacity: 0; offset-distance: 0%; } 15% { opacity: 1; } 100% { opacity: 0; offset-distance: 100%; } }
+    @keyframes rcCardIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
+    @keyframes rcRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @keyframes rcAccept { 0%, 100% { opacity: 1; } 50% { opacity: 0.72; } }
+    @keyframes rcCursorIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes rcCursorNudge { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, -3px); } }
+
+    /* ═══════════ Simulation — Before → After, marked as a projection ═══════════ */
+    .si-watermark { fill: rgba(143,184,255,0.10); font: 800 60px var(--font-display); letter-spacing: 0.06em; }
+    .si-projtag { fill: #bcd4ff; font: 700 10px var(--font-body); letter-spacing: 0.16em; opacity: 0; }
+    .si-state { fill: rgba(255,255,255,0.85); font: 700 13px var(--font-display); letter-spacing: 0.06em; }
+    .si-node { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); }
+    .si-node--bottle { stroke: #ffb24d; }
+    .si-edge { fill: none; stroke: #6f9bff; stroke-width: 2.4; stroke-linecap: round; opacity: 0; }
+    .si-edge--rework { stroke: #ffb24d; }
+    .si-tile { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.12); stroke-width: 1; opacity: 0; }
+    .si-tlabel { fill: rgba(255,255,255,0.6); font: 700 11px var(--font-body); letter-spacing: 0.12em; }
+    .si-num { fill: #ff8a6a; font: 700 25px var(--font-display); transition: fill 0.8s ease; }
+    .si-delta { fill: #5fe3a0; font: 700 12px var(--font-body); opacity: 0; }
+    .si-scene.playing .si-node { animation: anPop 0.45s cubic-bezier(.22,1,.36,1) both; }
+    .si-scene.playing .si-edge { animation: piFade 0.5s both; }
+    .si-scene.playing .si-tile { animation: piFade 0.6s both; }
+    .si-scene.playing .si-projtag { animation: piFade 0.6s 0.4s ease both; }
+    /* the "run": rework + bottleneck resolve, figures go green */
+    .si-scene.playing .si-edge--rework { animation: piFade 0.5s both, siFadeOut 0.8s 3.6s ease forwards; }
+    .si-scene.playing .si-node--bottle { animation: anPop 0.45s cubic-bezier(.22,1,.36,1) both, siCalm 0.9s 3.6s ease forwards; }
+    .si-scene.playing .si-num--live { animation: siGreen 0.8s 4.6s ease forwards; }
+    .si-scene.playing .si-delta { animation: piFade 0.6s 4.8s ease both; }
+    .si-scene.playing .si-after { animation: piFade 0.6s 3.5s ease both; }
+    .si-scene.playing .si-before-fade { animation: siFadeOut 0.6s 3.6s ease forwards; }
+    @keyframes siFadeOut { to { opacity: 0; } }
+    @keyframes siCalm { to { stroke: #8fb8ff; } }
+    @keyframes siGreen { to { fill: #5fe3a0; } }
+
+    /* ═══════════ Monitor — holding, watched, drift caught (calm) ═══════════ */
+    .mo-node { fill: #0a1c44; stroke: #7fc8b0; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); }
+    .mo-node--drift { transition: stroke 0.5s ease; }
+    .mo-edge { fill: none; stroke: #4f9c86; stroke-width: 2.2; stroke-linecap: round; opacity: 0; }
+    .mo-pulse { fill: #aef0d8; opacity: 0; filter: drop-shadow(0 0 5px rgba(120,230,190,0.9)); }
+    .mo-spark { fill: none; stroke: #6fe0b4; stroke-width: 1.8; stroke-linejoin: round; opacity: 0; }
+    .mo-spark-dot { fill: #d6fff0; opacity: 0; filter: drop-shadow(0 0 4px rgba(120,230,190,0.95)); }
+    .mo-live { opacity: 0; }
+    .mo-live-dot { fill: #5fe3a0; transform-box: fill-box; transform-origin: center; }
+    .mo-live-label { fill: rgba(255,255,255,0.7); font: 700 11px var(--font-body); letter-spacing: 0.16em; }
+    .mo-status { fill: rgba(255,255,255,0.62); font: 600 12px var(--font-body); letter-spacing: 0.04em; opacity: 0; }
+    .mo-flag { opacity: 0; transform-box: fill-box; transform-origin: center bottom; }
+    .mo-flag-ring { fill: none; stroke: #ffc24d; stroke-width: 2; transform-box: fill-box; transform-origin: center; }
+    .mo-flag-pole { stroke: #ffce85; stroke-width: 1.6; }
+    .mo-flag-flag { fill: #ffc24d; }
+    .mo-flag-label { fill: #ffd98a; font: 700 10px var(--font-body); letter-spacing: 0.08em; }
+    .mo-scene.playing .mo-node { animation: anPop 0.5s cubic-bezier(.22,1,.36,1) both; }
+    .mo-scene.playing .mo-edge { animation: piFade 0.6s both; }
+    .mo-scene.playing .mo-pulse { animation: piFade 0.8s 1.6s ease both; }
+    .mo-scene.playing .mo-spark { animation: piFade 0.8s 1.4s ease both; }
+    .mo-scene.playing .mo-spark-dot { animation: piFade 0.8s 1.6s ease both; }
+    .mo-scene.playing .mo-live { animation: piFade 0.7s 1.0s ease both; }
+    .mo-scene.playing .mo-live-dot { animation: moBlink 2.4s 1.2s ease-in-out infinite; }
+    .mo-scene.playing .mo-status { animation: piFade 0.6s 2.2s ease both; }
+    /* drift caught at ~5s — one node warms, a flag pops calmly */
+    .mo-scene.playing .mo-node--drift { animation: anPop 0.5s cubic-bezier(.22,1,.36,1) both, moDrift 0.6s 5.0s ease forwards; }
+    .mo-scene.playing .mo-flag { animation: moFlagIn 0.6s 5.1s cubic-bezier(.22,1,.36,1) forwards; }
+    .mo-scene.playing .mo-flag-ring { animation: moRing 2.2s 5.4s ease-in-out infinite; }
+    @keyframes moBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.82); } }
+    @keyframes moDrift { to { stroke: #ffc24d; } }
+    @keyframes moFlagIn { from { opacity: 0; transform: translateY(6px) scale(0.9); } to { opacity: 1; transform: none; } }
+    @keyframes moRing { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.25); opacity: 0.25; } }
+
+    /* reduced motion — settle every card on its final, readable frame */
+    @media (prefers-reduced-motion: reduce) {
+      .pi-narr.wipe { animation: none !important; }
+      .an-node, .an-tile, .an-edge, .an-worsttag { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .an-gauge-val { transition: none !important; stroke-dashoffset: calc(100 - var(--val,0)) !important; }
+      .an-glow { fill: rgba(255,140,70,0.16) !important; animation: none !important; }
+      .an-scan { opacity: 0 !important; animation: none !important; }
+      .rc-chip, .rc-priotag, .rc-orb, .rc-card, .rc-card-tag, .rc-card-title, .rc-eff-label, .rc-eff-val, .rc-eff-bar-t, .rc-btn, .rc-cursor { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .rc-bar-fill, .rc-eff-bar-f { transform: scaleX(1) !important; animation: none !important; }
+      .rc-beam { opacity: 0 !important; } .rc-tok { opacity: 0 !important; }
+      .si-node, .si-edge, .si-tile, .si-projtag, .si-delta, .si-after { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .si-edge--rework, .si-before-fade { opacity: 0 !important; }
+      .si-node--bottle { stroke: #8fb8ff !important; } .si-num--live { fill: #5fe3a0 !important; }
+      .mo-node, .mo-edge, .mo-pulse, .mo-spark, .mo-spark-dot, .mo-live, .mo-status, .mo-flag { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .mo-node--drift { stroke: #ffc24d !important; }
+    }
+
     /* ── Responsive ── */
     @media (max-width: 1000px) {
       #rail { flex-wrap: wrap; }
@@ -617,16 +803,16 @@
     { num:'02', name:'Task Mining',     tag:'Desktop', color:'#8fb8ff', anim:'tasks',
       sub:'See the work <em>between</em> the systems &mdash; where process mining goes blind.',
       desc:'Captures the work between systems at the desktop &mdash; the look-ups, emails and manual hand-offs that process mining alone cannot see.' },
-    { num:'03', name:'Analysis',        tag:'Insight', color:'#8fb8ff',
+    { num:'03', name:'Analysis',        tag:'Insight', color:'#8fb8ff', anim:'analysis',
       sub:'Put a number on the waste &mdash; and on the prize.',
       desc:'Quantifies the cost of inefficiency and the value of recoverable waste, turning observation into a business case.' },
-    { num:'04', name:'Recommendation',  tag:'AI',      color:'#8fb8ff',
+    { num:'04', name:'Recommendation',  tag:'AI',      color:'#8fb8ff', anim:'recommend',
       sub:'From problem to the specific fix &mdash; proposed by AI.',
       desc:'AI proposes the specific change to make &mdash; not just the problem, but the mechanism that fixes it.' },
-    { num:'05', name:'Simulation',      tag:'Proof',   color:'#8fb8ff',
+    { num:'05', name:'Simulation',      tag:'Proof',   color:'#8fb8ff', anim:'simulate',
       sub:'Prove the change works <em>before</em> you make it.',
       desc:'Validates the recommendation before you commit, modelling the impact across cost, time and risk.' },
-    { num:'06', name:'Monitor',         tag:'Live',    color:'#8fb8ff',
+    { num:'06', name:'Monitor',         tag:'Live',    color:'#8fb8ff', anim:'monitor',
       sub:'Keep it fixed &mdash; watch the process live and catch drift the moment it appears.',
       desc:'Watches the process in production, confirming the change held and catching drift the moment it appears.' },
   ];
@@ -932,10 +1118,14 @@
     el.className = 'pi-big'; el.style.setProperty('--c', l.color);
     // No header/text — the whole card is the animation slot.
     const stage = document.createElement('div'); stage.className = 'pi-big-stage';
-    if (l.anim === 'mining')      stage.innerHTML = PROCESS_MINING;
-    else if (l.anim === 'tasks')  stage.appendChild(buildTaskMining());
-    else if (l.anim === 'convo')  stage.appendChild(buildConvo());
-    else                         stage.innerHTML = placeholderSlot();
+    if (l.anim === 'mining')         stage.innerHTML = PROCESS_MINING;
+    else if (l.anim === 'tasks')     stage.appendChild(buildTaskMining());
+    else if (l.anim === 'analysis')  stage.appendChild(buildAnalysis());
+    else if (l.anim === 'recommend') stage.appendChild(buildRecommend());
+    else if (l.anim === 'simulate')  stage.appendChild(buildSimulate());
+    else if (l.anim === 'monitor')   stage.appendChild(buildMonitor());
+    else if (l.anim === 'convo')     stage.appendChild(buildConvo());
+    else                             stage.innerHTML = placeholderSlot();
     el.appendChild(stage);
     bottom.appendChild(el);
     bigs.push(el);
@@ -961,6 +1151,313 @@
   let swapTimer = null;
 
   const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ════════════ Shared helpers for cards 3–6 ════════════
+  // Each scene keeps its pending timers on scene._t; cardPlay resets + re-fires the
+  // CSS timeline, cardStop tears it down. cardType is the common narration typer,
+  // cardCount animates a number into an element. All three guard against a torn-down
+  // scene so a stale timeout can never write to a stopped card.
+  function cardPlay(scene) {
+    if (scene._t) scene._t.forEach(clearTimeout);
+    scene._t = [];
+    const nar = scene.querySelector('.pi-narr'); if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
+    scene.classList.remove('playing'); void scene.offsetWidth; scene.classList.add('playing');
+  }
+  function cardStop(scene) {
+    if (scene._t) { scene._t.forEach(clearTimeout); scene._t = null; }
+    const nar = scene.querySelector('.pi-narr'); if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
+    scene.classList.remove('playing');
+  }
+  function cardType(scene, host, segments, cps, delay) {
+    const run = () => {
+      host.innerHTML = '';
+      const spans = segments.map(s => { const e = document.createElement('span'); if (s.hl) e.className = 'pi-hl'; host.appendChild(e); return e; });
+      if (reduceMotion()) { spans.forEach((e, i) => e.textContent = segments[i].t); return; }
+      const caret = document.createElement('span'); caret.className = 'pi-caret'; host.appendChild(caret);
+      let si = 0, ci = 0;
+      const stepFn = () => {
+        if (si >= segments.length) { caret.remove(); return; }
+        const seg = segments[si];
+        if (ci < seg.t.length) spans[si].textContent += seg.t[ci++]; else { si++; ci = 0; }
+        if (scene._t) scene._t.push(setTimeout(stepFn, cps));
+      };
+      stepFn();
+    };
+    if (scene._t) scene._t.push(setTimeout(run, delay));
+  }
+  function cardCount(scene, el, to, dur, delay, fmt, from) {
+    if (!el) return;
+    from = from || 0;
+    const start = () => {
+      if (reduceMotion()) { el.textContent = fmt(to); return; }
+      const N = Math.max(12, Math.round(dur / 40)); let i = 0;
+      const tick = () => {
+        i++; const p = i / N, e = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(from + (to - from) * e);
+        if (i < N) { if (scene._t) scene._t.push(setTimeout(tick, dur / N)); } else el.textContent = fmt(to);
+      };
+      tick();
+    };
+    if (scene._t) scene._t.push(setTimeout(start, delay));
+  }
+  // Dispatch: each big card is recognised by its scene class.
+  function playScene(el) {
+    if (!el) return;
+    if (el.querySelector('.pm-scene')) playPM(el);
+    else if (el.querySelector('.tm-scene')) playTM(el);
+    else if (el.querySelector('.an-scene')) playAN(el);
+    else if (el.querySelector('.rc-scene')) playRC(el);
+    else if (el.querySelector('.si-scene')) playSI(el);
+    else if (el.querySelector('.mo-scene')) playMO(el);
+    else if (el.querySelector('.cv-scene')) playConvo(el);
+  }
+  function stopScene(el) {
+    if (!el) return;
+    if (el.querySelector('.cv-scene')) stopConvo(el);
+    else if (el.querySelector('.pm-scene')) stopPM(el);
+    else if (el.querySelector('.tm-scene')) stopTM(el);
+    else { const s = el.querySelector('.an-scene, .rc-scene, .si-scene, .mo-scene'); if (s) cardStop(s); }
+  }
+
+  // ════════════ Card 3 · Analysis ════════════
+  // A read-pass sweeps an abstract process, then three gauges (Cost / Resource /
+  // Time) fill and count up to concrete figures; the worst (Cost) flares warm.
+  function buildAnalysis() {
+    const NODES = [190, 310, 430, 550, 670, 790];
+    let strip = '';
+    for (let i = 0; i < NODES.length - 1; i++)
+      strip += `<line class="an-edge" x1="${NODES[i] + 14}" y1="110" x2="${NODES[i + 1] - 14}" y2="110" style="animation-delay:${(0.5 + i * 0.12).toFixed(2)}s"/>`;
+    NODES.forEach((x, i) => strip += `<circle class="an-node" cx="${x}" cy="110" r="14" style="animation-delay:${(0.3 + i * 0.12).toFixed(2)}s"/>`);
+    const scan = `<g class="an-scan"><line class="an-scan-line" x1="180" y1="84" x2="180" y2="136"/></g>`;
+    const metrics = [
+      { key: 'COST',     cx: 235, val: 78, worst: true,  cls: 'cost', sub: 'per year' },
+      { key: 'RESOURCE', cx: 500, val: 64, worst: false, cls: 'res',  sub: 'hours / year' },
+      { key: 'TIME',     cx: 765, val: 52, worst: false, cls: 'time', sub: 'days / case' },
+    ];
+    let tiles = '';
+    metrics.forEach((m, i) => {
+      const glow = m.worst ? `<rect class="an-glow" x="${m.cx - 116}" y="206" width="232" height="258" rx="14"/>` : '';
+      const worstTag = m.worst ? `<text class="an-worsttag" x="${m.cx}" y="446" text-anchor="middle">BIGGEST COST</text>` : '';
+      const valCls = 'an-gauge-val' + (m.worst ? ' an-gauge-val--worst' : '');
+      const numCls = 'an-num an-num--' + m.cls + (m.worst ? ' an-num--worst' : '');
+      tiles += `<g>${glow}
+        <rect class="an-tile" x="${m.cx - 112}" y="210" width="224" height="250" rx="12" style="animation-delay:${(2.6 + i * 0.2).toFixed(2)}s"/>
+        <text class="an-label" x="${m.cx}" y="250" text-anchor="middle">${m.key}</text>
+        <circle class="an-gauge-track" cx="${m.cx}" cy="352" r="50"/>
+        <circle class="${valCls}" cx="${m.cx}" cy="352" r="50" pathLength="100" style="--val:${m.val}; transition-delay:${(3.2 + i * 1.2).toFixed(2)}s"/>
+        <text class="${numCls}" x="${m.cx}" y="360" text-anchor="middle">0</text>
+        <text class="an-sub" x="${m.cx}" y="384" text-anchor="middle">${m.sub}</text>
+        ${worstTag}</g>`;
+    });
+    const scene = document.createElement('div');
+    scene.className = 'an-scene pi-cardscene';
+    scene.innerHTML = `<div class="pi-narr"></div>
+      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${strip}${scan}${tiles}</svg>`;
+    return scene;
+  }
+  function playAN(el) {
+    const scene = el.querySelector('.an-scene'); if (!scene) return;
+    cardPlay(scene);
+    const nar = scene.querySelector('.pi-narr');
+    const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
+    cardType(scene, nar, [{ t: 'Now ' }, { t: 'measure', hl: true }, { t: ' it.' }], 46, 350);
+    T(() => nar.classList.add('wipe'), 6300);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'That’s ' }, { t: '$2.4M a year', hl: true }, { t: ' — measured, not guessed.' }], 46, 0); }, 7000);
+    cardCount(scene, scene.querySelector('.an-num--cost'), 2.4,   1200, 3300, v => '$' + v.toFixed(1) + 'M');
+    cardCount(scene, scene.querySelector('.an-num--res'),  12400, 1300, 4500, v => Math.round(v).toLocaleString());
+    cardCount(scene, scene.querySelector('.an-num--time'), 9,     1100, 5700, v => String(Math.round(v)));
+  }
+
+  // ════════════ Card 4 · Recommendation ════════════
+  // Three weighted priorities (Cost highest); an AI element proposes a specific
+  // change and its projected effect, held in a review/accept state — your call.
+  function buildRecommend() {
+    const chips = [
+      { l: 'Cost',     cx: 285, w: 88, prio: true },
+      { l: 'Resource', cx: 500, w: 42 },
+      { l: 'Time',     cx: 715, w: 60 },
+    ];
+    let chipSVG = '';
+    chips.forEach((c, i) => {
+      const fillW = (148 * c.w / 100).toFixed(1);
+      const dly = (0.5 + i * 0.18).toFixed(2);
+      chipSVG += `<g>
+        <rect class="rc-chip${c.prio ? ' rc-chip--prio' : ''}" x="${c.cx - 92}" y="60" width="184" height="58" rx="10" style="animation-delay:${dly}s"/>
+        <text class="rc-chiplabel" x="${c.cx - 74}" y="84">${c.l}</text>
+        ${c.prio ? `<text class="rc-priotag" x="${c.cx + 74}" y="84" text-anchor="end">PRIORITY</text>` : ''}
+        <rect class="rc-bar-track" x="${c.cx - 74}" y="96" width="148" height="7" rx="3.5"/>
+        <rect class="rc-bar-fill${c.prio ? ' rc-bar-fill--prio' : ''}" x="${c.cx - 74}" y="96" width="${fillW}" height="7" rx="3.5" style="animation-delay:${(1.0 + i * 0.18).toFixed(2)}s"/>
+      </g>`;
+    });
+    const orb = `<g class="rc-orb">
+        <circle class="rc-orb-glow" cx="235" cy="324" r="34"/>
+        <circle class="rc-orb-ring" cx="235" cy="324" r="29"/>
+        <circle class="rc-orb-spin" cx="235" cy="324" r="21"/>
+        <circle class="rc-orb-core" cx="235" cy="324" r="15"/>
+        <text class="rc-orb-label" x="235" y="329" text-anchor="middle">AI</text>
+      </g>`;
+    const beam = `<path class="rc-beam" pathLength="1" d="M272,320 L414,300"/>`;
+    const effects = [
+      { l: 'Cost',     v: '−22%', w: 132, prio: true },
+      { l: 'Resource', v: '−15%', w: 90 },
+      { l: 'Time',     v: '−28%', w: 168 },
+    ];
+    let rows = '';
+    effects.forEach((e, i) => {
+      const y = 288 + i * 42, d = (4.8 + i * 0.3).toFixed(2);
+      rows += `<text class="rc-eff-label" x="440" y="${y + 4}" style="animation-delay:${d}s">${e.l}</text>
+        <rect class="rc-eff-bar-t" x="540" y="${y - 8}" width="180" height="9" rx="4.5" style="animation-delay:${d}s"/>
+        <rect class="rc-eff-bar-f" x="540" y="${y - 8}" width="${e.w}" height="9" rx="4.5" style="animation-delay:${d}s"/>
+        <text class="rc-eff-val${e.prio ? ' rc-eff-val--prio' : ''}" x="862" y="${y + 4}" text-anchor="end" style="animation-delay:${d}s">${e.v}</text>`;
+    });
+    const card = `<rect class="rc-card" x="415" y="158" width="470" height="306" rx="14"/>
+      <text class="rc-card-tag" x="440" y="190">PROPOSAL · AWAITING YOUR APPROVAL</text>
+      <text class="rc-card-title" x="440" y="222">Automate the manual step</text>
+      <line class="rc-eff-bar-t" x1="440" y1="240" x2="860" y2="240" style="stroke:rgba(255,255,255,0.12);stroke-width:1;animation-delay:4.4s"/>
+      ${rows}
+      <g class="rc-btn">
+        <rect class="rc-btn-box" x="470" y="414" width="104" height="34" rx="8"/>
+        <text class="rc-btn-label" x="522" y="436" text-anchor="middle">Review</text>
+        <rect class="rc-accept-box" x="606" y="414" width="124" height="34" rx="8"/>
+        <text class="rc-btn-label" x="668" y="436" text-anchor="middle">Accept</text>
+      </g>
+      <g class="rc-cursor"><path d="M690,430 l0,21 l5.5,-5 l4,8.5 l3.2,-1.5 l-4,-8.5 l7.3,0 z"/></g>`;
+    const scene = document.createElement('div');
+    scene.className = 'rc-scene pi-cardscene';
+    scene.innerHTML = `<div class="pi-narr"></div>
+      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${chipSVG}${orb}${beam}${card}</svg>`;
+    return scene;
+  }
+  function playRC(el) {
+    const scene = el.querySelector('.rc-scene'); if (!scene) return;
+    cardPlay(scene);
+    const nar = scene.querySelector('.pi-narr');
+    const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
+    cardType(scene, nar, [{ t: 'Set your ' }, { t: 'priority', hl: true }, { t: '.' }], 46, 350);
+    T(() => nar.classList.add('wipe'), 3000);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'AI proposes the ' }, { t: 'fix', hl: true }, { t: '.' }], 46, 0); }, 3600);
+    T(() => nar.classList.add('wipe'), 6000);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Your ' }, { t: 'decision', hl: true }, { t: ' to make.' }], 46, 0); }, 6600);
+  }
+
+  // ════════════ Card 5 · Simulation ════════════
+  // The current state carries its problem (rework loop + bottleneck, weak red
+  // figures); modelling the change streamlines it and the figures improve in real
+  // time, Before → After — marked throughout as a projection, not a done deal.
+  function buildSimulate() {
+    const N = [250, 400, 550, 700, 820];
+    let flow = '';
+    for (let i = 0; i < N.length - 1; i++)
+      flow += `<path class="si-edge" d="M${N[i] + 18},250 L${N[i + 1] - 18},250" style="animation-delay:${(0.6 + i * 0.12).toFixed(2)}s"/>`;
+    // rework back-edge (fades out on the run)
+    flow += `<path class="si-edge si-edge--rework" d="M694,232 C660,176 606,176 574,228" style="animation-delay:1.1s"/>`;
+    N.forEach((x, i) => {
+      const bottle = i === 2 ? ' si-node--bottle' : '';
+      flow += `<circle class="si-node${bottle}" cx="${x}" cy="250" r="17" style="animation-delay:${(0.4 + i * 0.12).toFixed(2)}s"/>`;
+    });
+    const figs = [
+      { l: 'COST',     cx: 285, before: 2.4,   after: 1.6,  delta: '−33%', fmt: 'm' },
+      { l: 'RESOURCE', cx: 500, before: 12400, after: 8200, delta: '−34%', fmt: 'n' },
+      { l: 'TIME',     cx: 715, before: 9,     after: 5,    delta: '−44%', fmt: 'd' },
+    ];
+    const fmtOf = k => k === 'm' ? (v => '$' + v.toFixed(1) + 'M') : k === 'n' ? (v => Math.round(v).toLocaleString()) : (v => String(Math.round(v)));
+    let tiles = '';
+    figs.forEach((f, i) => {
+      const init = fmtOf(f.fmt)(f.before);
+      tiles += `<g>
+        <rect class="si-tile" x="${f.cx - 110}" y="372" width="220" height="120" rx="12" style="animation-delay:${(1.4 + i * 0.15).toFixed(2)}s"/>
+        <text class="si-tlabel" x="${f.cx}" y="402" text-anchor="middle">${f.l}</text>
+        <text class="si-num si-num--live si-num--${i}" x="${f.cx}" y="446" text-anchor="middle">${init}</text>
+        <text class="si-delta" x="${f.cx}" y="476" text-anchor="middle">${f.delta}</text>
+      </g>`;
+    });
+    const head = `<text class="si-watermark" x="500" y="300" text-anchor="middle" opacity="0.9">PROJECTION</text>
+      <text class="si-projtag" x="500" y="64" text-anchor="middle">SIMULATION · PROJECTED OUTCOME</text>
+      <text class="si-state si-before-fade" x="500" y="150" text-anchor="middle">BEFORE</text>
+      <text class="si-state si-after" x="500" y="150" text-anchor="middle" style="opacity:0;fill:#5fe3a0">AFTER</text>`;
+    const scene = document.createElement('div');
+    scene.className = 'si-scene pi-cardscene';
+    scene.innerHTML = `<div class="pi-narr"></div>
+      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${head}${flow}${tiles}</svg>`;
+    return scene;
+  }
+  function playSI(el) {
+    const scene = el.querySelector('.si-scene'); if (!scene) return;
+    cardPlay(scene);
+    const nar = scene.querySelector('.pi-narr');
+    const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
+    cardType(scene, nar, [{ t: 'Before you commit…' }], 46, 350);
+    T(() => nar.classList.add('wipe'), 2800);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: '…model the ' }, { t: 'change', hl: true }, { t: '.' }], 46, 0); }, 3400);
+    T(() => nar.classList.add('wipe'), 5700);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Proven', hl: true }, { t: ' before you spend.' }], 46, 0); }, 6300);
+    // figures improve on the run (Before → After)
+    cardCount(scene, scene.querySelector('.si-num--0'), 1.6,  1300, 4600, v => '$' + v.toFixed(1) + 'M', 2.4);
+    cardCount(scene, scene.querySelector('.si-num--1'), 8200, 1300, 4600, v => Math.round(v).toLocaleString(), 12400);
+    cardCount(scene, scene.querySelector('.si-num--2'), 5,    1300, 4600, v => String(Math.round(v)), 9);
+  }
+
+  // ════════════ Card 6 · Monitor ════════════
+  // The fixed process runs live with a calm, steady pulse; a drift surfaces on one
+  // node and is caught and flagged the instant it appears. Calmer than the rest.
+  function buildMonitor() {
+    const N = [200, 350, 500, 650, 800], Y = 280;
+    const spine = N.map((x, i) => (i ? 'L' : 'M') + x + ',' + Y).join(' ');
+    let flow = '';
+    for (let i = 0; i < N.length - 1; i++)
+      flow += `<path class="mo-edge" d="M${N[i] + 16},${Y} L${N[i + 1] - 16},${Y}" style="animation-delay:${(0.6 + i * 0.12).toFixed(2)}s"/>`;
+    N.forEach((x, i) => {
+      const drift = i === 3 ? ' mo-node--drift' : '';
+      flow += `<circle class="mo-node${drift}" cx="${x}" cy="${Y}" r="15" style="animation-delay:${(0.3 + i * 0.12).toFixed(2)}s"/>`;
+    });
+    const pulses = `<g class="mo-pulse-wrap">
+        <circle class="mo-pulse" r="5"><animateMotion dur="5.5s" begin="0s" repeatCount="indefinite" path="${spine}"/></circle>
+        <circle class="mo-pulse" r="5"><animateMotion dur="5.5s" begin="2.6s" repeatCount="indefinite" path="${spine}"/></circle>
+      </g>`;
+    // calm steady sparkline across the top + a travelling dot
+    const sx = 200, sw = 600, base = 120, pts = [];
+    for (let i = 0; i <= 24; i++) {
+      const x = sx + sw * i / 24;
+      const y = base - Math.sin(i * 0.9) * 9 - (i % 6 === 0 ? 5 : 0);
+      pts.push(x.toFixed(0) + ',' + y.toFixed(0));
+    }
+    const spark = `<polyline class="mo-spark" points="${pts.join(' ')}"/>
+      <circle class="mo-spark-dot" r="3.5"><animateMotion dur="6s" repeatCount="indefinite" path="M${pts[0].replace(',', ',')} ${pts.map(p => 'L' + p).join(' ')}"/></circle>`;
+    const live = `<g class="mo-live">
+        <circle class="mo-live-dot" cx="792" cy="116" r="5"/>
+        <text class="mo-live-label" x="806" y="120">LIVE</text>
+      </g>
+      <text class="mo-status" x="200" y="170">Holding · within tolerance</text>`;
+    const flag = `<g class="mo-flag">
+        <circle class="mo-flag-ring" cx="650" cy="${Y}" r="27"/>
+        <line class="mo-flag-pole" x1="650" y1="248" x2="650" y2="214"/>
+        <path class="mo-flag-flag" d="M650,214 L672,220 L650,228 Z"/>
+        <text class="mo-flag-label" x="650" y="205" text-anchor="middle">CAUGHT</text>
+      </g>`;
+    const scene = document.createElement('div');
+    scene.className = 'mo-scene pi-cardscene';
+    scene.innerHTML = `<div class="pi-narr"></div>
+      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${spark}${flow}${pulses}${live}${flag}</svg>`;
+    return scene;
+  }
+  function playMO(el) {
+    const scene = el.querySelector('.mo-scene'); if (!scene) return;
+    cardPlay(scene);
+    const nar = scene.querySelector('.pi-narr');
+    const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
+    cardType(scene, nar, [{ t: 'The fix is ' }, { t: 'holding', hl: true }, { t: '.' }], 46, 350);
+    T(() => nar.classList.add('wipe'), 2800);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Watched around the clock.' }], 46, 0); }, 3400);
+    T(() => nar.classList.add('wipe'), 4900);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Drift — ' }, { t: 'caught', hl: true }, { t: ' the moment it shows.' }], 46, 0); }, 5200);
+  }
 
   // ── Task Mining: fire the CSS timeline, then type the three narration beats ──
   function typeTM(scene, host, segments, cps, startDelay) {
@@ -1227,18 +1724,14 @@
     if (swapTimer) { clearTimeout(swapTimer); swapTimer = null; }
     if (prev) {
       prev.classList.remove('active'); prev.classList.add('closing');
-      if (prev.querySelector('.cv-scene')) stopConvo(prev);   // halt question timers immediately
-      else if (prev.querySelector('.pm-scene')) stopPM(prev); // halt narration + reset the map
-      else if (prev.querySelector('.tm-scene')) stopTM(prev); // halt narration + reset the cluster
+      stopScene(prev);                                        // halt timers + reset the leaving card
     }
     const delay = prev ? 280 : 0;           // close the last card, then raise the new one
     swapTimer = setTimeout(() => {
       if (prev) prev.classList.remove('closing');
       if (next) {
         next.classList.add('active');
-        if (next.querySelector('.pm-scene')) playPM(next);
-        else if (next.querySelector('.tm-scene')) playTM(next);
-        else if (next.querySelector('.cv-scene')) playConvo(next);
+        playScene(next);
       }
     }, delay);
   }
@@ -1247,9 +1740,7 @@
   // button and the deck's replay button via the 'replay' message).
   function replayCurrent() {
     const el = currentBig; if (!el) return;
-    if (el.querySelector('.pm-scene')) playPM(el);
-    else if (el.querySelector('.tm-scene')) playTM(el);
-    else if (el.querySelector('.cv-scene')) playConvo(el);
+    playScene(el);
   }
 
   function render() {
