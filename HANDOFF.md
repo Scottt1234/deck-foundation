@@ -143,11 +143,15 @@ Narrated sequence (timings in `playConvo`, typing speed `CPS=67`):
 - **Not yet done (optional):** #5 small asker-avatar dots on bubbles + bubble width
   variation; #6 composition tightening (kill dead space). Reversible if tried.
 
-## Task Mining animation (step 2 / `anim:'blackbox'`)
-Exists but the user considers it **illustrative / needs work**: a sealed "black box" cover
-dissolves to reveal siloed system windows (Pega/Outlook/Excel/SharePoint/Guidewire/Portal)
-streaming into a unified hub. Good candidate to redo properly next, OR move to Analysis/
-Recommendation/Simulation/Monitor/Process Mining (currently placeholders).
+## Animation slot status (per layer)
+State only — this doc is agnostic about which slot is worked on next; any can be built with
+the swappable-slot pattern described under "architecture".
+- **Conversational Interface (step 7, `anim:'convo'`)** — built & polished (detailed above).
+- **Task Mining (step 2, `anim:'blackbox'`)** — present but illustrative / placeholder-quality
+  (a sealed "black box" cover dissolves to reveal siloed system windows streaming into a
+  unified hub).
+- **Process Mining, Analysis, Recommendation, Simulation, Monitor** — clean placeholders, no
+  animation yet.
 
 ## Working style the user likes
 - High visual quality (process-reality bar). Verify with screenshots before saying "done".
