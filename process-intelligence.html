@@ -580,36 +580,91 @@
     @keyframes piNarrWipe { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 0 100%); } }
     @keyframes piFade { from { opacity: 0; } to { opacity: 1; } }
 
-    /* ═══════════ Analysis — measure into Cost / Resource / Time, flare the worst ═══════════ */
-    .an-node { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); }
-    .an-edge { stroke: #5f7fce; stroke-width: 2; opacity: 0; }
-    .an-scan { opacity: 0; }
-    .an-scan-line { stroke: #bcd4ff; stroke-width: 2.5; filter: drop-shadow(0 0 6px rgba(143,184,255,0.9)); }
-    .an-tile { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.12); stroke-width: 1; opacity: 0; }
-    .an-label { fill: rgba(255,255,255,0.62); font: 700 12px var(--font-body); letter-spacing: 0.14em; }
-    .an-num   { fill: #eaf3ff; font: 700 30px var(--font-display); }
-    .an-sub   { fill: rgba(255,255,255,0.5); font: 600 11px var(--font-body); letter-spacing: 0.04em; }
-    .an-gauge-track { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 8; }
-    .an-gauge-val { fill: none; stroke: #6f9bff; stroke-width: 8; stroke-linecap: round;
-      stroke-dasharray: 100; stroke-dashoffset: 100; transform-box: fill-box; transform-origin: center; transform: rotate(-90deg);
-      transition: stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1), stroke 0.6s ease; }
-    .an-scene.playing .an-gauge-val { stroke-dashoffset: calc(100 - var(--val, 0)); }
-    .an-glow { fill: rgba(255,140,70,0); }
-    .an-worsttag { fill: #ffce93; font: 700 10px var(--font-body); letter-spacing: 0.12em; opacity: 0; }
-    .an-scene.playing .an-node { animation: anPop 0.45s cubic-bezier(.22,1,.36,1) both; }
-    .an-scene.playing .an-edge { animation: piFade 0.5s both; }
-    .an-scene.playing .an-tile { animation: piFade 0.6s both; }
-    .an-scene.playing .an-scan { animation: anScan 2.4s 1.4s cubic-bezier(.4,0,.2,1) forwards; }
-    .an-scene.playing .an-glow       { animation: anGlowIn 0.8s 7.0s ease forwards, anGlowPulse 2.4s 7.8s ease-in-out infinite; }
-    .an-scene.playing .an-num--worst { animation: anWarmNum 0.8s 7.0s ease forwards; }
-    .an-scene.playing .an-gauge-val--worst { animation: anWarmArc 0.8s 7.0s ease forwards; }
-    .an-scene.playing .an-worsttag   { animation: piFade 0.6s 7.2s ease both; }
-    @keyframes anPop { 0% { opacity: 0; transform: scale(0.3); } 60% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
-    @keyframes anScan { 0% { transform: translateX(0); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(600px); opacity: 0; } }
-    @keyframes anGlowIn { to { fill: rgba(255,140,70,0.16); } }
-    @keyframes anGlowPulse { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
-    @keyframes anWarmNum { to { fill: #ff9a6a; } }
-    @keyframes anWarmArc { to { stroke: #ff7a5c; } }
+    /* ═══════════ Analysis — scan the carried-over map, then quantify into pills ═══════════
+       Layout: process map (TM final state) is carried over UNCHANGED on the right; the
+       left third (where System+Engine+Extras lived in PM/TM) is now occupied by three
+       large pills — Cost / Time / Resource. Beat 1 sweeps a scan line across the map.
+       Beat 2 introduces the pills and scatters coloured metric dots across the map.
+       Beat 3 flares the lead cost dot dramatically and runs figures into the pills. */
+
+    /* ── carry-over map (TM final state, visible from frame 1, no animation) ── */
+    .an-map-edge { fill: none; stroke: #6f9bff; stroke-width: 2.6; stroke-linecap: round; opacity: 0.92;
+      filter: drop-shadow(0 0 3px rgba(111,155,255,0.45)); }
+    .an-map-edge--alt    { stroke: #7aa0ff; stroke-width: 2.2; }
+    .an-map-edge--rework { stroke: #7aa0ff; stroke-width: 2.2; }
+    .an-map-node { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 2.4;
+      filter: drop-shadow(0 0 6px rgba(143,184,255,0.40)); }
+    .an-map-core { fill: #bcd4ff; }
+
+    /* ── scan line + trail (Beat 1): sweeps L→R once. The trail is a horizontal gradient
+       behind the leading bright line; together they read as a radar pass. ── */
+    .an-scanwrap { transform: translateX(-280px); opacity: 0; }
+    .an-scanline { stroke: #e6f1ff; stroke-width: 2.5; filter: drop-shadow(0 0 9px rgba(180,220,255,0.95)); }
+    /* Linear sweep so the per-dot reveal delays (computed from x in buildAnalysis)
+       match the bright line's actual position over time. Starts after Beat 1 caption finishes. */
+    .an-scene.playing .an-scanwrap { animation: anScanSweep 2.6s 2.0s linear forwards; }
+    @keyframes anScanSweep {
+      0%   { transform: translateX(-280px); opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: translateX(1280px); opacity: 0; }
+    }
+
+    /* ── scattered metric dots (Beat 2). Per-dot delay set inline. ── */
+    .an-dot { opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.2); }
+    .an-scene.playing .an-dot { animation: anDotIn 0.55s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes anDotIn { 0% { opacity: 0; transform: scale(0.2); } 60% { opacity: 1; transform: scale(1.25); } 100% { opacity: 0.85; transform: scale(1); } }
+    .an-dot--cost     { fill: #ff9a6a; filter: drop-shadow(0 0 5px rgba(255,154,106,0.85)); }
+    .an-dot--time     { fill: #8fb8ff; filter: drop-shadow(0 0 5px rgba(143,184,255,0.85)); }
+    .an-dot--resource { fill: #5fe3a0; filter: drop-shadow(0 0 5px rgba(95,227,160,0.75)); }
+
+    /* ── lead cost dot flare (Beat 3, dramatic): big amber glow + expanding ring ── */
+    .an-flare-glow { fill: rgba(255,154,106,0.20); opacity: 0; transform-box: fill-box; transform-origin: center; }
+    .an-flare-ring { fill: none; stroke: #ff9a6a; stroke-width: 2.4; opacity: 0; transform-box: fill-box; transform-origin: center;
+      filter: drop-shadow(0 0 8px rgba(255,154,106,0.85)); }
+    .an-scene.playing .an-flare-glow { animation: anFlareGlowIn 0.9s 9.5s ease forwards, anFlareGlowPulse 2.6s 10.4s ease-in-out infinite; }
+    .an-scene.playing .an-flare-ring { animation: anFlareRingIn 0.7s 9.5s ease forwards, anFlareRingPulse 2.4s 10.2s ease-in-out infinite; }
+    @keyframes anFlareGlowIn    { to { opacity: 1; } }
+    @keyframes anFlareGlowPulse { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
+    @keyframes anFlareRingIn    { from { opacity: 0; transform: scale(0.5); } to { opacity: 0.95; transform: scale(1); } }
+    @keyframes anFlareRingPulse { 0%,100% { transform: scale(1); opacity: 0.95; } 50% { transform: scale(1.55); opacity: 0.18; } }
+
+    /* ── softer pulses on representative cost / time / resource dots (Beat 3) ──
+       Single combined animation so per-dot staggering is just one inline animation-delay. */
+    .an-pulse { fill: none; stroke-width: 1.7; opacity: 0; transform-box: fill-box; transform-origin: center; }
+    .an-pulse--cost     { stroke: #ff9a6a; filter: drop-shadow(0 0 6px rgba(255,154,106,0.65)); }
+    .an-pulse--time     { stroke: #8fb8ff; filter: drop-shadow(0 0 6px rgba(143,184,255,0.7)); }
+    .an-pulse--resource { stroke: #5fe3a0; filter: drop-shadow(0 0 6px rgba(95,227,160,0.65)); }
+    .an-scene.playing .an-pulse { animation: anPulseFull 3.0s ease-in-out infinite both; }
+    @keyframes anPulseFull {
+      0%   { opacity: 0;    transform: scale(0.55); }
+      10%  { opacity: 0.85; transform: scale(1);    }
+      50%  { opacity: 0.15; transform: scale(1.45); }
+      100% { opacity: 0.85; transform: scale(1);    }
+    }
+
+    /* ── pills (large, wide, on the LEFT) ── */
+    .an-pill { opacity: 0; }
+    .an-scene.playing .an-pill { animation: anPillIn 0.6s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes anPillIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .an-pill-bg            { fill: rgba(143,184,255,0.06); stroke: rgba(143,184,255,0.32); stroke-width: 1; }
+    .an-pill-bg--cost      { fill: rgba(255,154,106,0.05); stroke: rgba(255,154,106,0.42); }
+    .an-pill-dot--cost     { fill: #ff9a6a; filter: drop-shadow(0 0 6px rgba(255,154,106,0.9)); }
+    .an-pill-dot--time     { fill: #8fb8ff; filter: drop-shadow(0 0 6px rgba(143,184,255,0.9)); }
+    .an-pill-dot--resource { fill: #5fe3a0; filter: drop-shadow(0 0 6px rgba(95,227,160,0.85)); }
+    .an-pill-label         { fill: rgba(255,255,255,0.78); font: 700 13px var(--font-body); letter-spacing: 0.18em; }
+    .an-pill-fig           { fill: #ffffff; font: 700 40px var(--font-display); letter-spacing: -0.01em; }
+    .an-pill-fig--cost     { fill: #ff9a6a; }
+    .an-pill-sub           { fill: rgba(255,255,255,0.5); font: 600 10.5px var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; }
+    .an-pill-bar-t         { fill: rgba(255,255,255,0.10); }
+    .an-pill-bar-f         { transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
+    .an-pill-bar-f--cost     { fill: #ff9a6a; }
+    .an-pill-bar-f--time     { fill: #8fb8ff; }
+    .an-pill-bar-f--resource { fill: #5fe3a0; }
+    .an-scene.playing .an-pill-bar-f--cost     { animation: anBarFill 1.0s 10.0s cubic-bezier(.4,0,.2,1) forwards; }
+    .an-scene.playing .an-pill-bar-f--resource { animation: anBarFill 1.0s 12.0s cubic-bezier(.4,0,.2,1) forwards; }
+    .an-scene.playing .an-pill-bar-f--time     { animation: anBarFill 1.0s 12.2s cubic-bezier(.4,0,.2,1) forwards; }
+    @keyframes anBarFill { from { transform: scaleX(0); } to { transform: scaleX(var(--bar, 0.7)); } }
 
     /* ═══════════ Recommendation — set a priority, AI proposes, you decide ═══════════ */
     .rc-chip { fill: rgba(255,255,255,0.04); stroke: rgba(255,255,255,0.14); stroke-width: 1; opacity: 0; }
@@ -733,10 +788,12 @@
     /* reduced motion — settle every card on its final, readable frame */
     @media (prefers-reduced-motion: reduce) {
       .pi-narr.wipe { animation: none !important; }
-      .an-node, .an-tile, .an-edge, .an-worsttag { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .an-gauge-val { transition: none !important; stroke-dashoffset: calc(100 - var(--val,0)) !important; }
-      .an-glow { fill: rgba(255,140,70,0.16) !important; animation: none !important; }
-      .an-scan { opacity: 0 !important; animation: none !important; }
+      .an-scanwrap { opacity: 0 !important; animation: none !important; }
+      .an-dot, .an-pill { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .an-flare-glow { opacity: 1 !important; animation: none !important; }
+      .an-flare-ring { opacity: 0.95 !important; animation: none !important; transform: none !important; }
+      .an-pulse { opacity: 0.85 !important; transform: none !important; animation: none !important; }
+      .an-pill-bar-f { transform: scaleX(var(--bar, 0.7)) !important; animation: none !important; }
       .rc-chip, .rc-priotag, .rc-orb, .rc-card, .rc-card-tag, .rc-card-title, .rc-eff-label, .rc-eff-val, .rc-eff-bar-t, .rc-btn, .rc-cursor { opacity: 1 !important; transform: none !important; animation: none !important; }
       .rc-bar-fill, .rc-eff-bar-f { transform: scaleX(1) !important; animation: none !important; }
       .rc-beam { opacity: 0 !important; } .rc-tok { opacity: 0 !important; }
@@ -1358,53 +1415,183 @@
   }
 
   // ════════════ Card 3 · Analysis ════════════
-  // A read-pass sweeps an abstract process, then three gauges (Cost / Resource /
-  // Time) fill and count up to concrete figures; the worst (Cost) flares warm.
+  // The Task Mining process map is carried over UNCHANGED on the right-hand side; the
+  // left third (where the System and Engine lived in PM/TM) becomes a column of three
+  // large pills. Three beats:
+  //   Beat 1 (0.35–5.1s)    Caption types ("Your full process is analysed."), then a
+  //                         scan line sweeps L→R across the map with a soft cyan trail.
+  //                         2-second narration breath after.
+  //   Beat 2 (5.1–9.5s)     Caption replaces with "Quantified across cost, time and
+  //                         resource."; pills fade in on the left; coloured metric dots
+  //                         scatter across the map. 2-second breath after.
+  //   Beat 3 (9.5s+)        Caption replaces with the closer; the LEAD cost dot at the
+  //                         bottleneck flares dramatically while $1.2M counts up; the
+  //                         remaining dots pulse softer; resource (12,400 hrs/yr) and
+  //                         time (9 days/case) figures count up into their pills.
   function buildAnalysis() {
-    const NODES = [190, 310, 430, 550, 670, 790];
-    let strip = '';
-    for (let i = 0; i < NODES.length - 1; i++)
-      strip += `<line class="an-edge" x1="${NODES[i] + 14}" y1="110" x2="${NODES[i + 1] - 14}" y2="110" style="animation-delay:${(0.5 + i * 0.12).toFixed(2)}s"/>`;
-    NODES.forEach((x, i) => strip += `<circle class="an-node" cx="${x}" cy="110" r="14" style="animation-delay:${(0.3 + i * 0.12).toFixed(2)}s"/>`);
-    const scan = `<g class="an-scan"><line class="an-scan-line" x1="180" y1="84" x2="180" y2="136"/></g>`;
-    const metrics = [
-      { key: 'COST',     cx: 235, val: 78, worst: true,  cls: 'cost', sub: 'per year' },
-      { key: 'RESOURCE', cx: 500, val: 64, worst: false, cls: 'res',  sub: 'hours / year' },
-      { key: 'TIME',     cx: 765, val: 52, worst: false, cls: 'time', sub: 'days / case' },
+    // ── carry-over map from Task Mining (final state). All visible from frame 1. ──
+    const carryMap = `
+      <!-- forward + alt + rework1 edges (TM static) -->
+      <path class="an-map-edge" d="M506,300 L564,300"/>
+      <path class="an-map-edge" d="M616,300 L674,300"/>
+      <path class="an-map-edge an-map-edge--alt" d="M608,318 C640,400 670,440 700,440"/>
+      <path class="an-map-edge" d="M726,300 L784,300"/>
+      <path class="an-map-edge an-map-edge--alt" d="M700,440 C730,440 760,400 792,318"/>
+      <path class="an-map-edge" d="M836,300 L894,300"/>
+      <path class="an-map-edge an-map-edge--rework" d="M804,276 C796,210 716,210 708,276"/>
+      <!-- TM Beat 3 NEW variants + upper alt node -->
+      <path class="an-map-edge an-map-edge--alt" d="M484,278 C540,200 660,200 696,278"/>
+      <path class="an-map-edge an-map-edge--alt" d="M498,282 C530,260 555,180 574,154"/>
+      <path class="an-map-edge an-map-edge--alt" d="M590,278 C586,240 586,200 590,162"/>
+      <circle class="an-map-node" cx="590" cy="140" r="22"/>
+      <circle class="an-map-core" cx="590" cy="140" r="6"/>
+      <path class="an-map-edge an-map-edge--alt" d="M610,148 C720,140 760,210 794,290"/>
+      <path class="an-map-edge an-map-edge--alt" d="M715,452 C800,475 880,420 906,322"/>
+      <path class="an-map-edge an-map-edge--alt" d="M826,278 C840,238 900,238 914,278"/>
+      <!-- main spine nodes + cores -->
+      <circle class="an-map-node" cx="480" cy="300" r="26"/>
+      <circle class="an-map-node" cx="590" cy="300" r="26"/>
+      <circle class="an-map-node" cx="700" cy="300" r="26"/>
+      <circle class="an-map-node" cx="700" cy="440" r="22"/>
+      <circle class="an-map-node" cx="810" cy="300" r="26"/>
+      <circle class="an-map-node" cx="920" cy="300" r="26"/>
+      <circle class="an-map-core" cx="480" cy="300" r="7"/>
+      <circle class="an-map-core" cx="590" cy="300" r="7"/>
+      <circle class="an-map-core" cx="700" cy="300" r="7"/>
+      <circle class="an-map-core" cx="700" cy="440" r="6"/>
+      <circle class="an-map-core" cx="810" cy="300" r="7"/>
+      <circle class="an-map-core" cx="920" cy="300" r="7"/>`;
+
+    // ── scan line (Beat 1): vertical bright line + horizontal cyan trail behind it ──
+    const scanDefs = `<defs>
+      <linearGradient id="anScanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="rgba(143,184,255,0)"/>
+        <stop offset="55%"  stop-color="rgba(143,184,255,0.18)"/>
+        <stop offset="92%"  stop-color="rgba(180,220,255,0.55)"/>
+        <stop offset="100%" stop-color="rgba(230,241,255,0.95)"/>
+      </linearGradient>
+    </defs>`;
+    const scan = `<g class="an-scanwrap">
+      <rect x="0" y="0" width="220" height="540" fill="url(#anScanGrad)"/>
+      <line class="an-scanline" x1="220" y1="0" x2="220" y2="540"/>
+    </g>`;
+
+    // ── scattered metric dots, revealed AS the scan line passes over them (Beat 1).
+    //   Lead cost dot sits on the bottleneck (700,300) and is what flares dramatically
+    //   in Beat 3. The scan is linear, sweeping the wrap from translateX(-280) to
+    //   translateX(1280) over 2.6s starting at t=2.0s. The bright leading line sits at
+    //   the right edge of the wrap (x=220 within wrap-local coords), so the line's
+    //   viewBox x at elapsed scan-time t (0..2.6) is: -280 + t*(1560/2.6) + 220.
+    //   Solving for the elapsed t at which the line reaches dot.x:
+    //     t = (dot.x + 60) / 600   and   delay = 2.0 + t. ──
+    const DOTS = [
+      // cost (4) — concentrated on the problem zones
+      { c: 'cost',     x: 700, y: 300, lead: true },                                       // lead — bottleneck
+      { c: 'cost',     x: 756, y: 232 },                                                   // rework loop
+      { c: 'cost',     x: 700, y: 440 },                                                   // lower alt path
+      { c: 'cost',     x: 590, y: 140 },                                                   // upper alt path
+      // time (4) — along the spine where time accumulates
+      { c: 'time',     x: 545, y: 300 },
+      { c: 'time',     x: 655, y: 300 },
+      { c: 'time',     x: 765, y: 300 },
+      { c: 'time',     x: 875, y: 300 },
+      // resource (4) — scattered around the variants
+      { c: 'resource', x: 480, y: 268 },
+      { c: 'resource', x: 920, y: 268 },
+      { c: 'resource', x: 656, y: 380 },
+      { c: 'resource', x: 820, y: 268 },
     ];
-    let tiles = '';
-    metrics.forEach((m, i) => {
-      const glow = m.worst ? `<rect class="an-glow" x="${m.cx - 116}" y="206" width="232" height="258" rx="14"/>` : '';
-      const worstTag = m.worst ? `<text class="an-worsttag" x="${m.cx}" y="446" text-anchor="middle">BIGGEST COST</text>` : '';
-      const valCls = 'an-gauge-val' + (m.worst ? ' an-gauge-val--worst' : '');
-      const numCls = 'an-num an-num--' + m.cls + (m.worst ? ' an-num--worst' : '');
-      tiles += `<g>${glow}
-        <rect class="an-tile" x="${m.cx - 112}" y="210" width="224" height="250" rx="12" style="animation-delay:${(2.6 + i * 0.2).toFixed(2)}s"/>
-        <text class="an-label" x="${m.cx}" y="250" text-anchor="middle">${m.key}</text>
-        <circle class="an-gauge-track" cx="${m.cx}" cy="352" r="50"/>
-        <circle class="${valCls}" cx="${m.cx}" cy="352" r="50" pathLength="100" style="--val:${m.val}; transition-delay:${(3.2 + i * 1.2).toFixed(2)}s"/>
-        <text class="${numCls}" x="${m.cx}" y="360" text-anchor="middle">0</text>
-        <text class="an-sub" x="${m.cx}" y="384" text-anchor="middle">${m.sub}</text>
-        ${worstTag}</g>`;
-    });
+    const dots = DOTS.map(d => {
+      const delay = (2.0 + (d.x + 60) / 600).toFixed(2);
+      const r = d.lead ? 6 : 4.5;
+      return `<circle class="an-dot an-dot--${d.c}${d.lead ? ' an-dot--lead' : ''}" cx="${d.x}" cy="${d.y}" r="${r}" style="animation-delay:${delay}s"/>`;
+    }).join('');
+
+    // ── lead cost dot flare (Beat 3): big amber glow + expanding ring on (700,300) ──
+    const flare = `<circle class="an-flare-glow" cx="700" cy="300" r="44"/>
+                   <circle class="an-flare-ring" cx="700" cy="300" r="34"/>`;
+
+    // ── soft pulses on a curated subset of remaining dots (Beat 3). Six pulses,
+    //   staggered ~0.12s apart so they read as a wave settling in after the cost flare. ──
+    const PULSES = [
+      { c: 'cost',     x: 756, y: 232, r: 14 },   // rework loop (non-lead cost)
+      { c: 'cost',     x: 700, y: 440, r: 14 },   // lower alt path
+      { c: 'time',     x: 545, y: 300, r: 14 },
+      { c: 'time',     x: 875, y: 300, r: 14 },
+      { c: 'resource', x: 480, y: 268, r: 14 },
+      { c: 'resource', x: 820, y: 268, r: 14 },
+    ];
+    const pulses = PULSES.map((p, i) => {
+      const delay = (11.5 + i * 0.12).toFixed(2);
+      return `<circle class="an-pulse an-pulse--${p.c}" cx="${p.x}" cy="${p.y}" r="${p.r}" style="animation-delay:${delay}s"/>`;
+    }).join('');
+
+    // ── pills (left column). Each pill: rounded background, dot legend + label,
+    //   big figure (left) + sub (right), magnitude bar at the bottom. The figure
+    //   text starts at "0"/"$0" and is animated by cardCount in Beat 3. ──
+    const PILL_X = 30, PILL_W = 380, PILL_H = 110;
+    const PILLS = [
+      { c: 'cost',     y: 82,  label: 'COST',     init: '$0', sub: 'PER YEAR',     bar: 0.92, dly: 5.10 },
+      { c: 'time',     y: 212, label: 'TIME',     init: '0',  sub: 'DAYS / CASE',  bar: 0.55, dly: 5.25 },
+      { c: 'resource', y: 342, label: 'RESOURCE', init: '0',  sub: 'HOURS / YEAR', bar: 0.70, dly: 5.40 },
+    ];
+    const pills = PILLS.map(p => {
+      const dotCx = PILL_X + 22, dotCy = p.y + 28;
+      const labelX = PILL_X + 38, labelY = p.y + 33;
+      const figX = PILL_X + 24, figY = p.y + 78;
+      const subX = PILL_X + PILL_W - 22, subY = p.y + 78;
+      const barX = PILL_X + 22, barY = p.y + 92, barW = PILL_W - 44;
+      const figCls = 'an-pill-fig' + (p.c === 'cost' ? ' an-pill-fig--cost' : '');
+      const bgCls  = 'an-pill-bg'  + (p.c === 'cost' ? ' an-pill-bg--cost'  : '');
+      return `<g class="an-pill" style="animation-delay:${p.dly}s">
+        <rect class="${bgCls}" x="${PILL_X}" y="${p.y}" width="${PILL_W}" height="${PILL_H}" rx="14"/>
+        <circle class="an-pill-dot--${p.c}" cx="${dotCx}" cy="${dotCy}" r="6"/>
+        <text class="an-pill-label" x="${labelX}" y="${labelY}">${p.label}</text>
+        <text class="${figCls} an-fig--${p.c}" x="${figX}" y="${figY}">${p.init}</text>
+        <text class="an-pill-sub" x="${subX}" y="${subY}" text-anchor="end">${p.sub}</text>
+        <rect class="an-pill-bar-t" x="${barX}" y="${barY}" width="${barW}" height="6" rx="3"/>
+        <rect class="an-pill-bar-f an-pill-bar-f--${p.c}" x="${barX}" y="${barY}" width="${barW}" height="6" rx="3" style="--bar:${p.bar}"/>
+      </g>`;
+    }).join('');
+
     const scene = document.createElement('div');
     scene.className = 'an-scene pi-cardscene';
     scene.innerHTML = `<div class="pi-narr"></div>
-      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${strip}${scan}${tiles}</svg>`;
+      <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        ${scanDefs}
+        ${carryMap}
+        ${scan}
+        ${dots}
+        ${flare}
+        ${pulses}
+        ${pills}
+      </svg>`;
     return scene;
   }
   function playAN(el) {
     const scene = el.querySelector('.an-scene'); if (!scene) return;
     cardPlay(scene);
     const nar = scene.querySelector('.pi-narr');
-    const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
-    cardType(scene, nar, [{ t: 'Now ' }, { t: 'measure', hl: true }, { t: ' it.' }], 46, 350);
-    T(() => nar.classList.add('wipe'), 6300);
-    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'That’s ' }, { t: '$2.4M a year', hl: true }, { t: ' — measured, not guessed.' }], 46, 0); }, 7000);
-    cardCount(scene, scene.querySelector('.an-num--cost'), 2.4,   1200, 3300, v => '$' + v.toFixed(1) + 'M');
-    cardCount(scene, scene.querySelector('.an-num--res'),  12400, 1300, 4500, v => Math.round(v).toLocaleString());
-    cardCount(scene, scene.querySelector('.an-num--time'), 9,     1100, 5700, v => String(Math.round(v)));
+    // Beat 1 — caption types first (0.35–1.73s); scan starts at 2.0s and lasts 2.6s,
+    //   revealing each dot AS the line passes its x-position; 2s breath afterwards.
+    cardType(scene, nar, [{ t: 'Your full process is ' }, { t: 'analysed', hl: true }, { t: '.' }], 46, 350);
+    // Beat 2 — wipes immediately as the scan finishes (4.6s); pills land while
+    //   "Quantified across cost, time and resource." types.
+    if (scene._t) scene._t.push(setTimeout(() => nar.classList.add('wipe'), 4600));
+    if (scene._t) scene._t.push(setTimeout(() => {
+      nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Quantified across ' }, { t: 'cost, time and resource', hl: true }, { t: '.' }], 46, 0);
+    }, 4950));
+    if (scene._t) scene._t.push(setTimeout(() => nar.classList.add('wipe'), 8880));
+    // Beat 3 — "Showing exactly where your time, money and effort are going." +
+    //   cost figure counts (1.2s), then resource and time figures count after the wave.
+    if (scene._t) scene._t.push(setTimeout(() => {
+      nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Showing exactly where your ' }, { t: 'time, money and effort', hl: true }, { t: ' are going.' }], 46, 0);
+    }, 9230));
+    cardCount(scene, scene.querySelector('.an-fig--cost'),     1.2,   1200, 9700,  v => '$' + v.toFixed(1) + 'M');
+    cardCount(scene, scene.querySelector('.an-fig--resource'), 12400, 1100, 11700, v => Math.round(v).toLocaleString());
+    cardCount(scene, scene.querySelector('.an-fig--time'),     9,     1000, 11900, v => String(Math.round(v)));
   }
 
   // ════════════ Card 4 · Recommendation ════════════
