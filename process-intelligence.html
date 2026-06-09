@@ -257,99 +257,71 @@
     #nav button:disabled { opacity: 0.3; cursor: default; }
 
     /* ═══════════ Task Mining animation — the work between the systems ═══════════
-       Self-contained: opens on a single source system (echoing Process Mining),
-       then generic app windows fade in around it. Faint "between-tool" activity
-       (a dashed rim with ghost tokens) surfaces the desktop work the single-system
-       view misses; a central intelligence element then ignites and captures it —
-       every source spoked inward with bright inflow. All in one SVG so windows,
-       rim, spokes and hub share a coordinate space. Scoped under .tm-scene; the
-       structural timeline is a CSS cascade fired by toggling .playing. */
+       Reuses the Process Mining visual language (same System + Engine + map style)
+       but overrides timings so the System and Engine are present from t=0 (carried
+       over from the PM card visually). Three beats:
+         Beat 1 (0–5.1s)    System + Engine appear; dots stream from System into
+                            Engine. Caption: "Process Mining only sees what is
+                            logged within your systems." Wait 2s.
+         Beat 2 (5.1–11.0s) Caption: "But the real work happens between them..."
+                            then small extras (Browser/Email/Sheet/Doc) fade in
+                            around the System. Wait 2s.
+         Beat 3 (11.0s+)    Dots also stream from extras into Engine; the process
+                            map then builds with one extra rework loop (N5→N2)
+                            to demonstrate greater complexity. */
     .tm-scene { position: absolute; inset: 0; overflow: hidden; }
     .tm-scene::before { content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: radial-gradient(48% 58% at 50% 52%, rgba(20,86,220,0.22), transparent 70%); }
-    .tm-svg { position: relative; width: 100%; height: 100%; display: block; }
+      background: radial-gradient(54% 62% at 57% 52%, rgba(20,86,220,0.20), transparent 70%); }
 
-    /* typed narration — same treatment as the other cards */
-    .tm-narrate { position: absolute; top: 20px; left: 28px; right: 28px; z-index: 4;
-      font-family: var(--font-display); font-weight: 700; font-size: clamp(15px, 2.1vw, 20px);
-      letter-spacing: -0.01em; line-height: 1.25; color: #fff; white-space: nowrap; pointer-events: none; }
-    .tm-narrate.wipe { animation: tmWipe 0.6s ease forwards; }
-    .tm-hl { color: var(--sf-blue-l); }
-    .tm-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
-      margin-left: 2px; vertical-align: -2px; animation: tmBlink 1s step-end infinite; }
-    @keyframes tmBlink { 50% { opacity: 0; } }
-    @keyframes tmWipe { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 0 100%); } }
+    /* TM-specific timings — reuses pm-* classes from the Process Mining card.
+       System + Engine appear quickly at t=0 (carried over visually from PM). */
+    .tm-scene.playing .pm-sys-box   { animation: pmSysIn 0.6s 0.0s cubic-bezier(.22,1,.36,1) both; }
+    .tm-scene.playing .pm-sys-cyl,
+    .tm-scene.playing .pm-sys-cyl-top { animation: pmFade 0.5s 0.3s ease both; }
+    .tm-scene.playing .pm-sys-label { animation: pmFade 0.5s 0.5s ease both; }
+    .tm-scene.playing .pm-rec       { animation: pmRow 0.45s ease both; }
+    .tm-scene.playing .pm-rt        { animation: pmStream 1.4s ease-out infinite; }
+    .tm-scene.playing .pm-eng       { animation: pmFade 0.6s 0.3s ease both; }
+    .tm-scene.playing .pm-eng-halo  { animation: pmEngHalo 0.7s 0.7s ease forwards; }
+    .tm-scene.playing .pm-eng-core  { animation: pmEngPulse 1.6s 0.7s ease-in-out infinite; }
+    .tm-scene.playing .pm-eng-ring  { animation: pmEngRotate 14s 0.7s linear infinite; }
+    .tm-scene.playing .pm-edge      { animation: pmDraw 0.45s ease both; }
+    .tm-scene.playing .pm-node      { animation: pmNode 0.55s cubic-bezier(.22,1,.36,1) both; }
+    .tm-scene.playing .pm-core      { animation: pmFade 0.45s ease both; }
+    .tm-scene.playing .pm-label     { animation: pmFade 0.55s ease both; }
 
-    /* ── windows: generic apps + the single (emphasised) system ── */
-    .tm-win { opacity: 0; transform-box: fill-box; transform-origin: center; transform: translateY(8px) scale(0.94); }
-    .tm-win-box   { fill: rgba(255,255,255,0.05); stroke: rgba(255,255,255,0.18); stroke-width: 1.2; }
-    .tm-sys-box   { fill: rgba(143,184,255,0.07); stroke: rgba(143,184,255,0.38); stroke-width: 1.5; }
-    .tm-win-rule  { stroke: rgba(255,255,255,0.12); stroke-width: 1; }
-    .tm-win-glyph { fill: none; stroke: #9db8ff; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-    .tm-win-dot   { fill: rgba(255,255,255,0.28); }
-    .tm-win-line  { fill: rgba(255,255,255,0.14); }
-    .tm-row       { fill: rgba(143,184,255,0.6); transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
-    .tm-tag       { fill: rgba(143,184,255,0.85); font: 700 9.5px var(--font-body); letter-spacing: 0.16em; opacity: 0; }
-    .tm-hubtag    { fill: #dbe8ff; font: 700 11px var(--font-body); letter-spacing: 0.20em; opacity: 0; }
+    /* The carry-over process map (System + Engine + spine + alt path + rework1)
+       is visible from frame 1 — no animation. Elements that should appear
+       statically are tagged with .tm-static; that class overrides the default
+       animated state to make them visible immediately.
+       The new Beat-3 variants (3 forward arcs + 1 upper node + 2 connecting
+       edges) DON'T have .tm-static — they animate in at ~15.56s using the
+       same .tm-scene.playing animations defined above. */
+    .tm-scene .pm-edge.tm-static { opacity: 0.92; stroke-dashoffset: 0; animation: none; }
+    .tm-scene .pm-node.tm-static { opacity: 1; transform: none; animation: none; }
+    .tm-scene .pm-core.tm-static { opacity: 1; animation: none; }
 
-    /* ── between-tool rim (the hidden activity) ── */
-    .tm-rim   { fill: none; stroke: #6f86c0; stroke-width: 1.5; stroke-dasharray: 4 5; opacity: 0; }
-    .tm-ghost { fill: #aebfe6; }
-    .tm-ghosts { opacity: 0; }
-
-    /* ── capture: spokes inward + bright inflow ── */
-    .tm-spoke { fill: none; stroke: #7aa0ff; stroke-width: 2.2; stroke-linecap: round;
-      stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0;
-      filter: drop-shadow(0 0 3px rgba(122,160,255,0.5)); }
-    .tm-flow  { fill: #e6f1ff; filter: drop-shadow(0 0 5px rgba(143,184,255,0.95)); }
-    .tm-flows { opacity: 0; }
-
-    /* ── central intelligence element ── */
-    .tm-hub { opacity: 0; }
-    .tm-hub-glow { fill: rgba(143,184,255,0.20); transform-box: fill-box; transform-origin: center; }
-    .tm-hub-ring { fill: none; stroke: #8fb8ff; stroke-width: 1.6; }
-    .tm-hub-spin { fill: none; stroke: #bcd4ff; stroke-width: 1.6; stroke-dasharray: 6 9; opacity: 0.8;
-      transform-box: fill-box; transform-origin: center; }
-    .tm-hub-coreglow { fill: none; stroke: #e6f1ff; stroke-width: 1.4; opacity: 0.85; }
-    .tm-hub-core { fill: #eaf3ff; }
-    .tm-sweep { fill: none; stroke: #bcd4ff; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
-
-    /* ── timeline (fires on .playing; per-element delays live inline) ── */
-    .tm-scene.playing .tm-win   { animation: tmWinIn 0.55s cubic-bezier(.22,1,.36,1) both; }
-    .tm-scene.playing .tm-row   { animation: tmRow 0.4s ease both; }
-    .tm-scene.playing .tm-tag, .tm-scene.playing .tm-syslabel { animation: tmFade 0.6s 1.4s ease both; }
-    .tm-scene.playing .tm-rim   { animation: tmFaint 0.8s 3.2s ease both, tmRimDim 1.0s 8.2s ease forwards; }
-    .tm-scene.playing .tm-ghosts { animation: tmGhostIn 0.8s 3.6s ease both, tmGhostDim 1.0s 8.2s ease forwards; }
-    .tm-scene.playing .tm-hub    { animation: tmFade 0.7s 5.8s ease both; }
-    .tm-scene.playing .tm-hub-glow { animation: tmHubPulse 2.6s 6.4s ease-in-out infinite; }
-    .tm-scene.playing .tm-hub-spin { animation: tmSpin 9s 5.8s linear infinite; }
-    .tm-scene.playing .tm-sweep  { animation: tmSweep 1.1s 6.0s ease-out forwards; }
-    .tm-scene.playing .tm-spoke  { animation: tmDraw 0.7s ease both; }
-    .tm-scene.playing .tm-flows  { animation: tmFade 0.8s 7.4s ease both; }
-    .tm-scene.playing .tm-hubtag { animation: tmFade 0.7s 8.7s ease both; }
-
-    @keyframes tmWinIn { from { opacity: 0; transform: translateY(8px) scale(0.94); } to { opacity: 1; transform: none; } }
-    @keyframes tmRow   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-    @keyframes tmFade  { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes tmFaint { from { opacity: 0; } to { opacity: 0.34; } }
-    @keyframes tmRimDim { to { opacity: 0.12; } }
-    @keyframes tmGhostIn { from { opacity: 0; } to { opacity: 0.72; } }
-    @keyframes tmGhostDim { to { opacity: 0.18; } }
-    @keyframes tmDraw  { 0% { opacity: 1; stroke-dashoffset: 1; } 100% { opacity: 0.9; stroke-dashoffset: 0; } }
-    @keyframes tmHubPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.18); opacity: 0.5; } }
-    @keyframes tmSpin { to { transform: rotate(360deg); } }
-    @keyframes tmSweep { 0% { opacity: 0; transform: scale(0.2); } 14% { opacity: 0.7; } 100% { opacity: 0; transform: scale(4.2); } }
+    /* ── TM extras (Beat 2): small panels around the System representing the
+       non-logged tools — Browser, Email, Spreadsheet, Document. Reuse the same
+       glass + cyan-stroke palette as the System/Engine so they read as members
+       of the same family. ── */
+    .tm-extra { opacity: 0; }
+    .tm-extra-box { fill: rgba(143,184,255,0.10); stroke: rgba(143,184,255,0.55); stroke-width: 1.2; }
+    .tm-extra-glyph { fill: none; stroke: #8fb8ff; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+    .tm-scene.playing .tm-extra { animation: pmFade 0.55s ease forwards; }
 
     @media (prefers-reduced-motion: reduce) {
-      .tm-scene .tm-win, .tm-scene .tm-tag, .tm-scene .tm-syslabel, .tm-scene .tm-hubtag,
-      .tm-scene .tm-hub, .tm-scene .tm-flows { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .tm-scene .tm-row   { transform: scaleX(1) !important; animation: none !important; }
-      .tm-scene .tm-rim   { opacity: 0.3 !important; animation: none !important; }
-      .tm-scene .tm-ghosts { opacity: 0.5 !important; animation: none !important; }
-      .tm-scene .tm-spoke { opacity: 0.9 !important; stroke-dashoffset: 0 !important; animation: none !important; }
-      .tm-scene .tm-hub-glow, .tm-scene .tm-hub-spin { animation: none !important; }
-      .tm-scene .tm-sweep { opacity: 0 !important; animation: none !important; }
-      .tm-scene .tm-narrate.wipe { animation: none !important; }
+      .tm-scene .pm-sys-box, .tm-scene .pm-sys-cyl, .tm-scene .pm-sys-cyl-top, .tm-scene .pm-sys-label,
+      .tm-scene .pm-rec, .tm-scene .pm-core, .tm-scene .pm-label, .tm-scene .pm-bottle-glow, .tm-scene .pm-alt-glow,
+      .tm-scene .pm-eng, .tm-scene .pm-eng-halo, .tm-scene .tm-extra
+        { opacity: 1 !important; animation: none !important; }
+      .tm-scene .pm-rt    { opacity: 0 !important; animation: none !important; }
+      .tm-scene .pm-rec   { transform: scaleX(1) !important; animation: none !important; }
+      .tm-scene .pm-edge  { opacity: 0.92 !important; stroke-dashoffset: 0 !important; animation: none !important; }
+      .tm-scene .pm-node  { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .tm-scene .pm-node--bottle, .tm-scene .pm-node--alt { stroke: #ffb24d !important; }
+      .tm-scene .pm-bottle-ring, .tm-scene .pm-alt-ring   { opacity: 0.7 !important; animation: none !important; }
+      .tm-scene .pm-eng-core, .tm-scene .pm-eng-ring      { animation: none !important; transform: none !important; }
     }
 
     /* ═══════════ Conversational Interface animation — the few → the many ═══════════
@@ -457,87 +429,136 @@
        assemble into a clean process flow, which then reveals its real variation —
        an alternative path, a rework loop and a bottleneck. Everything originates
        from the one system, keeping the scene scoped to a single source. All drawn
-       in one SVG so panel, graph and labels share a coordinate space. Scoped under
-       .pm-scene; the whole timeline is a CSS cascade fired by toggling .playing. */
-    .pm-scene { position: absolute; inset: 0; overflow: hidden; }
-    /* atmospheric depth behind the graph (mirrors the conversational card's glow) */
-    .pm-scene::before { content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: radial-gradient(54% 62% at 57% 52%, rgba(20,86,220,0.20), transparent 70%); }
-    .pm-svg { position: relative; width: 100%; height: 100%; display: block; }
+       in one SVG so panel, engine, graph and labels share a coordinate space. Scoped
+       under .pm-scene; uses the shared pi-cardscene shell + pi-narr narration so it
+       matches cards 3–6. Three beats:
+         Beat 1 (0–3s)   Extract: database appears, ~24 glowing dots stream toward the
+                         compiling-engine icon in the middle.
+         Beat 2 (3–6s)   Compile: engine activates (halo flares, ring rotates, core
+                         pulses); ordered tokens emerge from its right edge; the main
+                         spine builds progressively as those tokens land.
+         Beat 3 (6–9s)   Map:     all variants (alt path, rework, bottleneck flare,
+                         labels) appear in a tight ~0.5s window, not staggered. */
 
-    /* typed narration — same treatment as the conversational card's narration line */
-    .pm-narrate { position: absolute; top: 20px; left: 28px; right: 28px; z-index: 4;
-      font-family: var(--font-display); font-weight: 700; font-size: clamp(15px, 2.1vw, 20px);
-      letter-spacing: -0.01em; line-height: 1.25; color: #fff; white-space: nowrap; pointer-events: none; }
-    .pm-narrate.wipe { animation: pmWipe 0.6s ease forwards; }
-    .pm-hl { color: var(--sf-blue-l); }
-    .pm-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
-      margin-left: 2px; vertical-align: -2px; animation: pmBlink 1s step-end infinite; }
-    @keyframes pmBlink { 50% { opacity: 0; } }
-    @keyframes pmWipe { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 0 100%); } }
-
-    /* ── source system panel (the single origin of all the data) ── */
-    .pm-sys-box   { fill: rgba(255,255,255,0.05); stroke: rgba(255,255,255,0.20); stroke-width: 1.3;
+    /* ── source system panel (the database that originates the data) ── */
+    .pm-sys-box   { fill: rgba(143,184,255,0.10); stroke: rgba(143,184,255,0.55); stroke-width: 1.3;
       opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.96); }
-    .pm-sys-glyph { fill: none; stroke: #8fb8ff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-    .pm-sys-label { fill: rgba(255,255,255,0.88); font: 700 14px var(--font-body); }
-    .pm-sys-rule  { stroke: rgba(255,255,255,0.14); stroke-width: 1; }
-    .pm-sys-scope { fill: rgba(143,184,255,0.85); font: 700 9.5px var(--font-body); letter-spacing: 0.16em; opacity: 0; }
-    .pm-row       { fill: rgba(143,184,255,0.55); transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
+    .pm-sys-cyl   { fill: none; stroke: #8fb8ff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+      opacity: 0; }
+    .pm-sys-cyl-top { fill: rgba(143,184,255,0.22); stroke: #8fb8ff; stroke-width: 1.5; opacity: 0; }
+    .pm-sys-label { fill: rgba(255,255,255,0.92); font: 700 13px var(--font-body); letter-spacing: 0.04em; opacity: 0; }
+    .pm-rec       { fill: rgba(143,184,255,0.55); rx: 2; opacity: 0;
+      transform-box: fill-box; transform-origin: left center; transform: scaleX(0);
+      filter: drop-shadow(0 0 2px rgba(143,184,255,0.35)); }
 
-    /* ── graph: edges, nodes, cores ── */
+    /* ── compiling engine (Apromore-inspired): central core + 4 orbiting nodes
+       connected by curved arcs into an "orbit ring". The ring rotates slowly while
+       active; the core pulses; the halo brightens when the stream first arrives. ── */
+    .pm-eng       { opacity: 0; }
+    .pm-eng-halo  { fill: rgba(0,179,255,0.06); }
+    .pm-eng-arc   { fill: none; stroke: rgba(143,184,255,0.55); stroke-width: 2; opacity: 0.75; }
+    .pm-eng-orb   { filter: drop-shadow(0 0 6px rgba(143,184,255,0.7)); }
+    .pm-eng-orb-1 { fill: #00B3FF; }   /* top — bright cyan */
+    .pm-eng-orb-2 { fill: #04E1CB; }   /* right — teal accent */
+    .pm-eng-orb-3 { fill: #8fb8ff; }   /* bottom — cloud blue */
+    .pm-eng-orb-4 { fill: #6f9bff; }   /* left — deeper cloud */
+    .pm-eng-core  { fill: #e6f1ff; filter: drop-shadow(0 0 10px rgba(0,179,255,0.85));
+      transform-box: fill-box; transform-origin: center; }
+    .pm-eng-ring  { transform-box: fill-box; transform-origin: center; }
+
+    /* ── streaming dots (Beat 1 → Beat 2): glowing circles flowing from system to
+       engine. Volume is the point — many of them. ── */
+    .pm-rt { fill: #e6f1ff; opacity: 0; filter: drop-shadow(0 0 4px rgba(143,184,255,0.95)); }
+
+    /* ── ordered output tokens (Beat 2): emerge from engine right edge to node
+       positions; brighter and slightly larger than the chaotic input stream ── */
+    .pm-out { fill: #c5e9ff; opacity: 0; filter: drop-shadow(0 0 6px rgba(0,179,255,1)); }
+
+    /* ── process map nodes + cores ── */
+    .pm-node { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 2.4; opacity: 0;
+      transform-box: fill-box; transform-origin: center; transform: scale(0.2);
+      filter: drop-shadow(0 0 6px rgba(143,184,255,0.40)); }
+    .pm-core { fill: #bcd4ff; opacity: 0; }
+
+    /* ── edges (forward / alternative / rework) ── */
     .pm-edge { fill: none; stroke: #6f9bff; stroke-width: 2.6; stroke-linecap: round;
       stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0;
       filter: drop-shadow(0 0 3px rgba(111,155,255,0.45)); }
     .pm-edge--alt    { stroke: #7aa0ff; stroke-width: 2.2; }
-    .pm-edge--rework { stroke: #ffb24d; stroke-width: 2.2; }
-    .pm-node { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 2.4; opacity: 0;
-      transform-box: fill-box; transform-origin: center; transform: scale(0.2);
-      filter: drop-shadow(0 0 6px rgba(143,184,255,0.35)); }
-    .pm-core { fill: #bcd4ff; opacity: 0; }
-    .pm-tok  { fill: #e6f1ff; filter: drop-shadow(0 0 5px rgba(143,184,255,0.95)); }
-    .pm-tokens { opacity: 0; }
-    .pm-label { fill: rgba(255,255,255,0.72); font: 700 13px var(--font-body); letter-spacing: 0.03em; opacity: 0; }
+    .pm-edge--rework { stroke: #7aa0ff; stroke-width: 2.2; }
+
+    /* ── live tokens riding the spine (Beat 2 onward) ── */
+    .pm-tok { fill: #e6f1ff; opacity: 0; filter: drop-shadow(0 0 5px rgba(143,184,255,0.95)); }
+
+    /* ── bottleneck flare + alt-node flare (Beat 3) — both flash amber together ── */
+    .pm-bottle-glow, .pm-alt-glow { fill: rgba(255,160,60,0.18); opacity: 0; }
+    .pm-bottle-ring, .pm-alt-ring { fill: none; stroke: #ffb24d; stroke-width: 2.2; opacity: 0;
+      transform-box: fill-box; transform-origin: center; }
+
+    /* ── feature labels ── */
+    .pm-label { fill: rgba(255,255,255,0.78); font: 700 12px var(--font-body); letter-spacing: 0.03em; opacity: 0; }
     .pm-label--rework { fill: #ffce93; }
     .pm-label--bottle { fill: #ffce93; }
 
-    /* bottleneck flare on the worst node */
-    .pm-bottle-glow { fill: rgba(255,160,60,0.18); opacity: 0; }
-    .pm-bottle-ring { fill: none; stroke: #ffb24d; stroke-width: 2.2; opacity: 0;
-      transform-box: fill-box; transform-origin: center; }
+    /* ── timeline (fires when .playing is added; per-element delays live inline) ──
+       Strict sequence: caption types first, then visual.
+         Beat 1 (0–6.3s):     caption (0.35–2.6) → system appears (2.6–4.3) → dots flow → wait 2s
+         Beat 2 (6.3–12.5s):  caption (6.65–9.9) → engine appears + spins (9.9–10.5 + on) → wait 2s
+         Beat 3 (12.5s+):     caption + map animate together (map starts at 12.9s)
+       Streaming dots loop infinitely (data is always coming in) but their
+       infinite cycle is offset so they only become visible from t=4.3s. */
+    .pm-scene.playing .pm-sys-box   { animation: pmSysIn 0.6s 2.6s cubic-bezier(.22,1,.36,1) both; }
+    .pm-scene.playing .pm-sys-cyl,
+    .pm-scene.playing .pm-sys-cyl-top { animation: pmFade 0.5s 2.9s ease both; }
+    .pm-scene.playing .pm-sys-label { animation: pmFade 0.5s 3.1s ease both; }
+    .pm-scene.playing .pm-rec       { animation: pmRow 0.45s ease both; }
+    .pm-scene.playing .pm-rt        { animation: pmStream 1.4s ease-out infinite; }
+    .pm-scene.playing .pm-out       { animation: pmStream 0.6s ease-out both; }
+    .pm-scene.playing .pm-eng       { animation: pmFade 0.6s 9.9s ease both; }
+    .pm-scene.playing .pm-eng-halo  { animation: pmEngHalo 0.7s 10.5s ease forwards; }
+    .pm-scene.playing .pm-eng-core  { animation: pmEngPulse 1.6s 10.5s ease-in-out infinite; }
+    .pm-scene.playing .pm-eng-ring  { animation: pmEngRotate 14s 10.5s linear infinite; }
+    .pm-scene.playing .pm-node      { animation: pmNode 0.55s cubic-bezier(.22,1,.36,1) both; }
+    .pm-scene.playing .pm-core      { animation: pmFade 0.45s ease both; }
+    .pm-scene.playing .pm-edge      { animation: pmDraw 0.45s ease both; }
+    .pm-scene.playing .pm-tok       { animation: pmFade 0.6s ease forwards, pmTokFlow 3.4s linear infinite; }
+    .pm-scene.playing .pm-label     { animation: pmFade 0.55s ease both; }
+    .pm-scene.playing .pm-bottle-glow,
+    .pm-scene.playing .pm-alt-glow    { animation: pmFade 0.7s 15.9s ease forwards; }
+    .pm-scene.playing .pm-bottle-ring,
+    .pm-scene.playing .pm-alt-ring    { animation: pmRingIn 0.5s 15.9s ease forwards, pmRingPulse 2.4s 16.4s ease-in-out infinite; }
+    /* Beat 3 spine build runs from 12.9s; bottleneck and alt nodes both pop at
+       14.2s (endpoints of the lines growing out of N2). Both warm to amber at
+       15.9s once the spine has fully drawn. */
+    .pm-scene.playing .pm-node--bottle { animation: pmNode 0.55s 14.2s cubic-bezier(.22,1,.36,1) both, pmWarm 0.8s 15.9s ease forwards; }
+    .pm-scene.playing .pm-node--alt    { animation: pmNode 0.55s 14.2s cubic-bezier(.22,1,.36,1) both, pmWarm 0.8s 15.9s ease forwards; }
 
-    /* ── timeline (fires when .playing is added; per-element delays live inline) ── */
-    .pm-scene.playing .pm-sys-box   { animation: pmSysIn 0.6s 0.2s cubic-bezier(.22,1,.36,1) both; }
-    .pm-scene.playing .pm-sys-scope { animation: pmFade 0.6s 1.2s ease both; }
-    .pm-scene.playing .pm-row       { animation: pmRow 0.45s ease both; }
-    .pm-scene.playing .pm-edge      { animation: pmDraw 0.7s ease both; }
-    .pm-scene.playing .pm-node      { animation: pmNode 0.5s cubic-bezier(.22,1,.36,1) both; }
-    .pm-scene.playing .pm-core      { animation: pmFade 0.5s ease both; }
-    .pm-scene.playing .pm-tokens    { animation: pmFade 0.8s 1.3s ease both; }
-    .pm-scene.playing .pm-label     { animation: pmFade 0.6s ease both; }
-    .pm-scene.playing .pm-bottle-glow { animation: pmFade 0.8s 5.5s ease forwards; }
-    .pm-scene.playing .pm-bottle-ring { animation: pmRingIn 0.6s 5.5s ease forwards, pmRingPulse 2.2s 6.1s ease-in-out infinite; }
-    /* the bottleneck node keeps its pop, then warms to amber (own rule → independent delays) */
-    .pm-scene.playing .pm-node--bottle { animation: pmNode 0.5s 2.1s cubic-bezier(.22,1,.36,1) both, pmWarm 0.9s 5.5s ease forwards; }
-
-    @keyframes pmSysIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-    @keyframes pmRow   { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-    @keyframes pmDraw  { 0% { opacity: 1; stroke-dashoffset: 1; } 100% { opacity: 0.92; stroke-dashoffset: 0; } }
-    @keyframes pmNode  { 0% { opacity: 0; transform: scale(0.2); } 60% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
-    @keyframes pmFade  { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes pmWarm  { to { stroke: #ffb24d; } }
-    @keyframes pmRingIn { from { opacity: 0; } to { opacity: 0.8; } }
+    @keyframes pmSysIn   { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    @keyframes pmFade    { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pmRow     { 0% { opacity: 0; transform: scaleX(0); } 50% { opacity: 1; } 100% { opacity: 1; transform: scaleX(1); } }
+    @keyframes pmStream  { 0% { opacity: 0; transform: translate(0, 0); } 14% { opacity: 1; } 80% { opacity: 0.85; } 100% { opacity: 0; transform: translate(var(--tx, 100px), var(--ty, 0px)); } }
+    @keyframes pmDraw    { 0% { opacity: 1; stroke-dashoffset: 1; } 100% { opacity: 0.92; stroke-dashoffset: 0; } }
+    @keyframes pmNode    { 0% { opacity: 0; transform: scale(0.2); } 60% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes pmTokFlow { 0% { transform: translate(0, 0); } 100% { transform: translate(var(--tflow, 480px), 0); } }
+    @keyframes pmEngHalo  { to { fill: rgba(0,179,255,0.22); } }
+    @keyframes pmEngPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+    @keyframes pmEngRotate { to { transform: rotate(360deg); } }
+    @keyframes pmWarm    { to { stroke: #ffb24d; } }
+    @keyframes pmRingIn  { from { opacity: 0; } to { opacity: 0.8; } }
     @keyframes pmRingPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.32); opacity: 0.18; } }
 
     @media (prefers-reduced-motion: reduce) {
-      .pm-scene .pm-sys-box, .pm-scene .pm-sys-scope, .pm-scene .pm-core,
-      .pm-scene .pm-tokens, .pm-scene .pm-label, .pm-scene .pm-bottle-glow { opacity: 1 !important; animation: none !important; }
-      .pm-scene .pm-row  { transform: scaleX(1) !important; animation: none !important; }
+      .pm-scene .pm-sys-box, .pm-scene .pm-sys-cyl, .pm-scene .pm-sys-cyl-top, .pm-scene .pm-sys-label,
+      .pm-scene .pm-rec, .pm-scene .pm-core, .pm-scene .pm-label, .pm-scene .pm-bottle-glow, .pm-scene .pm-alt-glow, .pm-scene .pm-tok,
+      .pm-scene .pm-eng, .pm-scene .pm-eng-halo
+        { opacity: 1 !important; animation: none !important; }
+      .pm-scene .pm-rt, .pm-scene .pm-out { opacity: 0 !important; animation: none !important; }
+      .pm-scene .pm-rec  { transform: scaleX(1) !important; animation: none !important; }
       .pm-scene .pm-edge { opacity: 0.92 !important; stroke-dashoffset: 0 !important; animation: none !important; }
       .pm-scene .pm-node { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .pm-scene .pm-node--bottle { stroke: #ffb24d !important; }
-      .pm-scene .pm-bottle-ring { opacity: 0.7 !important; animation: none !important; }
-      .pm-scene .pm-narrate.wipe { animation: none !important; }
+      .pm-scene .pm-node--bottle, .pm-scene .pm-node--alt { stroke: #ffb24d !important; }
+      .pm-scene .pm-bottle-ring, .pm-scene .pm-alt-ring  { opacity: 0.7 !important; animation: none !important; }
+      .pm-scene .pm-eng-core, .pm-scene .pm-eng-ring { animation: none !important; transform: none !important; }
     }
 
     /* ═══════════ Shared scaffolding for cards 3–6 ═══════════
@@ -823,171 +844,291 @@
   // Process Mining), generic app windows fade in around it, faint between-tool
   // activity (a dashed rim with ghost tokens) surfaces, then a central intelligence
   // element ignites and captures it — every source spoked inward with bright inflow.
-  // Geometry is generated here; the CSS cascade (.playing) runs the timeline and
-  // playTM() types the narration. All sources sit on a ring around the hub.
-  const TM_HUB = { x: 500, y: 288 };
-  const TM_SRC = [
-    { x: 500, y:  98, sys: true, g: 'db',   d: 0.20 },   // the single system (prominent, opens first)
-    { x: 732, y: 185,            g: 'grid', d: 2.05 },
-    { x: 732, y: 392,            g: 'web',  d: 2.20 },
-    { x: 500, y: 470,            g: 'doc',  d: 2.35 },
-    { x: 268, y: 392,            g: 'chat', d: 2.50 },
-    { x: 268, y: 185,            g: 'cal',  d: 2.65 },
-  ];
-  // Generic, unnamed app glyphs (drawn in a ~14px local box).
+  // Generic app glyphs (drawn in a ~14px local box) used for the TM extras.
   const TM_GLYPHS = {
-    db:   '<ellipse cx="7" cy="2.6" rx="6.4" ry="2.4"/><path d="M0.6,2.6 V11 a6.4,2.4 0 0 0 12.8,0 V2.6"/><path d="M0.6,6.8 a6.4,2.4 0 0 0 12.8,0"/>',
     grid: '<rect x="0.6" y="0.6" width="12.8" height="12.8" rx="1.4"/><path d="M0.6,5 H13.4 M0.6,9 H13.4 M5,0.6 V13.4 M9,0.6 V13.4"/>',
     web:  '<rect x="0.6" y="1.4" width="12.8" height="11.2" rx="1.4"/><path d="M0.6,5 H13.4"/><circle cx="2.6" cy="3.2" r="0.5"/><circle cx="4.3" cy="3.2" r="0.5"/>',
     doc:  '<rect x="2.4" y="0.6" width="9.2" height="12.8" rx="1.2"/><path d="M4.4,4 H9.6 M4.4,6.6 H9.6 M4.4,9.2 H8"/>',
     chat: '<path d="M1,3 a2,2 0 0 1 2,-2 H11 a2,2 0 0 1 2,2 V8.4 a2,2 0 0 1 -2,2 H6.2 L3,13 V10.4 a2,2 0 0 1 -2,-2 z"/><path d="M4,5.6 H10 M4,7.8 H8"/>',
-    cal:  '<rect x="0.7" y="1.6" width="12.6" height="11.7" rx="1.4"/><path d="M0.7,5 H13.3 M4,0.6 V3 M10,0.6 V3"/>',
   };
-  const tmEdge = (from, to, dist) => {                   // a point `dist` px from `from` toward `to`
-    const dx = to.x - from.x, dy = to.y - from.y, L = Math.hypot(dx, dy) || 1;
-    return { x: from.x + dx / L * dist, y: from.y + dy / L * dist };
-  };
-  // One window (the system is larger, brighter and streams log rows like card 1).
-  function tmWin(s) {
-    const w = s.sys ? 150 : 124, h = s.sys ? 104 : 86;
-    const x = s.x - w / 2, y = s.y - h / 2, barH = s.sys ? 24 : 22;
-    const boxCls = s.sys ? 'tm-win-box tm-sys-box' : 'tm-win-box';
-    let body;
-    if (s.sys) {
-      const ry = y + barH + 12;
-      const rows = [[118, ry], [88, ry + 14], [118, ry + 28], [72, ry + 42]];
-      body = rows.map((r, i) => `<rect class="tm-row" x="${x + 18}" y="${r[1]}" width="${r[0]}" height="7" rx="3" style="animation-delay:${(0.5 + i * 0.14).toFixed(2)}s"/>`).join('');
-    } else {
-      body = `<rect class="tm-win-line" x="${x + 16}" y="${y + barH + 12}" width="92" height="6" rx="3"/>`
-           + `<rect class="tm-win-line" x="${x + 16}" y="${y + barH + 26}" width="58" height="6" rx="3"/>`
-           + `<circle class="tm-win-dot" cx="${x + w - 14}" cy="${y + 11}" r="1.7"/><circle class="tm-win-dot" cx="${x + w - 22}" cy="${y + 11}" r="1.7"/>`;
-    }
-    return `<g class="tm-win" style="animation-delay:${s.d}s">
-        <rect class="${boxCls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="9"/>
-        <line class="tm-win-rule" x1="${x}" y1="${y + barH}" x2="${x + w}" y2="${y + barH}"/>
-        <g class="tm-win-glyph" transform="translate(${x + 13},${y + (barH - 14) / 2})">${TM_GLYPHS[s.g]}</g>
-        ${body}
-      </g>`;
-  }
+
+  // The four "non-logged" sources that fade in around the System in Beat 2.
+  // Positioned around the System (50–190 wide × 190–390 tall), all to the LEFT
+  // of the Engine (cx=370). Half-system size (~50×44 panels).
+  const TM_EXTRAS = [
+    { cx: 130, cy: 120, glyph: 'web'  },   // Browser, top-left
+    { cx: 260, cy: 130, glyph: 'chat' },   // Email,   top-right (between sys and engine)
+    { cx: 260, cy: 470, glyph: 'grid' },   // Spreadsheet, bottom-right
+    { cx: 130, cy: 480, glyph: 'doc'  },   // Document, bottom-left
+  ];
+
   function buildTaskMining() {
-    const W = [], RIM = [], GH = [], SP = [], FL = [];
-    TM_SRC.forEach(s => W.push(tmWin(s)));
-    // rim chords between neighbours = the hidden between-tool activity
-    TM_SRC.forEach((s, i) => {
-      const n = TM_SRC[(i + 1) % TM_SRC.length];
-      const fwd = i % 2 === 0;                            // alternate direction for an organic feel
-      const d = fwd ? `M${s.x},${s.y} L${n.x},${n.y}` : `M${n.x},${n.y} L${s.x},${s.y}`;
-      RIM.push(`<path class="tm-rim" d="M${s.x},${s.y} L${n.x},${n.y}"/>`);
-      GH.push(`<circle class="tm-ghost" r="3"><animateMotion dur="${(3.6 + i * 0.25).toFixed(2)}s" begin="${(i * 0.6).toFixed(2)}s" repeatCount="indefinite" path="${d}"/></circle>`);
-    });
-    // spokes inward + bright inflow = the capture into the central intelligence element
-    TM_SRC.forEach((s, i) => {
-      const p1 = tmEdge(s, TM_HUB, s.sys ? 58 : 48), p2 = tmEdge(TM_HUB, s, 44);
-      const d = `M${p1.x.toFixed(1)},${p1.y.toFixed(1)} L${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
-      SP.push(`<path class="tm-spoke" pathLength="1" style="animation-delay:${(6.8 + i * 0.15).toFixed(2)}s" d="${d}"/>`);
-      FL.push(`<circle class="tm-flow" r="3.6"><animateMotion dur="2.2s" begin="${(i * 0.32).toFixed(2)}s" repeatCount="indefinite" path="${d}"/></circle>`);
-    });
-    const { x: hx, y: hy } = TM_HUB;
-    const hub = `<g class="tm-hub">
-        <circle class="tm-hub-glow" cx="${hx}" cy="${hy}" r="34"/>
-        <circle class="tm-hub-ring" cx="${hx}" cy="${hy}" r="29"/>
-        <circle class="tm-hub-spin" cx="${hx}" cy="${hy}" r="21"/>
-        <circle class="tm-hub-coreglow" cx="${hx}" cy="${hy}" r="12"/>
-        <circle class="tm-hub-core" cx="${hx}" cy="${hy}" r="8"/>
+    // Beat-1 stream from System into Engine (infinite loop, 30 dots, base delay 1.5s
+    // so they only become visible after the System's records have appeared).
+    const sysStream = (() => {
+      let s = 0xC0FFEE;
+      const rnd = () => { s = (s * 1103515245 + 12345) & 0x7FFFFFFF; return s / 0x7FFFFFFF; };
+      const N = 30, BASE_DELAY = 1.5;
+      let html = '';
+      for (let i = 0; i < N; i++) {
+        const sy = 268 + Math.floor(rnd() * 100);
+        const endX = 365 + Math.floor(rnd() * 10);
+        const endY = 295 + Math.floor(rnd() * 10);
+        const tx = endX - 190;
+        const ty = endY - sy;
+        const dur = (1.0 + rnd() * 0.6).toFixed(2);
+        const delay = (BASE_DELAY + rnd() * 1.4).toFixed(2);
+        html += `<circle class="pm-rt" cx="190" cy="${sy}" r="2.5" style="--tx:${tx}px;--ty:${ty}px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
+      }
+      return html;
+    })();
+
+    // Beat-3 stream from extras into Engine (infinite loop, ~6 dots per extra,
+    // base delay 11.31s — the moment Beat 3 begins).
+    const extraStream = (() => {
+      let s = 0xCAFEBABE;
+      const rnd = () => { s = (s * 1103515245 + 12345) & 0x7FFFFFFF; return s / 0x7FFFFFFF; };
+      const PER_EXTRA = 6, BASE_DELAY = 11.31;
+      let html = '';
+      TM_EXTRAS.forEach(ex => {
+        for (let i = 0; i < PER_EXTRA; i++) {
+          const sx = ex.cx + (rnd() - 0.5) * 26;
+          const sy = ex.cy + (rnd() - 0.5) * 18;
+          const endX = 365 + Math.floor(rnd() * 10);
+          const endY = 295 + Math.floor(rnd() * 10);
+          const tx = endX - sx;
+          const ty = endY - sy;
+          const dur = (1.0 + rnd() * 0.6).toFixed(2);
+          const delay = (BASE_DELAY + rnd() * 1.4).toFixed(2);
+          html += `<circle class="pm-rt" cx="${sx.toFixed(0)}" cy="${sy.toFixed(0)}" r="2.5" style="--tx:${tx.toFixed(0)}px;--ty:${ty.toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
+        }
+      });
+      return html;
+    })();
+
+    // Extras: enlarged again to 100×75 (33% wider, 36% taller than previous 75×55).
+    // Glyph scaled 2.4× from its 14×14 base. Faded in during Beat 2.
+    const extrasHTML = TM_EXTRAS.map((ex, i) => {
+      const delay = (8.36 + i * 0.12).toFixed(2);
+      return `<g class="tm-extra" transform="translate(${ex.cx},${ex.cy})" style="animation-delay:${delay}s">
+        <rect class="tm-extra-box" x="-50" y="-37.5" width="100" height="75" rx="12"/>
+        <g class="tm-extra-glyph" transform="translate(-17,-17) scale(2.4)">${TM_GLYPHS[ex.glyph]}</g>
       </g>`;
-    const sweep = `<circle class="tm-sweep" cx="${hx}" cy="${hy}" r="58"/>`;
-    const labels = `<text class="tm-tag tm-syslabel" x="500" y="168" text-anchor="middle">SINGLE SYSTEM</text>`
-                 + `<text class="tm-hubtag" x="${hx}" y="${hy + 54}" text-anchor="middle">CAPTURED</text>`;
+    }).join('');
+
     const scene = document.createElement('div');
-    scene.className = 'tm-scene';
-    scene.innerHTML = `<div class="tm-narrate"></div>
-      <svg class="tm-svg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        ${SP.join('')}${RIM.join('')}
-        <g class="tm-ghosts">${GH.join('')}</g>
-        <g class="tm-flows">${FL.join('')}</g>
-        ${hub}${sweep}
-        ${W.join('')}${labels}
+    scene.className = 'tm-scene pi-cardscene';
+    scene.innerHTML = `
+      <div class="pi-narr"></div>
+      <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+
+        <!-- ── System (carried over from Process Mining; appears at t=0) ── -->
+        <g class="pm-sys">
+          <rect class="pm-sys-box" x="50" y="190" width="140" height="200" rx="14"/>
+          <ellipse class="pm-sys-cyl-top" cx="82" cy="226" rx="18" ry="5.5"/>
+          <path class="pm-sys-cyl" d="M64,226 V250 a18,5.5 0 0 0 36,0 V226"/>
+          <path class="pm-sys-cyl" d="M64,238 a18,5.5 0 0 0 36,0" opacity="0.7"/>
+          <text class="pm-sys-label" x="112" y="232">System</text>
+          <rect class="pm-rec" x="66" y="280" width="106" height="6" rx="2" style="animation-delay:0.5s"/>
+          <rect class="pm-rec" x="66" y="296" width="86"  height="6" rx="2" style="animation-delay:0.55s"/>
+          <rect class="pm-rec" x="66" y="312" width="106" height="6" rx="2" style="animation-delay:0.6s"/>
+          <rect class="pm-rec" x="66" y="328" width="68"  height="6" rx="2" style="animation-delay:0.65s"/>
+          <rect class="pm-rec" x="66" y="344" width="96"  height="6" rx="2" style="animation-delay:0.7s"/>
+          <rect class="pm-rec" x="66" y="358" width="78"  height="6" rx="2" style="animation-delay:0.75s"/>
+        </g>
+
+        <!-- ── System → Engine streaming dots (Beat 1+, infinite from t=1.5s) ── -->
+        ${sysStream}
+
+        <!-- ── Engine (carried over from PM; appears at t=0.3s, spinning from t=0.7s) ── -->
+        <g class="pm-eng" transform="translate(370,300)">
+          <circle class="pm-eng-halo" cx="0" cy="0" r="55"/>
+          <g class="pm-eng-ring">
+            <path class="pm-eng-arc" d="M0,-30 A30,30 0 0 1 30,0"/>
+            <path class="pm-eng-arc" d="M30,0 A30,30 0 0 1 0,30"/>
+            <path class="pm-eng-arc" d="M0,30 A30,30 0 0 1 -30,0"/>
+            <path class="pm-eng-arc" d="M-30,0 A30,30 0 0 1 0,-30"/>
+            <circle class="pm-eng-orb pm-eng-orb-1" cx="0"   cy="-30" r="7"/>
+            <circle class="pm-eng-orb pm-eng-orb-2" cx="30"  cy="0"   r="7"/>
+            <circle class="pm-eng-orb pm-eng-orb-3" cx="0"   cy="30"  r="7"/>
+            <circle class="pm-eng-orb pm-eng-orb-4" cx="-30" cy="0"   r="7"/>
+          </g>
+          <circle class="pm-eng-core" cx="0" cy="0" r="11"/>
+        </g>
+
+        <!-- ── Extras (Beat 2): non-logged tools fade in around the System ── -->
+        ${extrasHTML}
+
+        <!-- ── Extras → Engine streaming dots (Beat 3+, infinite from t=11.31s) ── -->
+        ${extraStream}
+
+        <!-- ── Process map carried over from PM's end state (visible immediately,
+             no animation). Plain cyan nodes — the bottleneck and alt-path nodes
+             are no longer specially highlighted. The .tm-static class overrides
+             the default invisible-state and skips the .tm-scene.playing animations. ── -->
+        <!-- forward + alt + rework1 edges (all static — visible from frame 1) -->
+        <path class="pm-edge tm-static" pathLength="1" d="M506,300 L564,300"/>
+        <path class="pm-edge tm-static" pathLength="1" d="M616,300 L674,300"/>
+        <path class="pm-edge pm-edge--alt tm-static" pathLength="1" d="M608,318 C640,400 670,440 700,440"/>
+        <path class="pm-edge tm-static" pathLength="1" d="M726,300 L784,300"/>
+        <path class="pm-edge pm-edge--alt tm-static" pathLength="1" d="M700,440 C730,440 760,400 792,318"/>
+        <path class="pm-edge tm-static" pathLength="1" d="M836,300 L894,300"/>
+        <path class="pm-edge pm-edge--rework tm-static" pathLength="1" d="M804,276 C796,210 716,210 708,276"/>
+
+        <!-- ── Beat 3 NEW variants and node — the dots flow for 2 seconds first
+             (caption ends ~13.56s), then the new variants animate in starting
+             at 15.56s, ordered strictly left → right by their starting x. ── -->
+        <!-- 1. N1 → N3 above the spine (skip past N2) — leftmost (starts x=484) -->
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:15.56s" d="M484,278 C540,200 660,200 696,278"/>
+        <!-- 2. N1 → upper alt-path node (NEW diagonal lift) (starts x=498) -->
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:15.71s" d="M498,282 C530,260 555,180 574,154"/>
+        <!-- 3. N2 → upper (vertical lift) (starts x=590) -->
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:15.86s" d="M590,278 C586,240 586,200 590,162"/>
+        <!-- 4. Upper alt-path node + core pop in once both incoming edges have arrived -->
+        <circle class="pm-node" cx="590" cy="140" r="22" style="animation-delay:16.01s"/>
+        <circle class="pm-core" cx="590" cy="140" r="6"  style="animation-delay:16.16s"/>
+        <!-- 5. upper → N4 edge (long diagonal across) (starts x=610) -->
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:16.16s" d="M610,148 C720,140 760,210 794,290"/>
+        <!-- 6. Lower → N5 (skips re-joining at N4) (starts x=715) -->
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:16.31s" d="M715,452 C800,475 880,420 906,322"/>
+        <!-- 7. N4 → N5 above the spine (rightmost, starts x=826) -->
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:16.46s" d="M826,278 C840,238 900,238 914,278"/>
+
+        <!-- main spine nodes + cores (all plain cyan, all static) -->
+        <circle class="pm-node tm-static" cx="480" cy="300" r="26"/>
+        <circle class="pm-node tm-static" cx="590" cy="300" r="26"/>
+        <circle class="pm-node tm-static" cx="700" cy="300" r="26"/>
+        <circle class="pm-node tm-static" cx="700" cy="440" r="22"/>
+        <circle class="pm-node tm-static" cx="810" cy="300" r="26"/>
+        <circle class="pm-node tm-static" cx="920" cy="300" r="26"/>
+        <circle class="pm-core tm-static" cx="480" cy="300" r="7"/>
+        <circle class="pm-core tm-static" cx="590" cy="300" r="7"/>
+        <circle class="pm-core tm-static" cx="700" cy="300" r="7"/>
+        <circle class="pm-core tm-static" cx="700" cy="440" r="6"/>
+        <circle class="pm-core tm-static" cx="810" cy="300" r="7"/>
+        <circle class="pm-core tm-static" cx="920" cy="300" r="7"/>
       </svg>`;
     return scene;
   }
 
   // ── Process Mining animation (data → the real process map) ──────
-  // One SVG holds it all so the source panel, the graph and the labels share a
-  // coordinate space (viewBox 1000×540). A single "System" panel streams its event
-  // log; the records assemble into a clean flow; then the flow reveals its real
-  // variation — an alternative path, a rework loop and a flared bottleneck. Token
-  // dots keep flowing through so the finished map reads as live. The CSS cascade
-  // (fired by .playing) runs the structural timeline; playPM() types the narration.
-  // Spine the data tokens ride (system exit → end node), reused by all three tokens.
-  const PM_SPINE = 'M190,270 L300,270 L450,270 L600,270 L750,270 L900,270';
-  const pmTok = (begin) =>
-    `<circle class="pm-tok" r="4.5"><animateMotion dur="3.4s" begin="${begin}s" repeatCount="indefinite" path="${PM_SPINE}"/></circle>`;
-  const PROCESS_MINING = `
-    <div class="pm-scene">
-      <div class="pm-narrate"></div>
-      <svg class="pm-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <defs>
-          <marker id="pmArrowWarm" markerWidth="9" markerHeight="9" refX="5.5" refY="4" orient="auto">
-            <path d="M1,1 L6,4 L1,7" fill="none" stroke="#ffb24d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-        </defs>
+  // Three-beat layered SVG. ViewBox 1000×540.
+  //   Beat 1: database panel on the left emits a continuous (infinite) stream of
+  //           glowing dots toward the engine; data is always coming in.
+  //   Beat 2: engine activates (halo, ring rotation, core pulse); 5 ordered tokens
+  //           emerge from its right edge in sequence, each arriving just as the next
+  //           node pops in. The main spine then draws strictly node → edge → node …
+  //           from N1 through N5, left to right.
+  //   Beat 3: after the spine settles, the variants — alt-path lower node + edges,
+  //           rework loop, bottleneck/alt-node warm + glow + ring, plus three
+  //           labels — appear together in a tight ~0.5s window.
+  // Layout (cy=300 for main spine; bigger gap between system and engine):
+  //   System: x=50–190    Engine: cx=370, halo r=55
+  //   Main nodes: 480, 590, 700 (BN), 810, 920    Lower (alt) node: cx=700, cy=440
 
-        <!-- ── source system: the single origin of all the data ── -->
+  // Beat-1 stream: 30 dots with seeded-random Y, duration and delay so the stream
+  // looks like an organic field rather than a uniform conveyor. Animation is set
+  // to `infinite` in CSS so the stream never stops — data is always coming in.
+  // Base delay 4.3s so dots only become visible after the system has fully appeared.
+  const PM_STREAM_DOTS = (() => {
+    let s = 0xC0FFEE;
+    const rnd = () => { s = (s * 1103515245 + 12345) & 0x7FFFFFFF; return s / 0x7FFFFFFF; };
+    let html = '';
+    const N = 30;
+    const BASE_DELAY = 4.3;
+    for (let i = 0; i < N; i++) {
+      const sy   = 268 + Math.floor(rnd() * 100);    // 268–368, scattered across the system's record area
+      const endX = 365 + Math.floor(rnd() * 10);     // converge into the engine area, slightly scattered
+      const endY = 295 + Math.floor(rnd() * 10);
+      const tx = endX - 190;
+      const ty = endY - sy;
+      const dur   = (1.0 + rnd() * 0.6).toFixed(2);  // 1.0–1.6s — varied speed per dot
+      const delay = (BASE_DELAY + rnd() * 1.4).toFixed(2);  // 4.3–5.7s — initial offset within one cycle
+      html += `<circle class="pm-rt" cx="190" cy="${sy}" r="2.5" style="--tx:${tx}px;--ty:${ty}px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
+    }
+    return html;
+  })();
+  const PROCESS_MINING = `
+    <div class="pm-scene pi-cardscene">
+      <div class="pi-narr"></div>
+      <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+
+        <!-- ── source system: database cylinder + record rows (Beat 1) ── -->
         <g class="pm-sys">
-          <rect class="pm-sys-box" x="34" y="176" width="150" height="190" rx="12"/>
-          <line class="pm-sys-rule" x1="34" y1="208" x2="184" y2="208"/>
-          <g class="pm-sys-glyph" transform="translate(48,182)">
-            <ellipse cx="8" cy="3.4" rx="8" ry="3.2"/>
-            <path d="M0,3.4 V12 a8,3.2 0 0 0 16,0 V3.4"/>
-            <path d="M0,7.7 a8,3.2 0 0 0 16,0"/>
-          </g>
-          <text class="pm-sys-label" x="76" y="197">System</text>
-          <rect class="pm-row" x="50" y="224" width="118" height="8" rx="3" style="animation-delay:0.60s"/>
-          <rect class="pm-row" x="50" y="244" width="92"  height="8" rx="3" style="animation-delay:0.74s"/>
-          <rect class="pm-row" x="50" y="264" width="118" height="8" rx="3" style="animation-delay:0.88s"/>
-          <rect class="pm-row" x="50" y="284" width="74"  height="8" rx="3" style="animation-delay:1.02s"/>
-          <rect class="pm-row" x="50" y="304" width="104" height="8" rx="3" style="animation-delay:1.16s"/>
-          <rect class="pm-row" x="50" y="324" width="86"  height="8" rx="3" style="animation-delay:1.30s"/>
-          <text class="pm-sys-scope" x="109" y="352" text-anchor="middle">SINGLE SYSTEM</text>
+          <rect class="pm-sys-box" x="50" y="190" width="140" height="200" rx="14"/>
+          <ellipse class="pm-sys-cyl-top" cx="82" cy="226" rx="18" ry="5.5"/>
+          <path class="pm-sys-cyl" d="M64,226 V250 a18,5.5 0 0 0 36,0 V226"/>
+          <path class="pm-sys-cyl" d="M64,238 a18,5.5 0 0 0 36,0" opacity="0.7"/>
+          <text class="pm-sys-label" x="112" y="232">System</text>
+          <rect class="pm-rec" x="66" y="280" width="106" height="6" rx="2" style="animation-delay:3.1s"/>
+          <rect class="pm-rec" x="66" y="296" width="86"  height="6" rx="2" style="animation-delay:3.25s"/>
+          <rect class="pm-rec" x="66" y="312" width="106" height="6" rx="2" style="animation-delay:3.4s"/>
+          <rect class="pm-rec" x="66" y="328" width="68"  height="6" rx="2" style="animation-delay:3.55s"/>
+          <rect class="pm-rec" x="66" y="344" width="96"  height="6" rx="2" style="animation-delay:3.7s"/>
+          <rect class="pm-rec" x="66" y="358" width="78"  height="6" rx="2" style="animation-delay:3.85s"/>
         </g>
 
-        <!-- ── forward flow edges (drawn left → right) ── -->
-        <path class="pm-edge" pathLength="1" style="animation-delay:1.40s" d="M190,270 L266,270"/>
-        <path class="pm-edge" pathLength="1" style="animation-delay:1.70s" d="M334,270 L416,270"/>
-        <path class="pm-edge" pathLength="1" style="animation-delay:2.00s" d="M484,270 L566,270"/>
-        <path class="pm-edge" pathLength="1" style="animation-delay:2.30s" d="M634,270 L716,270"/>
-        <path class="pm-edge" pathLength="1" style="animation-delay:2.60s" d="M784,270 L866,270"/>
-        <!-- alternative path (a real variant the map uncovers) -->
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:4.40s" d="M450,300 C474,360 482,386 500,400"/>
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:4.70s" d="M551,400 C620,386 690,352 724,300"/>
-        <!-- rework loop (a back-edge: work returning upstream) -->
-        <path class="pm-edge pm-edge--rework" pathLength="1" marker-end="url(#pmArrowWarm)" style="animation-delay:5.00s" d="M742,246 C706,168 648,168 614,242"/>
+        <!-- ── streaming dots (Beat 1 → Beat 2): 24 glowing dots flow to the engine ── -->
+        ${PM_STREAM_DOTS}
 
-        <!-- ── live data tokens riding the spine ── -->
-        <g class="pm-tokens">${pmTok(0)}${pmTok(1.1)}${pmTok(2.2)}</g>
+        <!-- ── compiling engine (Apromore-inspired) (Beat 2) ── -->
+        <g class="pm-eng" transform="translate(370,300)">
+          <circle class="pm-eng-halo" cx="0" cy="0" r="55"/>
+          <g class="pm-eng-ring">
+            <path class="pm-eng-arc" d="M0,-30 A30,30 0 0 1 30,0"/>
+            <path class="pm-eng-arc" d="M30,0 A30,30 0 0 1 0,30"/>
+            <path class="pm-eng-arc" d="M0,30 A30,30 0 0 1 -30,0"/>
+            <path class="pm-eng-arc" d="M-30,0 A30,30 0 0 1 0,-30"/>
+            <circle class="pm-eng-orb pm-eng-orb-1" cx="0"   cy="-30" r="7"/>
+            <circle class="pm-eng-orb pm-eng-orb-2" cx="30"  cy="0"   r="7"/>
+            <circle class="pm-eng-orb pm-eng-orb-3" cx="0"   cy="30"  r="7"/>
+            <circle class="pm-eng-orb pm-eng-orb-4" cx="-30" cy="0"   r="7"/>
+          </g>
+          <circle class="pm-eng-core" cx="0" cy="0" r="11"/>
+        </g>
 
-        <!-- ── bottleneck flare around the worst node (N3) ── -->
-        <circle class="pm-bottle-glow" cx="600" cy="270" r="40"/>
-        <circle class="pm-bottle-ring" cx="600" cy="270" r="36"/>
+        <!-- ── flare layers (Beat 3): drawn before nodes so the nodes sit on top ── -->
+        <circle class="pm-bottle-glow" cx="700" cy="300" r="40"/>
+        <circle class="pm-bottle-ring" cx="700" cy="300" r="36"/>
+        <circle class="pm-alt-glow"    cx="700" cy="440" r="34"/>
+        <circle class="pm-alt-ring"    cx="700" cy="440" r="30"/>
 
-        <!-- ── nodes + cores ── -->
-        <circle class="pm-node" cx="300" cy="270" r="26" style="animation-delay:1.50s"/>
-        <circle class="pm-node pm-node--bottle" cx="600" cy="270" r="26"/>
-        <circle class="pm-node" cx="450" cy="270" r="26" style="animation-delay:1.80s"/>
-        <circle class="pm-node" cx="750" cy="270" r="26" style="animation-delay:2.40s"/>
-        <circle class="pm-node" cx="900" cy="270" r="26" style="animation-delay:2.70s"/>
-        <circle class="pm-node" cx="525" cy="405" r="22" style="animation-delay:4.50s"/>
-        <circle class="pm-core" cx="300" cy="270" r="7" style="animation-delay:1.90s"/>
-        <circle class="pm-core" cx="450" cy="270" r="7" style="animation-delay:2.20s"/>
-        <circle class="pm-core" cx="600" cy="270" r="7" style="animation-delay:2.50s"/>
-        <circle class="pm-core" cx="750" cy="270" r="7" style="animation-delay:2.80s"/>
-        <circle class="pm-core" cx="900" cy="270" r="7" style="animation-delay:3.10s"/>
-        <circle class="pm-core" cx="525" cy="405" r="6" style="animation-delay:4.90s"/>
+        <!-- ── EDGES (drawn before nodes so each line is "covered" by the node it
+             ends at, giving the impression that the line "grew" the node).
+             Build chain — Beat 3 starts at 12.9s; each line starts ~0.2s into its
+             upstream node's pop and finishes as its downstream node pops in:
+                13.1s  N1 → N2
+                13.75s N2 → N3   AND   N2 → lower (branch)
+                14.4s  N3 → N4   AND   lower → N4 (rejoin)
+                15.05s N4 → N5   AND   N4 → N3 (rework loop) ── -->
+        <path class="pm-edge" pathLength="1" style="animation-delay:13.1s"  d="M506,300 L564,300"/>
+        <path class="pm-edge" pathLength="1" style="animation-delay:13.75s" d="M616,300 L674,300"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:13.75s" d="M608,318 C640,400 670,440 700,440"/>
+        <path class="pm-edge" pathLength="1" style="animation-delay:14.4s"  d="M726,300 L784,300"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:14.4s"  d="M700,440 C730,440 760,400 792,318"/>
+        <path class="pm-edge" pathLength="1" style="animation-delay:15.05s" d="M836,300 L894,300"/>
+        <path class="pm-edge pm-edge--rework" pathLength="1" style="animation-delay:15.05s" d="M804,276 C796,210 716,210 708,276"/>
 
-        <!-- ── feature call-outs (fade in as each is uncovered) ── -->
-        <text class="pm-label pm-label--alt"    x="525" y="452" text-anchor="middle" style="animation-delay:4.95s">Alternative path</text>
-        <text class="pm-label pm-label--rework" x="671" y="150" text-anchor="middle" style="animation-delay:5.45s">Rework loop</text>
-        <text class="pm-label pm-label--bottle" x="600" y="340" text-anchor="middle" style="animation-delay:6.05s">Bottleneck</text>
+        <!-- ── nodes + cores. Each node pops just as the line growing toward it
+             completes. Lower (alt) and bottleneck both pop at 14.2s — they are
+             the two ends of the branch out of N2. ── -->
+        <circle class="pm-node" cx="480" cy="300" r="26" style="animation-delay:12.9s"/>
+        <circle class="pm-node" cx="590" cy="300" r="26" style="animation-delay:13.55s"/>
+        <circle class="pm-node pm-node--bottle" cx="700" cy="300" r="26"/>
+        <circle class="pm-node pm-node--alt"    cx="700" cy="440" r="22"/>
+        <circle class="pm-node" cx="810" cy="300" r="26" style="animation-delay:14.85s"/>
+        <circle class="pm-node" cx="920" cy="300" r="26" style="animation-delay:15.5s"/>
+        <circle class="pm-core" cx="480" cy="300" r="7" style="animation-delay:13.2s"/>
+        <circle class="pm-core" cx="590" cy="300" r="7" style="animation-delay:13.85s"/>
+        <circle class="pm-core" cx="700" cy="300" r="7" style="animation-delay:14.5s"/>
+        <circle class="pm-core" cx="700" cy="440" r="6" style="animation-delay:14.5s"/>
+        <circle class="pm-core" cx="810" cy="300" r="7" style="animation-delay:15.15s"/>
+        <circle class="pm-core" cx="920" cy="300" r="7" style="animation-delay:15.8s"/>
+
+        <!-- ── feature call-outs (Beat 3) ── -->
+        <text class="pm-label pm-label--alt"    x="700" y="488" text-anchor="middle" style="animation-delay:16.4s">Alternative path</text>
+        <text class="pm-label pm-label--rework" x="756" y="188" text-anchor="middle" style="animation-delay:16.7s">Rework loop</text>
+        <text class="pm-label pm-label--bottle" x="700" y="362" text-anchor="middle" style="animation-delay:17.0s">Bottleneck</text>
       </svg>
     </div>`;
 
@@ -1163,9 +1304,12 @@
     const nar = scene.querySelector('.pi-narr'); if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
     scene.classList.remove('playing');
   }
-  function cardType(scene, host, segments, cps, delay) {
+  function cardType(scene, host, segments, cps, delay, append) {
     const run = () => {
-      host.innerHTML = '';
+      // append=true keeps existing content (just strips any trailing caret) so a
+      // second cardType call can extend the caption with more text on the same line.
+      if (append) { const oldCaret = host.querySelector('.pi-caret'); if (oldCaret) oldCaret.remove(); }
+      else { host.innerHTML = ''; }
       const spans = segments.map(s => { const e = document.createElement('span'); if (s.hl) e.className = 'pi-hl'; host.appendChild(e); return e; });
       if (reduceMotion()) { spans.forEach((e, i) => e.textContent = segments[i].t); return; }
       const caret = document.createElement('span'); caret.className = 'pi-caret'; host.appendChild(caret);
@@ -1209,9 +1353,8 @@
   function stopScene(el) {
     if (!el) return;
     if (el.querySelector('.cv-scene')) stopConvo(el);
-    else if (el.querySelector('.pm-scene')) stopPM(el);
     else if (el.querySelector('.tm-scene')) stopTM(el);
-    else { const s = el.querySelector('.an-scene, .rc-scene, .si-scene, .mo-scene'); if (s) cardStop(s); }
+    else { const s = el.querySelector('.pm-scene, .an-scene, .rc-scene, .si-scene, .mo-scene'); if (s) cardStop(s); }
   }
 
   // ════════════ Card 3 · Analysis ════════════
@@ -1454,100 +1597,67 @@
       cardType(scene, nar, [{ t: 'Drift — ' }, { t: 'caught', hl: true }, { t: ' the moment it shows.' }], 46, 0); }, 5200);
   }
 
-  // ── Task Mining: fire the CSS timeline, then type the three narration beats ──
-  function typeTM(scene, host, segments, cps, startDelay) {
-    const run = () => {
-      host.innerHTML = '';
-      const spans = segments.map(s => { const e = document.createElement('span'); if (s.hl) e.className = 'tm-hl'; host.appendChild(e); return e; });
-      if (reduceMotion()) { spans.forEach((e, i) => e.textContent = segments[i].t); return; }
-      const caret = document.createElement('span'); caret.className = 'tm-caret'; host.appendChild(caret);
-      let si = 0, ci = 0;
-      const stepFn = () => {
-        if (si >= segments.length) { caret.remove(); return; }
-        const seg = segments[si];
-        if (ci < seg.t.length) spans[si].textContent += seg.t[ci++];
-        else { si++; ci = 0; }
-        scene._tmTimers.push(setTimeout(stepFn, cps));
-      };
-      stepFn();
-    };
-    scene._tmTimers.push(setTimeout(run, startDelay));
-  }
+  // ── Task Mining: same shared cardPlay/cardType pattern as Process Mining and
+  // cards 3–6. Three beats matching the strict-sequence visual schedule below:
+  //   Beat 1 (0.35–5.1s):   type "Process Mining only sees what is logged…" while
+  //                         System+Engine appear and dots stream between them
+  //                         (caption types in 0.35–3.11s; then a 2s wait).
+  //   Beat 2 (5.46–11.0s):  type "But the real work happens between them…" then
+  //                         the four extras (Browser/Email/Sheet/Doc) fade in
+  //                         around the System (8.36s+); 2s wait afterwards.
+  //   Beat 3 (11.31s+):     type "Task mining captures what process mining misses."
+  //                         while the map builds with an extra (longer) rework loop.
   function playTM(el) {
     const scene = el.querySelector('.tm-scene'); if (!scene) return;
-    if (scene._tmTimers) scene._tmTimers.forEach(clearTimeout);
-    scene._tmTimers = [];
-    const nar = scene.querySelector('.tm-narrate');
-    scene.classList.remove('playing');
-    if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
-    void scene.offsetWidth;                 // reflow so the CSS timeline re-fires from frame 0
-    scene.classList.add('playing');
-    const CPS = 46;
-    const T = (fn, ms) => scene._tmTimers.push(setTimeout(fn, ms));
-    // Beat 1: the single system opens → "Logs see one system."
-    typeTM(scene, nar, [{ t: 'Logs see ' }, { t: 'one system', hl: true }, { t: '.' }], CPS, 350);
-    // Beat 2: apps + the dim rim surface → "The real work happens between them."
-    if (nar) T(() => nar.classList.add('wipe'), 3700);
-    T(() => { if (!nar) return; nar.classList.remove('wipe'); nar.innerHTML = '';
-      typeTM(scene, nar, [{ t: 'The real work happens ' }, { t: 'between them', hl: true }, { t: '.' }], CPS, 0); }, 4400);
-    // Beat 3: the central intelligence element captures it → "Task Mining captures it."
-    if (nar) T(() => nar.classList.add('wipe'), 7900);
-    T(() => { if (!nar) return; nar.classList.remove('wipe'); nar.innerHTML = '';
-      typeTM(scene, nar, [{ t: 'Task Mining ' }, { t: 'captures it', hl: true }, { t: '.' }], CPS, 0); }, 8700);
+    cardPlay(scene);
+    const nar = scene.querySelector('.pi-narr');
+    const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
+    // Beat 1 — "Process Mining only sees what is logged within your systems."
+    cardType(scene, nar, [{ t: 'Process Mining only sees what is ' }, { t: 'logged', hl: true }, { t: ' within your systems.' }], 46, 350);
+    T(() => nar.classList.add('wipe'), 5110);
+    // Beat 2 — "But the real work happens between them, where nothing is logged."
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'But the real work happens ' }, { t: 'between them', hl: true }, { t: ', where nothing is logged.' }], 46, 0); }, 5460);
+    T(() => nar.classList.add('wipe'), 10960);
+    // Beat 3 — "Task mining captures what process mining misses."
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Task mining captures what process mining ' }, { t: 'misses', hl: true }, { t: '.' }], 46, 0); }, 11310);
+    // Beat 3 closer — appended after the new variants finish drawing (~16.91s),
+    // typed onto the same line directly after the first sentence.
+    T(() => {
+      cardType(scene, nar, [{ t: ' Showing you what\'s ' }, { t: 'really', hl: true }, { t: ' going on.' }], 46, 0, true);
+    }, 17200);
   }
   function stopTM(el) {
     const scene = el.querySelector('.tm-scene'); if (!scene) return;
-    if (scene._tmTimers) { scene._tmTimers.forEach(clearTimeout); scene._tmTimers = null; }
-    const nar = scene.querySelector('.tm-narrate'); if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
-    scene.classList.remove('playing');
+    cardStop(scene);
   }
 
-  // ── Process Mining: fire the CSS timeline, then type the two narration beats ──
-  // Typer for a narration line — `segments` = [{t, hl?}] so part of the line can be coloured.
-  function typePM(scene, host, segments, cps, startDelay) {
-    const run = () => {
-      host.innerHTML = '';
-      const spans = segments.map(s => { const e = document.createElement('span'); if (s.hl) e.className = 'pm-hl'; host.appendChild(e); return e; });
-      if (reduceMotion()) { spans.forEach((e, i) => e.textContent = segments[i].t); return; }
-      const caret = document.createElement('span'); caret.className = 'pm-caret'; host.appendChild(caret);
-      let si = 0, ci = 0;
-      const stepFn = () => {
-        if (si >= segments.length) { caret.remove(); return; }
-        const seg = segments[si];
-        if (ci < seg.t.length) spans[si].textContent += seg.t[ci++];
-        else { si++; ci = 0; }
-        scene._pmTimers.push(setTimeout(stepFn, cps));
-      };
-      stepFn();
-    };
-    scene._pmTimers.push(setTimeout(run, startDelay));
-  }
+  // ── Process Mining: fire the CSS timeline, then type the three narration beats.
+  // Uses the shared cardPlay/cardType/cardStop helpers and the shared .pi-narr
+  // narration container (same pattern as cards 3–6). Captions wipe-and-replace on
+  // beat boundaries; the visual timeline is driven entirely by CSS off .playing.
+  // Caption boundaries match the strict-sequence visual schedule:
+  //   Beat 1 (0.35–6.3s):    type extract → system appears → dots flow → wait 2s
+  //   Beat 2 (6.65–12.5s):   type connect → engine appears + spins → wait 2s
+  //   Beat 3 (12.85s+):      type real-process AS the map animates beneath
+  // Highlighted words ('extract', 'connect', 'real process') render in
+  // light blue via the .pi-hl class set when {hl:true} is on a segment.
   function playPM(el) {
     const scene = el.querySelector('.pm-scene'); if (!scene) return;
-    if (scene._pmTimers) scene._pmTimers.forEach(clearTimeout);
-    scene._pmTimers = [];
-    const nar = scene.querySelector('.pm-narrate');
-    scene.classList.remove('playing');
-    if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
-    void scene.offsetWidth;                 // reflow so the CSS timeline re-fires from frame 0
-    scene.classList.add('playing');
-    const CPS = 46;
-    const T = (fn, ms) => scene._pmTimers.push(setTimeout(fn, ms));
-    // Beat 1: as the system streams its log → "From data you already have…"
-    typePM(scene, nar, [{ t: 'From data you ' }, { t: 'already have', hl: true }, { t: '…' }], CPS, 350);
-    // Beat 2: as the graph forms → "…the real process, mapped automatically."
-    if (nar) T(() => nar.classList.add('wipe'), 3550);
-    T(() => {
-      if (!nar) return;
-      nar.classList.remove('wipe'); nar.innerHTML = '';
-      typePM(scene, nar, [{ t: 'The real process, ' }, { t: 'mapped automatically', hl: true }, { t: '.' }], CPS, 0);
-    }, 4250);
-  }
-  function stopPM(el) {
-    const scene = el.querySelector('.pm-scene'); if (!scene) return;
-    if (scene._pmTimers) { scene._pmTimers.forEach(clearTimeout); scene._pmTimers = null; }
-    const nar = scene.querySelector('.pm-narrate'); if (nar) { nar.classList.remove('wipe'); nar.innerHTML = ''; }
-    scene.classList.remove('playing');
+    cardPlay(scene);
+    const nar = scene.querySelector('.pi-narr');
+    const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
+    // Beat 1 — extract: "We extract the data your systems already capture."
+    cardType(scene, nar, [{ t: 'We ' }, { t: 'extract', hl: true }, { t: ' the data your systems already capture.' }], 46, 350);
+    T(() => nar.classList.add('wipe'), 6300);
+    // Beat 2 — connect: "We then connect those records to understand exactly what is happening."
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'We then ' }, { t: 'connect', hl: true }, { t: ' those records to understand exactly what is happening.' }], 46, 0); }, 6650);
+    T(() => nar.classList.add('wipe'), 12500);
+    // Beat 3 — real process: "Your real process appears, with every detour, bottleneck and loop exposed."
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'Your ' }, { t: 'real process', hl: true }, { t: ' appears, with every detour, bottleneck and loop exposed.' }], 46, 0); }, 12850);
   }
 
   // Crowd → question pulse: a small token travels from a random person to a new question bubble.
