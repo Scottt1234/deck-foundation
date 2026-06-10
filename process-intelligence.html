@@ -668,12 +668,12 @@
 
     /* ═══════════ Recommendation — the hotspot feeds AI, AI proposes, you decide ═══════════
        Continuity: the Analysis map carries over UNCHANGED on the right, its amber cost
-       flare still pulsing on the bottleneck. The engine (the PM/TM motif) returns on
-       the left where it has lived since card 1. Three beats:
-         Beat 1 (0.35–4.9s)  Caption types; the engine fades in and the flaring hotspot
+       flare still pulsing on the bottleneck. A pulsing AI brain sits on the left where
+       the engine has lived since card 1. Three beats:
+         Beat 1 (0.35–4.9s)  Caption types; the brain fades in and the flaring hotspot
                              streams its data INTO it — the problem feeds the AI.
                              (Reverses card 1's left-to-right flow.)
-         Beat 2 (4.9–9.3s)   Caption swaps; the engine emits ordered tokens downward and
+         Beat 2 (4.9–9.3s)   Caption swaps; the brain emits ordered tokens downward and
                              a proposal card materialises beneath it — the specific fix,
                              its mechanism, projected impact in the Analysis colours.
          Beat 3 (9.3s+)      Caption swaps; the proposal connects back to the map (dashed
@@ -689,11 +689,27 @@
     .rc-scene.playing .rc-flare-glow { animation: anFlareGlowPulse 2.6s ease-in-out infinite, rcFadeOut 0.9s 10.0s ease forwards; }
     .rc-scene.playing .rc-flare-ring { animation: anFlareRingPulse 2.4s ease-in-out infinite, rcFadeOut 0.9s 10.0s ease forwards; }
 
-    /* ── engine (PM motif, Beat 1) + hotspot→engine stream + engine→card tokens ── */
-    .rc-scene.playing .pm-eng      { animation: pmFade 0.6s 2.4s ease both; }
-    .rc-scene.playing .pm-eng-halo { animation: pmEngHalo 0.7s 2.8s ease forwards; }
-    .rc-scene.playing .pm-eng-core { animation: pmEngPulse 1.6s 2.8s ease-in-out infinite; }
-    .rc-scene.playing .pm-eng-ring { animation: pmEngRotate 14s 2.8s linear infinite; }
+    /* ── AI brain (Beat 1) — pulses while it thinks. Replaces the spinning engine on
+       this card only: cards 1–2 show Apromore processing; this element is the AI. ── */
+    .rc-brain { opacity: 0; }
+    .rc-brain-halo { fill: rgba(0,179,255,0.10); transform-box: fill-box; transform-origin: center; }
+    .rc-brain-outline { fill: rgba(143,184,255,0.08); stroke: #8fb8ff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+      transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 8px rgba(0,179,255,0.55)); }
+    .rc-brain-fold { fill: none; stroke: rgba(143,184,255,0.55); stroke-width: 1.6; stroke-linecap: round;
+      transform-box: fill-box; transform-origin: center; }
+    .rc-brain-stem { fill: none; stroke: #8fb8ff; stroke-width: 2.2; stroke-linecap: round;
+      transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 6px rgba(0,179,255,0.45)); }
+    .rc-brain-link { stroke: rgba(188,212,255,0.65); stroke-width: 1.4; }
+    .rc-brain-node { fill: #e6f1ff; filter: drop-shadow(0 0 4px rgba(0,179,255,0.9)); }
+    .rc-scene.playing .rc-brain { animation: pmFade 0.6s 2.4s ease both; }
+    .rc-scene.playing .rc-brain-halo { animation: rcBrainHalo 2.4s 2.8s ease-in-out infinite; }
+    .rc-scene.playing .rc-brain-outline,
+    .rc-scene.playing .rc-brain-stem,
+    .rc-scene.playing .rc-brain-fold { animation: rcBrainPulse 2.4s 2.8s ease-in-out infinite; }
+    .rc-scene.playing .rc-brain-node { animation: rcSynapse 2.4s ease-in-out infinite; }  /* inline stagger delays */
+    @keyframes rcBrainHalo { 0%, 100% { transform: scale(1); opacity: 0.55; } 50% { transform: scale(1.18); opacity: 1; } }
+    @keyframes rcBrainPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+    @keyframes rcSynapse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
     .rc-scene.playing .rc-rt  { animation: pmStream 1.3s ease-out infinite; }
     .rc-scene.playing .rc-out { animation: pmStream 0.55s ease-out both; }
 
@@ -829,8 +845,8 @@
       .an-pulse { opacity: 0.85 !important; transform: none !important; animation: none !important; }
       .an-pill-bar-f { transform: scaleX(var(--bar, 0.7)) !important; animation: none !important; }
       /* Recommendation — settle on the Beat-3 end state: proposal up, fix previewed, held for approval */
-      .rc-scene .pm-eng, .rc-scene .pm-eng-halo { opacity: 1 !important; animation: none !important; }
-      .rc-scene .pm-eng-core, .rc-scene .pm-eng-ring { animation: none !important; transform: none !important; }
+      .rc-brain, .rc-brain-node { opacity: 1 !important; animation: none !important; }
+      .rc-brain-halo, .rc-brain-outline, .rc-brain-stem, .rc-brain-fold { animation: none !important; transform: none !important; }
       .rc-rt, .rc-out { opacity: 0 !important; animation: none !important; }
       .rc-flare-glow, .rc-flare-ring { opacity: 0 !important; animation: none !important; }
       .rc-panel, .rc-tag, .rc-title, .rc-mech, .rc-div, .rc-proj, .rc-row, .rc-btn, .rc-cursor, .rc-bolt, .rc-fixlabel
@@ -1637,9 +1653,9 @@
   // ════════════ Card 4 · Recommendation ════════════
   // Continuity scene: the Analysis map carries over UNCHANGED on the right (same
   // geometry as buildAnalysis), amber cost flare still pulsing on the bottleneck.
-  // Beat 1: the engine (PM/TM motif) fades in on the left; the hotspot streams its
+  // Beat 1: a pulsing AI brain fades in on the left; the hotspot streams its
   //         data INTO it — the problem feeds the AI.
-  // Beat 2: the engine emits ordered tokens downward; a proposal card materialises
+  // Beat 2: the brain emits ordered tokens downward; a proposal card materialises
   //         beneath it — specific fix, mechanism, projected impact carrying the
   //         Analysis figures forward ($1.2M → −$640K, 9 days → −3.5, 12,400 → −5,100).
   // Beat 3: the proposal connects back to the map — dashed link, green target ring +
@@ -1686,21 +1702,26 @@
       <circle class="rc-flare-glow" cx="700" cy="300" r="44"/>
       <circle class="rc-flare-ring" cx="700" cy="300" r="34"/>`;
 
-    // ── engine (same markup as PM/TM, parked on the left at the column the
-    //    proposal card will share) ──
-    const engine = `<g class="pm-eng" transform="translate(220,155)">
-        <circle class="pm-eng-halo" cx="0" cy="0" r="55"/>
-        <g class="pm-eng-ring">
-          <path class="pm-eng-arc" d="M0,-30 A30,30 0 0 1 30,0"/>
-          <path class="pm-eng-arc" d="M30,0 A30,30 0 0 1 0,30"/>
-          <path class="pm-eng-arc" d="M0,30 A30,30 0 0 1 -30,0"/>
-          <path class="pm-eng-arc" d="M-30,0 A30,30 0 0 1 0,-30"/>
-          <circle class="pm-eng-orb pm-eng-orb-1" cx="0"   cy="-30" r="7"/>
-          <circle class="pm-eng-orb pm-eng-orb-2" cx="30"  cy="0"   r="7"/>
-          <circle class="pm-eng-orb pm-eng-orb-3" cx="0"   cy="30"  r="7"/>
-          <circle class="pm-eng-orb pm-eng-orb-4" cx="-30" cy="0"   r="7"/>
+    // ── AI brain (parked on the left at the column the proposal card will share):
+    //    side-profile brain outline with a neural circuit inside. The whole element
+    //    breathes on a slow pulse; the synapse nodes twinkle in a stagger. ──
+    const synapses = [[-16, -10], [-4, -20], [10, -12], [-6, 0], [8, 6], [-15, 7]];
+    const brain = `<g class="rc-brain" transform="translate(220,155)">
+        <circle class="rc-brain-halo" cx="0" cy="0" r="52"/>
+        <path class="rc-brain-outline" d="M-28,10 C-36,4 -36,-10 -28,-16 C-28,-26 -16,-32 -8,-28 C-2,-36 12,-36 18,-28 C28,-30 36,-20 32,-12 C38,-4 36,8 26,10 C24,18 14,22 6,18 C0,24 -12,24 -16,16 C-22,20 -30,16 -28,10 Z"/>
+        <path class="rc-brain-stem" d="M5,20 C7,25 4,29 -1,32"/>
+        <path class="rc-brain-fold" d="M-21,-14 C-13,-10 -11,-2 -15,6"/>
+        <path class="rc-brain-fold" d="M19,-21 C15,-12 19,-4 15,4"/>
+        <g class="rc-brain-net">
+          <line class="rc-brain-link" x1="-16" y1="-10" x2="-4"  y2="-20"/>
+          <line class="rc-brain-link" x1="-4"  y1="-20" x2="10"  y2="-12"/>
+          <line class="rc-brain-link" x1="10"  y1="-12" x2="8"   y2="6"/>
+          <line class="rc-brain-link" x1="-6"  y1="0"   x2="8"   y2="6"/>
+          <line class="rc-brain-link" x1="-16" y1="-10" x2="-6"  y2="0"/>
+          <line class="rc-brain-link" x1="-15" y1="7"   x2="-6"  y2="0"/>
+          ${synapses.map(([x, y], i) =>
+            `<circle class="rc-brain-node" cx="${x}" cy="${y}" r="2.6" style="animation-delay:${(2.8 + i * 0.35).toFixed(2)}s"/>`).join('')}
         </g>
-        <circle class="pm-eng-core" cx="0" cy="0" r="11"/>
       </g>`;
 
     // ── Beat-1 stream: the flaring hotspot feeds the engine (infinite, base 2.7s —
@@ -1771,7 +1792,7 @@
         ${carryMap}
         ${spots}
         ${preview}
-        ${engine}
+        ${brain}
         ${stream}
         ${tokens}
         ${panel}
@@ -1783,10 +1804,10 @@
     cardPlay(scene);
     const nar = scene.querySelector('.pi-narr');
     const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
-    // Beat 1 — caption types first (0.35–2.3s); engine lands 2.4s; the hotspot
+    // Beat 1 — caption types first (0.35–2.3s); brain lands 2.4s; the hotspot
     //   streams into it from 2.7s; 2-second breath after.
     cardType(scene, nar, [{ t: 'AI starts with your ' }, { t: 'most expensive problem', hl: true }, { t: '.' }], 46, 350);
-    // Beat 2 — proposal card materialises beneath the engine while the caption types.
+    // Beat 2 — proposal card materialises beneath the brain while the caption types.
     T(() => nar.classList.add('wipe'), 4900);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
       cardType(scene, nar, [{ t: 'And proposes the ' }, { t: 'specific fix', hl: true }, { t: '.' }], 46, 0); }, 5250);
