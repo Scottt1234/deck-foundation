@@ -666,62 +666,96 @@
     .an-scene.playing .an-pill-bar-f--time     { animation: anBarFill 1.0s 12.2s cubic-bezier(.4,0,.2,1) forwards; }
     @keyframes anBarFill { from { transform: scaleX(0); } to { transform: scaleX(var(--bar, 0.7)); } }
 
-    /* ═══════════ Recommendation — set a priority, AI proposes, you decide ═══════════ */
-    .rc-chip { fill: rgba(255,255,255,0.04); stroke: rgba(255,255,255,0.14); stroke-width: 1; opacity: 0; }
-    .rc-chip--prio { fill: rgba(6,106,254,0.10); stroke: rgba(111,155,255,0.6); stroke-width: 1.4; }
-    .rc-chiplabel { fill: rgba(255,255,255,0.78); font: 700 12px var(--font-body); letter-spacing: 0.06em; }
-    .rc-bar-track { fill: rgba(255,255,255,0.10); }
-    .rc-bar-fill  { fill: #6f9bff; transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
-    .rc-bar-fill--prio { fill: #8fb8ff; }
-    .rc-priotag { fill: #bcd4ff; font: 700 8.5px var(--font-body); letter-spacing: 0.14em; opacity: 0; }
-    .rc-orb { opacity: 0; }
-    .rc-orb-glow { fill: rgba(111,155,255,0.22); transform-box: fill-box; transform-origin: center; }
-    .rc-orb-ring { fill: none; stroke: #8fb8ff; stroke-width: 1.5; }
-    .rc-orb-spin { fill: none; stroke: #bcd4ff; stroke-width: 1.4; stroke-dasharray: 5 8; opacity: 0.85; transform-box: fill-box; transform-origin: center; }
-    .rc-orb-core { fill: #eaf3ff; }
-    .rc-orb-label { fill: #04102f; font: 800 13px var(--font-display); letter-spacing: 0.04em; }
-    .rc-beam { stroke: #8fb8ff; stroke-width: 2; stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; filter: drop-shadow(0 0 3px rgba(143,184,255,0.6)); }
-    .rc-tok  { fill: #eaf3ff; opacity: 0; filter: drop-shadow(0 0 5px rgba(143,184,255,0.95)); }
-    .rc-card { fill: rgba(10,28,68,0.72); stroke: rgba(111,155,255,0.4); stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; transform: translateY(10px) scale(0.97); }
-    .rc-card-tag { fill: #bcd4ff; font: 700 9.5px var(--font-body); letter-spacing: 0.12em; opacity: 0; }
-    .rc-card-title { fill: #ffffff; font: 700 17px var(--font-display); opacity: 0; }
-    .rc-eff-label { fill: rgba(255,255,255,0.66); font: 600 12px var(--font-body); opacity: 0; }
-    .rc-eff-val   { fill: #5fe3a0; font: 700 13px var(--font-body); opacity: 0; }
-    .rc-eff-val--prio { fill: #7CFFC4; }
-    .rc-eff-bar-t { fill: rgba(255,255,255,0.10); opacity: 0; }
-    .rc-eff-bar-f { fill: #36c98a; transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
+    /* ═══════════ Recommendation — the hotspot feeds AI, AI proposes, you decide ═══════════
+       Continuity: the Analysis map carries over UNCHANGED on the right, its amber cost
+       flare still pulsing on the bottleneck. The engine (the PM/TM motif) returns on
+       the left where it has lived since card 1. Three beats:
+         Beat 1 (0.35–4.9s)  Caption types; the engine fades in and the flaring hotspot
+                             streams its data INTO it — the problem feeds the AI.
+                             (Reverses card 1's left-to-right flow.)
+         Beat 2 (4.9–9.3s)   Caption swaps; the engine emits ordered tokens downward and
+                             a proposal card materialises beneath it — the specific fix,
+                             its mechanism, projected impact in the Analysis colours.
+         Beat 3 (9.3s+)      Caption swaps; the proposal connects back to the map (dashed
+                             link, green target ring + bolt on the bottleneck, rework
+                             loop ghosts out, flare cools) and Review / Approve appear —
+                             held, unclicked. Nothing applies itself. */
+
+    /* ── carried-over cost hotspots (static) + lead flare (pulses, cools in Beat 3) ── */
+    .rc-spot { fill: #ff9a6a; opacity: 0.85; filter: drop-shadow(0 0 5px rgba(255,154,106,0.85)); }
+    .rc-flare-glow { fill: rgba(255,154,106,0.20); opacity: 0.85; transform-box: fill-box; transform-origin: center; }
+    .rc-flare-ring { fill: none; stroke: #ff9a6a; stroke-width: 2.4; opacity: 0.95; transform-box: fill-box; transform-origin: center;
+      filter: drop-shadow(0 0 8px rgba(255,154,106,0.85)); }
+    .rc-scene.playing .rc-flare-glow { animation: anFlareGlowPulse 2.6s ease-in-out infinite, rcFadeOut 0.9s 10.0s ease forwards; }
+    .rc-scene.playing .rc-flare-ring { animation: anFlareRingPulse 2.4s ease-in-out infinite, rcFadeOut 0.9s 10.0s ease forwards; }
+
+    /* ── engine (PM motif, Beat 1) + hotspot→engine stream + engine→card tokens ── */
+    .rc-scene.playing .pm-eng      { animation: pmFade 0.6s 2.4s ease both; }
+    .rc-scene.playing .pm-eng-halo { animation: pmEngHalo 0.7s 2.8s ease forwards; }
+    .rc-scene.playing .pm-eng-core { animation: pmEngPulse 1.6s 2.8s ease-in-out infinite; }
+    .rc-scene.playing .pm-eng-ring { animation: pmEngRotate 14s 2.8s linear infinite; }
+    .rc-scene.playing .rc-rt  { animation: pmStream 1.3s ease-out infinite; }
+    .rc-scene.playing .rc-out { animation: pmStream 0.55s ease-out both; }
+
+    /* ── proposal card (Beat 2) ── */
+    .rc-panel { fill: rgba(10,28,68,0.72); stroke: rgba(111,155,255,0.4); stroke-width: 1.4; opacity: 0;
+      transform-box: fill-box; transform-origin: center; transform: translateY(10px) scale(0.97); }
+    .rc-tag   { fill: #bcd4ff; font: 700 9.5px var(--font-body); letter-spacing: 0.12em; opacity: 0; }
+    .rc-title { fill: #ffffff; font: 700 19px var(--font-display); opacity: 0; }
+    .rc-mech  { fill: rgba(255,255,255,0.62); font: 600 12.5px var(--font-body); opacity: 0; }
+    .rc-div   { stroke: rgba(255,255,255,0.12); stroke-width: 1; opacity: 0; }
+    .rc-proj  { fill: rgba(255,255,255,0.45); font: 700 9.5px var(--font-body); letter-spacing: 0.16em; opacity: 0; }
+    .rc-row   { opacity: 0; }
+    .rc-row-label { fill: rgba(255,255,255,0.66); font: 600 12.5px var(--font-body); letter-spacing: 0.04em; }
+    .rc-row-val   { font: 700 15px var(--font-display); }
+    .rc-val--cost     { fill: #ff9a6a; }
+    .rc-val--time     { fill: #8fb8ff; }
+    .rc-val--resource { fill: #5fe3a0; }
+    .rc-row-dot--cost     { fill: #ff9a6a; filter: drop-shadow(0 0 5px rgba(255,154,106,0.85)); }
+    .rc-row-dot--time     { fill: #8fb8ff; filter: drop-shadow(0 0 5px rgba(143,184,255,0.85)); }
+    .rc-row-dot--resource { fill: #5fe3a0; filter: drop-shadow(0 0 5px rgba(95,227,160,0.75)); }
+    .rc-scene.playing .rc-panel { animation: rcCardIn 0.6s 5.7s cubic-bezier(.22,1,.36,1) both; }
+    .rc-scene.playing .rc-tag   { animation: piFade 0.5s 6.1s ease both; }
+    .rc-scene.playing .rc-title { animation: rcRise 0.5s 6.3s ease both; }
+    .rc-scene.playing .rc-mech  { animation: rcRise 0.5s 6.5s ease both; }
+    .rc-scene.playing .rc-div   { animation: piFade 0.4s 6.7s ease both; }
+    .rc-scene.playing .rc-proj  { animation: piFade 0.5s 6.8s ease both; }
+    .rc-scene.playing .rc-row   { animation: rcRise 0.5s ease both; }  /* per-row inline delays */
+
+    /* ── Beat 3: proposal → map preview (dashed link, target ring + bolt, rework ghosts) ── */
+    .rc-link { fill: none; stroke: #5fe3a0; stroke-width: 1.8; stroke-dasharray: 6 7; opacity: 0;
+      filter: drop-shadow(0 0 4px rgba(95,227,160,0.5)); }
+    .rc-target-ring { fill: none; stroke: #5fe3a0; stroke-width: 2.4; stroke-dasharray: 7 6; opacity: 0;
+      transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 7px rgba(95,227,160,0.7)); }
+    .rc-bolt { opacity: 0; transform-box: fill-box; transform-origin: center; }
+    .rc-bolt-bg { fill: #0a1c44; stroke: #5fe3a0; stroke-width: 1.6; }
+    .rc-bolt-glyph { fill: #5fe3a0; }
+    .rc-fixlabel { fill: #9defc4; font: 700 12px var(--font-body); letter-spacing: 0.06em; opacity: 0; }
+    .rc-scene.playing .rc-ghost { animation: rcGhost 0.9s 10.0s ease forwards; }
+    .rc-scene.playing .rc-link { animation: rcDashIn 0.7s 10.1s ease forwards; }
+    .rc-scene.playing .rc-target-ring { animation: rcDashIn 0.6s 10.3s ease forwards, rcRingSpin 26s 10.3s linear infinite; }
+    .rc-scene.playing .rc-bolt { animation: rcPopIn 0.5s 10.6s cubic-bezier(.22,1,.36,1) both; }
+    .rc-scene.playing .rc-fixlabel { animation: piFade 0.5s 10.8s ease both; }
+
+    /* ── Beat 3: decision state — Review / Approve, cursor hovering, held ── */
     .rc-btn { opacity: 0; }
     .rc-btn-box { fill: none; stroke: rgba(255,255,255,0.4); stroke-width: 1.3; }
-    .rc-accept-box { fill: #1356d6; stroke: #6f9bff; stroke-width: 1.3; }
+    .rc-approve-box { fill: #1356d6; stroke: #6f9bff; stroke-width: 1.3; }
     .rc-btn-label { fill: #fff; font: 700 12px var(--font-body); letter-spacing: 0.04em; }
     .rc-cursor { opacity: 0; }
     .rc-cursor path { fill: #ffffff; stroke: #04102f; stroke-width: 1; }
-    .rc-scene.playing .rc-chip { animation: piFade 0.5s both; }
-    .rc-scene.playing .rc-bar-fill { animation: rcBar 0.9s cubic-bezier(.4,0,.2,1) both; }
-    .rc-scene.playing .rc-priotag { animation: piFade 0.5s 2.4s ease both; }
-    .rc-scene.playing .rc-orb { animation: piFade 0.6s 0.4s ease both; }
-    .rc-scene.playing .rc-orb-glow { animation: rcOrbPulse 2.4s ease-in-out infinite; }
-    .rc-scene.playing .rc-orb-spin { animation: rcSpin 7s linear infinite; }
-    .rc-scene.playing .rc-beam { animation: rcDraw 0.6s 3.5s ease forwards; }
-    .rc-scene.playing .rc-tok  { animation: rcTok 0.7s 3.6s ease forwards; }
-    .rc-scene.playing .rc-card { animation: rcCardIn 0.6s 4.0s cubic-bezier(.22,1,.36,1) both; }
-    .rc-scene.playing .rc-card-tag   { animation: piFade 0.5s 4.4s ease both; }
-    .rc-scene.playing .rc-card-title { animation: rcRise 0.5s 4.6s ease both; }
-    .rc-scene.playing .rc-eff-label  { animation: piFade 0.5s ease both; }
-    .rc-scene.playing .rc-eff-val    { animation: piFade 0.5s ease both; }
-    .rc-scene.playing .rc-eff-bar-t  { animation: piFade 0.4s ease both; }
-    .rc-scene.playing .rc-eff-bar-f  { animation: rcBar 0.8s cubic-bezier(.4,0,.2,1) both; }
-    .rc-scene.playing .rc-btn { animation: piFade 0.5s 5.8s ease both; }
-    .rc-scene.playing .rc-accept-box { animation: rcAccept 1.8s 6.6s ease-in-out infinite; }
-    .rc-scene.playing .rc-cursor { animation: rcCursorIn 0.5s 6.2s ease forwards, rcCursorNudge 1.6s 7.0s ease-in-out infinite; }
-    @keyframes rcBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-    @keyframes rcOrbPulse { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.16); opacity: 0.5; } }
-    @keyframes rcSpin { to { transform: rotate(360deg); } }
-    @keyframes rcDraw { from { opacity: 1; stroke-dashoffset: 1; } to { opacity: 0.9; stroke-dashoffset: 0; } }
-    @keyframes rcTok { 0% { opacity: 0; offset-distance: 0%; } 15% { opacity: 1; } 100% { opacity: 0; offset-distance: 100%; } }
+    .rc-scene.playing .rc-btn { animation: piFade 0.5s 11.0s ease both; }
+    .rc-scene.playing .rc-approve-box { animation: rcApprove 1.8s 11.8s ease-in-out infinite; }
+    .rc-scene.playing .rc-cursor { animation: rcCursorIn 0.5s 11.4s ease forwards, rcCursorNudge 1.6s 12.0s ease-in-out infinite; }
+
     @keyframes rcCardIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
     @keyframes rcRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    @keyframes rcAccept { 0%, 100% { opacity: 1; } 50% { opacity: 0.72; } }
+    @keyframes rcFadeOut { to { opacity: 0; } }
+    @keyframes rcGhost { to { opacity: 0.15; } }
+    @keyframes rcDashIn { from { opacity: 0; } to { opacity: 0.95; } }
+    @keyframes rcRingSpin { to { transform: rotate(360deg); } }
+    @keyframes rcPopIn { 0% { opacity: 0; transform: scale(0.4); } 60% { opacity: 1; transform: scale(1.15); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes rcApprove { 0%, 100% { opacity: 1; } 50% { opacity: 0.72; } }
     @keyframes rcCursorIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes rcCursorNudge { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, -3px); } }
 
@@ -794,9 +828,15 @@
       .an-flare-ring { opacity: 0.95 !important; animation: none !important; transform: none !important; }
       .an-pulse { opacity: 0.85 !important; transform: none !important; animation: none !important; }
       .an-pill-bar-f { transform: scaleX(var(--bar, 0.7)) !important; animation: none !important; }
-      .rc-chip, .rc-priotag, .rc-orb, .rc-card, .rc-card-tag, .rc-card-title, .rc-eff-label, .rc-eff-val, .rc-eff-bar-t, .rc-btn, .rc-cursor { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .rc-bar-fill, .rc-eff-bar-f { transform: scaleX(1) !important; animation: none !important; }
-      .rc-beam { opacity: 0 !important; } .rc-tok { opacity: 0 !important; }
+      /* Recommendation — settle on the Beat-3 end state: proposal up, fix previewed, held for approval */
+      .rc-scene .pm-eng, .rc-scene .pm-eng-halo { opacity: 1 !important; animation: none !important; }
+      .rc-scene .pm-eng-core, .rc-scene .pm-eng-ring { animation: none !important; transform: none !important; }
+      .rc-rt, .rc-out { opacity: 0 !important; animation: none !important; }
+      .rc-flare-glow, .rc-flare-ring { opacity: 0 !important; animation: none !important; }
+      .rc-panel, .rc-tag, .rc-title, .rc-mech, .rc-div, .rc-proj, .rc-row, .rc-btn, .rc-cursor, .rc-bolt, .rc-fixlabel
+        { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .rc-link, .rc-target-ring { opacity: 0.95 !important; transform: none !important; animation: none !important; }
+      .rc-ghost { opacity: 0.15 !important; animation: none !important; }
       .si-node, .si-edge, .si-tile, .si-projtag, .si-delta, .si-after { opacity: 1 !important; transform: none !important; animation: none !important; }
       .si-edge--rework, .si-before-fade { opacity: 0 !important; }
       .si-node--bottle { stroke: #8fb8ff !important; } .si-num--live { fill: #5fe3a0 !important; }
@@ -1595,63 +1635,147 @@
   }
 
   // ════════════ Card 4 · Recommendation ════════════
-  // Three weighted priorities (Cost highest); an AI element proposes a specific
-  // change and its projected effect, held in a review/accept state — your call.
+  // Continuity scene: the Analysis map carries over UNCHANGED on the right (same
+  // geometry as buildAnalysis), amber cost flare still pulsing on the bottleneck.
+  // Beat 1: the engine (PM/TM motif) fades in on the left; the hotspot streams its
+  //         data INTO it — the problem feeds the AI.
+  // Beat 2: the engine emits ordered tokens downward; a proposal card materialises
+  //         beneath it — specific fix, mechanism, projected impact carrying the
+  //         Analysis figures forward ($1.2M → −$640K, 9 days → −3.5, 12,400 → −5,100).
+  // Beat 3: the proposal connects back to the map — dashed link, green target ring +
+  //         bolt on the bottleneck, rework loop ghosts out, flare cools — then
+  //         Review / Approve appear with the cursor hovering. Held. Your call.
   function buildRecommend() {
-    const chips = [
-      { l: 'Cost',     cx: 285, w: 88, prio: true },
-      { l: 'Resource', cx: 500, w: 42 },
-      { l: 'Time',     cx: 715, w: 60 },
-    ];
-    let chipSVG = '';
-    chips.forEach((c, i) => {
-      const fillW = (148 * c.w / 100).toFixed(1);
-      const dly = (0.5 + i * 0.18).toFixed(2);
-      chipSVG += `<g>
-        <rect class="rc-chip${c.prio ? ' rc-chip--prio' : ''}" x="${c.cx - 92}" y="60" width="184" height="58" rx="10" style="animation-delay:${dly}s"/>
-        <text class="rc-chiplabel" x="${c.cx - 74}" y="84">${c.l}</text>
-        ${c.prio ? `<text class="rc-priotag" x="${c.cx + 74}" y="84" text-anchor="end">PRIORITY</text>` : ''}
-        <rect class="rc-bar-track" x="${c.cx - 74}" y="96" width="148" height="7" rx="3.5"/>
-        <rect class="rc-bar-fill${c.prio ? ' rc-bar-fill--prio' : ''}" x="${c.cx - 74}" y="96" width="${fillW}" height="7" rx="3.5" style="animation-delay:${(1.0 + i * 0.18).toFixed(2)}s"/>
+    // ── carry-over map from Analysis (identical static geometry; rework loop
+    //    tagged .rc-ghost so Beat 3 can fade it — it's what the fix removes) ──
+    const carryMap = `
+      <path class="an-map-edge" d="M506,300 L564,300"/>
+      <path class="an-map-edge" d="M616,300 L674,300"/>
+      <path class="an-map-edge an-map-edge--alt" d="M608,318 C640,400 670,440 700,440"/>
+      <path class="an-map-edge" d="M726,300 L784,300"/>
+      <path class="an-map-edge an-map-edge--alt" d="M700,440 C730,440 760,400 792,318"/>
+      <path class="an-map-edge" d="M836,300 L894,300"/>
+      <path class="an-map-edge an-map-edge--rework rc-ghost" d="M804,276 C796,210 716,210 708,276"/>
+      <path class="an-map-edge an-map-edge--alt" d="M484,278 C540,200 660,200 696,278"/>
+      <path class="an-map-edge an-map-edge--alt" d="M498,282 C530,260 555,180 574,154"/>
+      <path class="an-map-edge an-map-edge--alt" d="M590,278 C586,240 586,200 590,162"/>
+      <circle class="an-map-node" cx="590" cy="140" r="22"/>
+      <circle class="an-map-core" cx="590" cy="140" r="6"/>
+      <path class="an-map-edge an-map-edge--alt" d="M610,148 C720,140 760,210 794,290"/>
+      <path class="an-map-edge an-map-edge--alt" d="M715,452 C800,475 880,420 906,322"/>
+      <path class="an-map-edge an-map-edge--alt" d="M826,278 C840,238 900,238 914,278"/>
+      <circle class="an-map-node" cx="480" cy="300" r="26"/>
+      <circle class="an-map-node" cx="590" cy="300" r="26"/>
+      <circle class="an-map-node" cx="700" cy="300" r="26"/>
+      <circle class="an-map-node" cx="700" cy="440" r="22"/>
+      <circle class="an-map-node" cx="810" cy="300" r="26"/>
+      <circle class="an-map-node" cx="920" cy="300" r="26"/>
+      <circle class="an-map-core" cx="480" cy="300" r="7"/>
+      <circle class="an-map-core" cx="590" cy="300" r="7"/>
+      <circle class="an-map-core" cx="700" cy="300" r="7"/>
+      <circle class="an-map-core" cx="700" cy="440" r="6"/>
+      <circle class="an-map-core" cx="810" cy="300" r="7"/>
+      <circle class="an-map-core" cx="920" cy="300" r="7"/>`;
+
+    // ── carried-over cost hotspots (static) + the lead flare on the bottleneck ──
+    const spots = `
+      <circle class="rc-spot" cx="700" cy="300" r="6"/>
+      <circle class="rc-spot rc-ghost" cx="756" cy="232" r="4.5"/>
+      <circle class="rc-spot" cx="700" cy="440" r="4.5"/>
+      <circle class="rc-spot" cx="590" cy="140" r="4.5"/>
+      <circle class="rc-flare-glow" cx="700" cy="300" r="44"/>
+      <circle class="rc-flare-ring" cx="700" cy="300" r="34"/>`;
+
+    // ── engine (same markup as PM/TM, parked on the left at the column the
+    //    proposal card will share) ──
+    const engine = `<g class="pm-eng" transform="translate(220,155)">
+        <circle class="pm-eng-halo" cx="0" cy="0" r="55"/>
+        <g class="pm-eng-ring">
+          <path class="pm-eng-arc" d="M0,-30 A30,30 0 0 1 30,0"/>
+          <path class="pm-eng-arc" d="M30,0 A30,30 0 0 1 0,30"/>
+          <path class="pm-eng-arc" d="M0,30 A30,30 0 0 1 -30,0"/>
+          <path class="pm-eng-arc" d="M-30,0 A30,30 0 0 1 0,-30"/>
+          <circle class="pm-eng-orb pm-eng-orb-1" cx="0"   cy="-30" r="7"/>
+          <circle class="pm-eng-orb pm-eng-orb-2" cx="30"  cy="0"   r="7"/>
+          <circle class="pm-eng-orb pm-eng-orb-3" cx="0"   cy="30"  r="7"/>
+          <circle class="pm-eng-orb pm-eng-orb-4" cx="-30" cy="0"   r="7"/>
+        </g>
+        <circle class="pm-eng-core" cx="0" cy="0" r="11"/>
       </g>`;
-    });
-    const orb = `<g class="rc-orb">
-        <circle class="rc-orb-glow" cx="235" cy="324" r="34"/>
-        <circle class="rc-orb-ring" cx="235" cy="324" r="29"/>
-        <circle class="rc-orb-spin" cx="235" cy="324" r="21"/>
-        <circle class="rc-orb-core" cx="235" cy="324" r="15"/>
-        <text class="rc-orb-label" x="235" y="329" text-anchor="middle">AI</text>
-      </g>`;
-    const beam = `<path class="rc-beam" pathLength="1" d="M272,320 L414,300"/>`;
-    const effects = [
-      { l: 'Cost',     v: '−22%', w: 132, prio: true },
-      { l: 'Resource', v: '−15%', w: 90 },
-      { l: 'Time',     v: '−28%', w: 168 },
+
+    // ── Beat-1 stream: the flaring hotspot feeds the engine (infinite, base 2.7s —
+    //    visible once the engine has landed). Right-to-left: card 1 reversed. ──
+    const stream = (() => {
+      let s = 0xBEEF1E;
+      const rnd = () => { s = (s * 1103515245 + 12345) & 0x7FFFFFFF; return s / 0x7FFFFFFF; };
+      const N = 22, BASE_DELAY = 2.7;
+      let html = '';
+      for (let i = 0; i < N; i++) {
+        const sx = 700 + (rnd() - 0.5) * 48;
+        const sy = 300 + (rnd() - 0.5) * 36;
+        const ex = 240 + Math.floor(rnd() * 14);
+        const ey = 158 + Math.floor(rnd() * 14);
+        const dur = (1.0 + rnd() * 0.5).toFixed(2);
+        const delay = (BASE_DELAY + rnd() * 1.4).toFixed(2);
+        html += `<circle class="pm-rt rc-rt" cx="${sx.toFixed(0)}" cy="${sy.toFixed(0)}" r="2.5" style="--tx:${(ex - sx).toFixed(0)}px;--ty:${(ey - sy).toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
+      }
+      return html;
+    })();
+
+    // ── Beat-2 ordered tokens: engine bottom → proposal card ──
+    const tokens = [5.55, 5.72, 5.89].map(d =>
+      `<circle class="pm-out rc-out" cx="220" cy="216" r="3.5" style="--tx:0px;--ty:42px;animation-delay:${d}s"/>`).join('');
+
+    // ── proposal card (left column — same x as the Analysis pills) ──
+    const ROWS = [
+      { c: 'cost',     l: 'COST',     v: '−$640K / yr',      y: 398, d: 7.00 },
+      { c: 'time',     l: 'TIME',     v: '−3.5 days / case', y: 426, d: 7.25 },
+      { c: 'resource', l: 'RESOURCE', v: '−5,100 hrs / yr',  y: 454, d: 7.50 },
     ];
-    let rows = '';
-    effects.forEach((e, i) => {
-      const y = 288 + i * 42, d = (4.8 + i * 0.3).toFixed(2);
-      rows += `<text class="rc-eff-label" x="440" y="${y + 4}" style="animation-delay:${d}s">${e.l}</text>
-        <rect class="rc-eff-bar-t" x="540" y="${y - 8}" width="180" height="9" rx="4.5" style="animation-delay:${d}s"/>
-        <rect class="rc-eff-bar-f" x="540" y="${y - 8}" width="${e.w}" height="9" rx="4.5" style="animation-delay:${d}s"/>
-        <text class="rc-eff-val${e.prio ? ' rc-eff-val--prio' : ''}" x="862" y="${y + 4}" text-anchor="end" style="animation-delay:${d}s">${e.v}</text>`;
-    });
-    const card = `<rect class="rc-card" x="415" y="158" width="470" height="306" rx="14"/>
-      <text class="rc-card-tag" x="440" y="190">PROPOSAL · AWAITING YOUR APPROVAL</text>
-      <text class="rc-card-title" x="440" y="222">Automate the manual step</text>
-      <line class="rc-eff-bar-t" x1="440" y1="240" x2="860" y2="240" style="stroke:rgba(255,255,255,0.12);stroke-width:1;animation-delay:4.4s"/>
+    const rows = ROWS.map(r => `<g class="rc-row" style="animation-delay:${r.d}s">
+        <circle class="rc-row-dot--${r.c}" cx="62" cy="${r.y - 4}" r="5"/>
+        <text class="rc-row-label" x="78" y="${r.y}">${r.l}</text>
+        <text class="rc-row-val rc-val--${r.c}" x="386" y="${r.y}" text-anchor="end">${r.v}</text>
+      </g>`).join('');
+    const panel = `
+      <rect class="rc-panel" x="30" y="250" width="380" height="258" rx="14"/>
+      <text class="rc-tag" x="54" y="282">PROPOSAL · GENERATED FROM YOUR DATA</text>
+      <text class="rc-title" x="54" y="312">Automate the manual check</text>
+      <text class="rc-mech" x="54" y="334">Removes the rework loop behind your bottleneck</text>
+      <line class="rc-div" x1="54" y1="350" x2="386" y2="350"/>
+      <text class="rc-proj" x="54" y="372">PROJECTED IMPACT</text>
       ${rows}
       <g class="rc-btn">
-        <rect class="rc-btn-box" x="470" y="414" width="104" height="34" rx="8"/>
-        <text class="rc-btn-label" x="522" y="436" text-anchor="middle">Review</text>
-        <rect class="rc-accept-box" x="606" y="414" width="124" height="34" rx="8"/>
-        <text class="rc-btn-label" x="668" y="436" text-anchor="middle">Accept</text>
+        <rect class="rc-btn-box" x="54" y="470" width="104" height="30" rx="8"/>
+        <text class="rc-btn-label" x="106" y="490" text-anchor="middle">Review</text>
+        <rect class="rc-approve-box" x="174" y="470" width="124" height="30" rx="8"/>
+        <text class="rc-btn-label" x="236" y="490" text-anchor="middle">Approve</text>
       </g>
-      <g class="rc-cursor"><path d="M690,430 l0,21 l5.5,-5 l4,8.5 l3.2,-1.5 l-4,-8.5 l7.3,0 z"/></g>`;
+      <g class="rc-cursor"><path d="M258,486 l0,21 l5.5,-5 l4,8.5 l3.2,-1.5 l-4,-8.5 l7.3,0 z"/></g>`;
+
+    // ── Beat-3 preview on the map: dashed link from the proposal to the bottleneck,
+    //    green target ring + bolt badge, "Proposed fix" label ──
+    const preview = `
+      <path class="rc-link" d="M412,310 C490,312 570,304 666,300"/>
+      <circle class="rc-target-ring" cx="700" cy="300" r="36"/>
+      <g transform="translate(727,270)"><g class="rc-bolt">
+        <circle class="rc-bolt-bg" r="13"/>
+        <path class="rc-bolt-glyph" d="M2.5,-8 L-4.5,1.5 L-0.5,1.5 L-2.5,8 L4.5,-1.5 L0.5,-1.5 Z"/>
+      </g></g>
+      <text class="rc-fixlabel" x="700" y="362" text-anchor="middle">Proposed fix</text>`;
+
     const scene = document.createElement('div');
     scene.className = 'rc-scene pi-cardscene';
     scene.innerHTML = `<div class="pi-narr"></div>
-      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${chipSVG}${orb}${beam}${card}</svg>`;
+      <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        ${carryMap}
+        ${spots}
+        ${preview}
+        ${engine}
+        ${stream}
+        ${tokens}
+        ${panel}
+      </svg>`;
     return scene;
   }
   function playRC(el) {
@@ -1659,13 +1783,17 @@
     cardPlay(scene);
     const nar = scene.querySelector('.pi-narr');
     const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
-    cardType(scene, nar, [{ t: 'Set your ' }, { t: 'priority', hl: true }, { t: '.' }], 46, 350);
-    T(() => nar.classList.add('wipe'), 3000);
+    // Beat 1 — caption types first (0.35–2.3s); engine lands 2.4s; the hotspot
+    //   streams into it from 2.7s; 2-second breath after.
+    cardType(scene, nar, [{ t: 'AI starts with your ' }, { t: 'most expensive problem', hl: true }, { t: '.' }], 46, 350);
+    // Beat 2 — proposal card materialises beneath the engine while the caption types.
+    T(() => nar.classList.add('wipe'), 4900);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'AI proposes the ' }, { t: 'fix', hl: true }, { t: '.' }], 46, 0); }, 3600);
-    T(() => nar.classList.add('wipe'), 6000);
+      cardType(scene, nar, [{ t: 'And proposes the ' }, { t: 'specific fix', hl: true }, { t: '.' }], 46, 0); }, 5250);
+    // Beat 3 — the fix previews on the map; Review / Approve appear, cursor hovers. Held.
+    T(() => nar.classList.add('wipe'), 9300);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'Your ' }, { t: 'decision', hl: true }, { t: ' to make.' }], 46, 0); }, 6600);
+      cardType(scene, nar, [{ t: 'Previewed on your process. ' }, { t: 'Your decision', hl: true }, { t: ' to make.' }], 46, 0); }, 9650);
   }
 
   // ════════════ Card 5 · Simulation ════════════
