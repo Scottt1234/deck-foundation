@@ -177,6 +177,13 @@
       line-height: 1.34; letter-spacing: -0.015em; max-width: 920px;
     }
     .statement .hl { color: var(--sf-blue-m); }
+    /* gentle breathing pulse for a closing challenge line */
+    .hl-pulse { animation: hlPulse 2.6s ease-in-out infinite; }
+    @keyframes hlPulse {
+      0%, 100% { opacity: 1; text-shadow: 0 0 18px rgba(143,184,255,0.45); }
+      50%      { opacity: 0.62; text-shadow: 0 0 4px rgba(143,184,255,0.1); }
+    }
+    @media (prefers-reduced-motion: reduce) { .hl-pulse { animation: none !important; } }
     .rule-accent { width: 44px; height: 3px; background: var(--sf-blue-m); border-radius: 2px; margin-bottom: 22px; }
 
     /* ── Prose blocks (slides 4 & 5) ─────────────────────────────────── */
@@ -1114,7 +1121,7 @@
     <div class="slide sd" data-section="The Common Thread">
       <div class="slide-body">
         <div class="eyebrow" data-animate="fade-up" data-anim-delay="0">The common thread</div>
-        <div class="section-title" data-animate="fade-up" data-anim-delay="60">Three decisions. One thing in common.<br/><span style="color:var(--sf-blue-l)">Limited room for error.</span></div>
+        <div class="section-title" data-animate="fade-up" data-anim-delay="60">These decisions have one thing in common.<br/><span style="color:var(--sf-blue-l)">Limited room for error.</span></div>
         <div class="section-sub" data-animate="fade-up" data-anim-delay="120">And they all need the same thing.</div>
 
         <div class="thread">
@@ -1165,7 +1172,7 @@
 
         <div data-animate="fade-up" data-anim-delay="440">
           <div class="rule-accent"></div>
-          <div class="statement">The quality of your visibility determines the quality of your decisions.<br/><span class="hl">So &mdash; how well do you know how your business actually runs?</span></div>
+          <div class="statement">The quality of your visibility determines the quality of your decisions.<br/><span class="hl hl-pulse">So &mdash; how well do you know how your business actually runs?</span></div>
         </div>
       </div>
     </div>
