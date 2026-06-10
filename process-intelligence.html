@@ -668,15 +668,17 @@
 
     /* ═══════════ Recommendation — the hotspot feeds AI, AI proposes, you decide ═══════════
        Continuity: the Analysis map carries over UNCHANGED on the right, its amber cost
-       flare still pulsing on the bottleneck. The engine (the PM/TM motif) returns on
-       the left where it has lived since card 1. Three beats:
-         Beat 1 (0.35–4.9s)  Caption types; the engine fades in and the flaring hotspot
-                             streams its data INTO it — the problem feeds the AI.
-                             (Reverses card 1's left-to-right flow.)
-         Beat 2 (4.9–9.3s)   Caption swaps; the engine emits ordered tokens downward and
-                             a proposal card materialises beneath it — the specific fix,
-                             its mechanism, projected impact in the Analysis colours.
-         Beat 3 (9.3s+)      Caption swaps; the proposal connects back to the map (dashed
+       flare still pulsing on the bottleneck. Human–AI–human: you aim → AI proposes →
+       you decide. Three beats:
+         Beat 1 (0.35–4.9s)  Caption types; priority chips (Cost / Time / Resource) land
+                             in the left column; the cursor picks Cost; the most
+                             expensive hotspot on the map surges in answer.
+         Beat 2 (4.9–10.6s)  Caption swaps; the engine (the PM/TM motif) returns and the
+                             flaring hotspot streams its data INTO it (card 1 reversed);
+                             ordered tokens drop out and a proposal card materialises
+                             beneath — specific fix, mechanism, projected impact in the
+                             Analysis colours.
+         Beat 3 (10.6s+)     Caption swaps; the proposal connects back to the map (dashed
                              link, green target ring + bolt on the bottleneck, rework
                              loop ghosts out, flare cools) and Review / Approve appear —
                              held, unclicked. Nothing applies itself. */
@@ -686,14 +688,35 @@
     .rc-flare-glow { fill: rgba(255,154,106,0.20); opacity: 0.85; transform-box: fill-box; transform-origin: center; }
     .rc-flare-ring { fill: none; stroke: #ff9a6a; stroke-width: 2.4; opacity: 0.95; transform-box: fill-box; transform-origin: center;
       filter: drop-shadow(0 0 8px rgba(255,154,106,0.85)); }
-    .rc-scene.playing .rc-flare-glow { animation: anFlareGlowPulse 2.6s ease-in-out infinite, rcFadeOut 0.9s 10.0s ease forwards; }
-    .rc-scene.playing .rc-flare-ring { animation: anFlareRingPulse 2.4s ease-in-out infinite, rcFadeOut 0.9s 10.0s ease forwards; }
+    .rc-scene.playing .rc-flare-glow { animation: anFlareGlowPulse 2.6s ease-in-out infinite, rcFadeOut 0.9s 11.3s ease forwards; }
+    .rc-scene.playing .rc-flare-ring { animation: anFlareRingPulse 2.4s ease-in-out infinite, rcFadeOut 0.9s 11.3s ease forwards; }
 
-    /* ── engine (PM motif, Beat 1) + hotspot→engine stream + engine→card tokens ── */
-    .rc-scene.playing .pm-eng      { animation: pmFade 0.6s 2.4s ease both; }
-    .rc-scene.playing .pm-eng-halo { animation: pmEngHalo 0.7s 2.8s ease forwards; }
-    .rc-scene.playing .pm-eng-core { animation: pmEngPulse 1.6s 2.8s ease-in-out infinite; }
-    .rc-scene.playing .pm-eng-ring { animation: pmEngRotate 14s 2.8s linear infinite; }
+    /* ── Beat 1: priority selector — YOU aim the AI before it moves ── */
+    .rc-prio { opacity: 0; }
+    .rc-scene.playing .rc-prio { animation: piFade 0.5s 1.9s ease both; }
+    .rc-pchip-box { fill: rgba(255,255,255,0.04); stroke: rgba(255,255,255,0.16); stroke-width: 1.2; }
+    .rc-pchip-label { fill: rgba(255,255,255,0.78); font: 700 13px var(--font-body); letter-spacing: 0.04em; }
+    .rc-pdot--cost { fill: #ff9a6a; } .rc-pdot--time { fill: #8fb8ff; } .rc-pdot--resource { fill: #5fe3a0; }
+    .rc-scene.playing .rc-pchip--sel .rc-pchip-box   { animation: rcPrioOn 0.5s 3.0s ease forwards; }
+    .rc-scene.playing .rc-pchip--sel .rc-pchip-label { animation: rcPrioLabelOn 0.5s 3.0s ease forwards; }
+    @keyframes rcPrioOn { to { fill: rgba(255,154,106,0.14); stroke: #ff9a6a; } }
+    @keyframes rcPrioLabelOn { to { fill: #ffffff; } }
+    /* the cursor that makes the choice (fades out once the choice is made) */
+    .rc-prio-cursor { opacity: 0; }
+    .rc-prio-cursor path { fill: #ffffff; stroke: #04102f; stroke-width: 1; }
+    .rc-scene.playing .rc-prio-cursor { animation: rcCursorIn 0.4s 2.5s ease forwards, rcClick 0.5s 2.9s ease, rcFadeOut 0.5s 3.8s ease forwards; }
+    @keyframes rcClick { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-2px, -2px) scale(0.9); } }
+    /* the map answers: a single surge on the most expensive hotspot */
+    .rc-prio-surge { fill: none; stroke: #ff9a6a; stroke-width: 2.5; opacity: 0; transform-box: fill-box; transform-origin: center;
+      filter: drop-shadow(0 0 8px rgba(255,154,106,0.8)); }
+    .rc-scene.playing .rc-prio-surge { animation: rcSurge 1.1s 3.3s ease-out forwards; }
+    @keyframes rcSurge { 0% { opacity: 0; transform: scale(0.55); } 25% { opacity: 0.95; } 100% { opacity: 0; transform: scale(1.9); } }
+
+    /* ── engine (PM motif, Beat 2) + hotspot→engine stream + engine→card tokens ── */
+    .rc-scene.playing .pm-eng      { animation: pmFade 0.6s 5.6s ease both; }
+    .rc-scene.playing .pm-eng-halo { animation: pmEngHalo 0.7s 6.0s ease forwards; }
+    .rc-scene.playing .pm-eng-core { animation: pmEngPulse 1.6s 6.0s ease-in-out infinite; }
+    .rc-scene.playing .pm-eng-ring { animation: pmEngRotate 14s 6.0s linear infinite; }
     .rc-scene.playing .rc-rt  { animation: pmStream 1.3s ease-out infinite; }
     .rc-scene.playing .rc-out { animation: pmStream 0.55s ease-out both; }
 
@@ -714,12 +737,12 @@
     .rc-row-dot--cost     { fill: #ff9a6a; filter: drop-shadow(0 0 5px rgba(255,154,106,0.85)); }
     .rc-row-dot--time     { fill: #8fb8ff; filter: drop-shadow(0 0 5px rgba(143,184,255,0.85)); }
     .rc-row-dot--resource { fill: #5fe3a0; filter: drop-shadow(0 0 5px rgba(95,227,160,0.75)); }
-    .rc-scene.playing .rc-panel { animation: rcCardIn 0.6s 5.7s cubic-bezier(.22,1,.36,1) both; }
-    .rc-scene.playing .rc-tag   { animation: piFade 0.5s 6.1s ease both; }
-    .rc-scene.playing .rc-title { animation: rcRise 0.5s 6.3s ease both; }
-    .rc-scene.playing .rc-mech  { animation: rcRise 0.5s 6.5s ease both; }
-    .rc-scene.playing .rc-div   { animation: piFade 0.4s 6.7s ease both; }
-    .rc-scene.playing .rc-proj  { animation: piFade 0.5s 6.8s ease both; }
+    .rc-scene.playing .rc-panel { animation: rcCardIn 0.6s 7.7s cubic-bezier(.22,1,.36,1) both; }
+    .rc-scene.playing .rc-tag   { animation: piFade 0.5s 8.0s ease both; }
+    .rc-scene.playing .rc-title { animation: rcRise 0.5s 8.2s ease both; }
+    .rc-scene.playing .rc-mech  { animation: rcRise 0.5s 8.4s ease both; }
+    .rc-scene.playing .rc-div   { animation: piFade 0.4s 8.55s ease both; }
+    .rc-scene.playing .rc-proj  { animation: piFade 0.5s 8.65s ease both; }
     .rc-scene.playing .rc-row   { animation: rcRise 0.5s ease both; }  /* per-row inline delays */
 
     /* ── Beat 3: proposal → map preview (dashed link, target ring + bolt, rework ghosts) ── */
@@ -731,11 +754,11 @@
     .rc-bolt-bg { fill: #0a1c44; stroke: #5fe3a0; stroke-width: 1.6; }
     .rc-bolt-glyph { fill: #5fe3a0; }
     .rc-fixlabel { fill: #9defc4; font: 700 12px var(--font-body); letter-spacing: 0.06em; opacity: 0; }
-    .rc-scene.playing .rc-ghost { animation: rcGhost 0.9s 10.0s ease forwards; }
-    .rc-scene.playing .rc-link { animation: rcDashIn 0.7s 10.1s ease forwards; }
-    .rc-scene.playing .rc-target-ring { animation: rcDashIn 0.6s 10.3s ease forwards, rcRingSpin 26s 10.3s linear infinite; }
-    .rc-scene.playing .rc-bolt { animation: rcPopIn 0.5s 10.6s cubic-bezier(.22,1,.36,1) both; }
-    .rc-scene.playing .rc-fixlabel { animation: piFade 0.5s 10.8s ease both; }
+    .rc-scene.playing .rc-ghost { animation: rcGhost 0.9s 11.3s ease forwards; }
+    .rc-scene.playing .rc-link { animation: rcDashIn 0.7s 11.4s ease forwards; }
+    .rc-scene.playing .rc-target-ring { animation: rcDashIn 0.6s 11.6s ease forwards, rcRingSpin 26s 11.6s linear infinite; }
+    .rc-scene.playing .rc-bolt { animation: rcPopIn 0.5s 11.9s cubic-bezier(.22,1,.36,1) both; }
+    .rc-scene.playing .rc-fixlabel { animation: piFade 0.5s 12.1s ease both; }
 
     /* ── Beat 3: decision state — Review / Approve, cursor hovering, held ── */
     .rc-btn { opacity: 0; }
@@ -744,9 +767,9 @@
     .rc-btn-label { fill: #fff; font: 700 12px var(--font-body); letter-spacing: 0.04em; }
     .rc-cursor { opacity: 0; }
     .rc-cursor path { fill: #ffffff; stroke: #04102f; stroke-width: 1; }
-    .rc-scene.playing .rc-btn { animation: piFade 0.5s 11.0s ease both; }
-    .rc-scene.playing .rc-approve-box { animation: rcApprove 1.8s 11.8s ease-in-out infinite; }
-    .rc-scene.playing .rc-cursor { animation: rcCursorIn 0.5s 11.4s ease forwards, rcCursorNudge 1.6s 12.0s ease-in-out infinite; }
+    .rc-scene.playing .rc-btn { animation: piFade 0.5s 12.3s ease both; }
+    .rc-scene.playing .rc-approve-box { animation: rcApprove 1.8s 13.1s ease-in-out infinite; }
+    .rc-scene.playing .rc-cursor { animation: rcCursorIn 0.5s 12.7s ease forwards, rcCursorNudge 1.6s 13.3s ease-in-out infinite; }
 
     @keyframes rcCardIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
     @keyframes rcRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -832,6 +855,10 @@
       .rc-scene .pm-eng, .rc-scene .pm-eng-halo { opacity: 1 !important; animation: none !important; }
       .rc-scene .pm-eng-core, .rc-scene .pm-eng-ring { animation: none !important; transform: none !important; }
       .rc-rt, .rc-out { opacity: 0 !important; animation: none !important; }
+      .rc-prio { opacity: 1 !important; animation: none !important; }
+      .rc-prio-cursor, .rc-prio-surge { opacity: 0 !important; animation: none !important; }
+      .rc-pchip--sel .rc-pchip-box { fill: rgba(255,154,106,0.14) !important; stroke: #ff9a6a !important; animation: none !important; }
+      .rc-pchip--sel .rc-pchip-label { fill: #ffffff !important; animation: none !important; }
       .rc-flare-glow, .rc-flare-ring { opacity: 0 !important; animation: none !important; }
       .rc-panel, .rc-tag, .rc-title, .rc-mech, .rc-div, .rc-proj, .rc-row, .rc-btn, .rc-cursor, .rc-bolt, .rc-fixlabel
         { opacity: 1 !important; transform: none !important; animation: none !important; }
@@ -1637,11 +1664,13 @@
   // ════════════ Card 4 · Recommendation ════════════
   // Continuity scene: the Analysis map carries over UNCHANGED on the right (same
   // geometry as buildAnalysis), amber cost flare still pulsing on the bottleneck.
-  // Beat 1: the engine (PM/TM motif) fades in on the left; the hotspot streams its
-  //         data INTO it — the problem feeds the AI.
-  // Beat 2: the engine emits ordered tokens downward; a proposal card materialises
-  //         beneath it — specific fix, mechanism, projected impact carrying the
-  //         Analysis figures forward ($1.2M → −$640K, 9 days → −3.5, 12,400 → −5,100).
+  // Human–AI–human arc: you aim → AI proposes → you decide.
+  // Beat 1: priority chips (Cost / Time / Resource) land in the left column; the
+  //         cursor picks Cost, the chip ignites, the hotspot surges in answer.
+  // Beat 2: the engine (PM/TM motif) returns; the hotspot streams its data INTO it,
+  //         ordered tokens drop out, and a proposal card materialises beneath —
+  //         specific fix, mechanism, projected impact carrying the Analysis
+  //         figures forward ($1.2M → −$640K, 9 days → −3.5, 12,400 → −5,100).
   // Beat 3: the proposal connects back to the map — dashed link, green target ring +
   //         bolt on the bottleneck, rework loop ghosts out, flare cools — then
   //         Review / Approve appear with the cursor hovering. Held. Your call.
@@ -1686,9 +1715,27 @@
       <circle class="rc-flare-glow" cx="700" cy="300" r="44"/>
       <circle class="rc-flare-ring" cx="700" cy="300" r="34"/>`;
 
+    // ── Beat-1 priority selector: three metric chips in the left column; the
+    //    cursor picks Cost, the chip ignites, and the most expensive hotspot on
+    //    the map surges in answer — you aim the AI before it moves. ──
+    const PRIO = [
+      { c: 'cost',     l: 'Cost',     x: 30, sel: true },
+      { c: 'time',     l: 'Time',     x: 158 },
+      { c: 'resource', l: 'Resource', x: 286 },
+    ];
+    const prio = `<g class="rc-prio">
+        ${PRIO.map(p => `<g class="rc-pchip${p.sel ? ' rc-pchip--sel' : ''}">
+          <rect class="rc-pchip-box" x="${p.x}" y="78" width="116" height="34" rx="9"/>
+          <circle class="rc-pdot--${p.c}" cx="${p.x + 20}" cy="95" r="4.5"/>
+          <text class="rc-pchip-label" x="${p.x + 34}" y="100">${p.l}</text>
+        </g>`).join('')}
+      </g>
+      <g class="rc-prio-cursor"><path d="M96,98 l0,21 l5.5,-5 l4,8.5 l3.2,-1.5 l-4,-8.5 l7.3,0 z"/></g>
+      <circle class="rc-prio-surge" cx="700" cy="300" r="34"/>`;
+
     // ── engine (same markup as PM/TM, parked on the left at the column the
     //    proposal card will share) ──
-    const engine = `<g class="pm-eng" transform="translate(220,155)">
+    const engine = `<g class="pm-eng" transform="translate(220,178)">
         <circle class="pm-eng-halo" cx="0" cy="0" r="55"/>
         <g class="pm-eng-ring">
           <path class="pm-eng-arc" d="M0,-30 A30,30 0 0 1 30,0"/>
@@ -1708,13 +1755,13 @@
     const stream = (() => {
       let s = 0xBEEF1E;
       const rnd = () => { s = (s * 1103515245 + 12345) & 0x7FFFFFFF; return s / 0x7FFFFFFF; };
-      const N = 22, BASE_DELAY = 2.7;
+      const N = 22, BASE_DELAY = 5.9;
       let html = '';
       for (let i = 0; i < N; i++) {
         const sx = 700 + (rnd() - 0.5) * 48;
         const sy = 300 + (rnd() - 0.5) * 36;
         const ex = 240 + Math.floor(rnd() * 14);
-        const ey = 158 + Math.floor(rnd() * 14);
+        const ey = 172 + Math.floor(rnd() * 14);
         const dur = (1.0 + rnd() * 0.5).toFixed(2);
         const delay = (BASE_DELAY + rnd() * 1.4).toFixed(2);
         html += `<circle class="pm-rt rc-rt" cx="${sx.toFixed(0)}" cy="${sy.toFixed(0)}" r="2.5" style="--tx:${(ex - sx).toFixed(0)}px;--ty:${(ey - sy).toFixed(0)}px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
@@ -1723,14 +1770,14 @@
     })();
 
     // ── Beat-2 ordered tokens: engine bottom → proposal card ──
-    const tokens = [5.55, 5.72, 5.89].map(d =>
-      `<circle class="pm-out rc-out" cx="220" cy="216" r="3.5" style="--tx:0px;--ty:42px;animation-delay:${d}s"/>`).join('');
+    const tokens = [7.3, 7.47, 7.64].map(d =>
+      `<circle class="pm-out rc-out" cx="220" cy="222" r="3.5" style="--tx:0px;--ty:36px;animation-delay:${d}s"/>`).join('');
 
     // ── proposal card (left column — same x as the Analysis pills) ──
     const ROWS = [
-      { c: 'cost',     l: 'COST',     v: '−$640K / yr',      y: 398, d: 7.00 },
-      { c: 'time',     l: 'TIME',     v: '−3.5 days / case', y: 426, d: 7.25 },
-      { c: 'resource', l: 'RESOURCE', v: '−5,100 hrs / yr',  y: 454, d: 7.50 },
+      { c: 'cost',     l: 'COST',     v: '−$640K / yr',      y: 398, d: 8.80 },
+      { c: 'time',     l: 'TIME',     v: '−3.5 days / case', y: 426, d: 9.05 },
+      { c: 'resource', l: 'RESOURCE', v: '−5,100 hrs / yr',  y: 454, d: 9.30 },
     ];
     const rows = ROWS.map(r => `<g class="rc-row" style="animation-delay:${r.d}s">
         <circle class="rc-row-dot--${r.c}" cx="62" cy="${r.y - 4}" r="5"/>
@@ -1739,7 +1786,7 @@
       </g>`).join('');
     const panel = `
       <rect class="rc-panel" x="30" y="250" width="380" height="258" rx="14"/>
-      <text class="rc-tag" x="54" y="282">PROPOSAL · GENERATED FROM YOUR DATA</text>
+      <text class="rc-tag" x="54" y="282">PROPOSAL · PRIORITY: COST</text>
       <text class="rc-title" x="54" y="312">Automate the manual check</text>
       <text class="rc-mech" x="54" y="334">Removes the rework loop behind your bottleneck</text>
       <line class="rc-div" x1="54" y1="350" x2="386" y2="350"/>
@@ -1771,6 +1818,7 @@
         ${carryMap}
         ${spots}
         ${preview}
+        ${prio}
         ${engine}
         ${stream}
         ${tokens}
@@ -1783,17 +1831,18 @@
     cardPlay(scene);
     const nar = scene.querySelector('.pi-narr');
     const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
-    // Beat 1 — caption types first (0.35–2.3s); engine lands 2.4s; the hotspot
-    //   streams into it from 2.7s; 2-second breath after.
-    cardType(scene, nar, [{ t: 'AI starts with your ' }, { t: 'most expensive problem', hl: true }, { t: '.' }], 46, 350);
-    // Beat 2 — proposal card materialises beneath the engine while the caption types.
+    // Beat 1 — caption types first (0.35–1.7s); the priority chips land 1.9s, the
+    //   cursor picks Cost at 2.9s, the hotspot surges in answer at 3.3s. Breath after.
+    cardType(scene, nar, [{ t: 'First, ' }, { t: 'you set the priority', hl: true }, { t: '.' }], 46, 350);
+    // Beat 2 — engine returns 5.6s, the hotspot streams into it from 5.9s, and the
+    //   proposal card materialises beneath it while the caption types.
     T(() => nar.classList.add('wipe'), 4900);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'And proposes the ' }, { t: 'specific fix', hl: true }, { t: '.' }], 46, 0); }, 5250);
+      cardType(scene, nar, [{ t: 'AI finds your ' }, { t: 'most expensive problem', hl: true }, { t: ' — and proposes the fix.' }], 46, 0); }, 5250);
     // Beat 3 — the fix previews on the map; Review / Approve appear, cursor hovers. Held.
-    T(() => nar.classList.add('wipe'), 9300);
+    T(() => nar.classList.add('wipe'), 10600);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'Previewed on your process. ' }, { t: 'Your decision', hl: true }, { t: ' to make.' }], 46, 0); }, 9650);
+      cardType(scene, nar, [{ t: 'Previewed on your process. ' }, { t: 'Your decision', hl: true }, { t: ' to make.' }], 46, 0); }, 10950);
   }
 
   // ════════════ Card 5 · Simulation ════════════
