@@ -857,7 +857,8 @@
   <style>
     /* The last slide mirrors the first: same canvas, same per-word headline
        reveal, and the deck's opening motif finally pays off. */
-    .close-title { font-size: clamp(34px, 6.4vw, 84px); line-height: 1.06; margin-bottom: 22px; }
+    .close-inner { max-width: 1100px; }
+    .close-title { font-size: clamp(36px, 7vw, 100px); line-height: 1.06; margin-bottom: 24px; }
     .close-title .hl2 { color: var(--sf-blue-l); }
     .close-title .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 0.08em 0.16em 0.04em; margin: 0 -0.08em -0.16em -0.04em; }
     .close-title .w > span { display: inline-block; transform: translateY(115%); }
@@ -869,8 +870,8 @@
     .close-title .hl2 { display: inline-block; opacity: 0; font-size: 0.72em; line-height: 1.15; }
     .slide-close.active .close-title .hl2 { animation: fallInUp 0.6s 0.75s cubic-bezier(0.22,1,0.36,1) both; }
     @keyframes fallInUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-    .close-body { font-size: clamp(15px, 1.6vw, 19px); max-width: 720px; }
-    .close-note { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 560px; }
+    .close-body { font-size: clamp(15px, 1.6vw, 19px); max-width: none; white-space: nowrap; }
+    @media (max-width: 900px) { .close-body { white-space: normal; } }
     @media (prefers-reduced-motion: reduce) {
       .close-title .w > span { transform: none !important; animation: none !important; }
       .close-title .hl2 { opacity: 1 !important; animation: none !important; }
@@ -1375,7 +1376,6 @@
           <span class="slp-label">Start with what matters most to you</span>
           <span class="slp-arrow">&rarr;</span>
         </a>
-        <div class="close-note" data-animate="fade-up" data-anim-delay="1300">Choose your industry and the KPIs you want to move &mdash; we&rsquo;ll shape a four-week pilot on your data around them.</div>
       </div>
     </div>
 
