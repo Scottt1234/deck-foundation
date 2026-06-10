@@ -336,6 +336,16 @@
     .tm-extra-box { fill: rgba(143,184,255,0.10); stroke: rgba(143,184,255,0.55); stroke-width: 1.2; }
     .tm-extra-glyph { fill: none; stroke: #8fb8ff; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
     .tm-scene.playing .tm-extra { animation: pmFade 0.55s ease forwards; }
+    /* Beat 2: the extras are visibly ACTIVE — content lines pulse like live work —
+       but nothing flows out of them. Their connections to the engine exist, dark
+       and empty (tmConnIn), until task mining switches on in Beat 3 (tmConnLive). */
+    .tm-act { fill: rgba(143,184,255,0.6); opacity: 0; }
+    .tm-scene.playing .tm-act { animation: tmActPulse 1.7s ease-in-out infinite; }
+    @keyframes tmActPulse { 0%, 100% { opacity: 0.18; } 50% { opacity: 0.85; } }
+    .tm-conn { stroke: #8fb8ff; stroke-width: 1.3; stroke-dasharray: 4 7; opacity: 0; }
+    .tm-scene.playing .tm-conn { animation: tmConnIn 0.6s ease both, tmConnLive 0.9s ease forwards; }
+    @keyframes tmConnIn  { from { opacity: 0; } to { opacity: 0.22; } }
+    @keyframes tmConnLive { to { opacity: 0.6; } }
 
     @media (prefers-reduced-motion: reduce) {
       .tm-scene .pm-sys-box, .tm-scene .pm-sys-cyl, .tm-scene .pm-sys-cyl-top, .tm-scene .pm-sys-label,
@@ -343,6 +353,8 @@
       .tm-scene .pm-eng, .tm-scene .pm-eng-halo, .tm-scene .tm-extra
         { opacity: 1 !important; animation: none !important; }
       .tm-scene .pm-rt    { opacity: 0 !important; animation: none !important; }
+      .tm-scene .tm-act   { opacity: 0.7 !important; animation: none !important; }
+      .tm-scene .tm-conn  { opacity: 0.55 !important; animation: none !important; }
       .tm-scene .pm-rec   { transform: scaleX(1) !important; animation: none !important; }
       .tm-scene .pm-edge  { opacity: 0.92 !important; stroke-dashoffset: 0 !important; animation: none !important; }
       .tm-scene .pm-node  { opacity: 1 !important; transform: none !important; animation: none !important; }
@@ -1194,7 +1206,9 @@
       const delay = (8.36 + i * 0.12).toFixed(2);
       return `<g class="tm-extra" transform="translate(${ex.cx},${ex.cy})" style="animation-delay:${delay}s">
         <rect class="tm-extra-box" x="-50" y="-37.5" width="100" height="75" rx="12"/>
-        <g class="tm-extra-glyph" transform="translate(-17,-17) scale(2.4)">${TM_GLYPHS[ex.glyph]}</g>
+        <g class="tm-extra-glyph" transform="translate(-17,-23) scale(2.4)">${TM_GLYPHS[ex.glyph]}</g>
+        <rect class="tm-act" x="-36" y="20" width="44" height="4" rx="2" style="animation-delay:${(9.0 + i * 0.3).toFixed(2)}s"/>
+        <rect class="tm-act" x="-36" y="27" width="28" height="4" rx="2" style="animation-delay:${(9.15 + i * 0.3).toFixed(2)}s"/>
       </g>`;
     }).join('');
 
@@ -1240,6 +1254,14 @@
 
         <!-- ── Extras (Beat 2): non-logged tools fade in around the System ── -->
         ${extrasHTML}
+
+
+        <!-- ── Dark connections (Beat 2): the routes exist but carry nothing;
+             they brighten when task mining switches on in Beat 3 ── -->
+        <line class="tm-conn" x1="172" y1="152" x2="316" y2="260" style="animation-delay:8.90s, 11.31s"/>
+        <line class="tm-conn" x1="288" y1="166" x2="334" y2="244" style="animation-delay:9.02s, 11.31s"/>
+        <line class="tm-conn" x1="288" y1="434" x2="334" y2="356" style="animation-delay:9.14s, 11.31s"/>
+        <line class="tm-conn" x1="172" y1="448" x2="316" y2="340" style="animation-delay:9.26s, 11.31s"/>
 
         <!-- ── Extras → Engine streaming dots (Beat 3+, infinite from t=11.31s) ── -->
         ${extraStream}
