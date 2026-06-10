@@ -15,9 +15,6 @@
       --accent-l: rgba(255,255,255,0.78);
     }
 
-    /* ── Slide 1 hero eyebrow rule — Salesforce Electric Blue 50 ── */
-    .hero-eyebrow::before { background: var(--sf-blue-m); }
-
     html { height: 100%; }
     /* iOS Safari: position:fixed on body keeps it from being a touch target
        that swallows scroll events meant for absolute-positioned slide children. */
@@ -192,8 +189,6 @@
     .slide-close { min-height: 100vh; min-height: 100dvh; background: var(--grad-evening); display: flex; align-items: center; position: relative; overflow: hidden; }
     .slide-close::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--sf-blue-m); }
     .close-inner { max-width: 1000px; margin: 0 auto; padding: 60px 48px; width: 100%; }
-    .close-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sf-blue-l); margin-bottom: 18px; }
-    .close-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--sf-blue-m); border-radius: 2px; }
     .close-title { font-family: var(--font-display); font-size: clamp(40px, 5.2vw, 68px); font-weight: 700; color: #fff; letter-spacing: -0.025em; line-height: 1.08; margin-bottom: 18px; }
     .close-body { font-size: 14.5px; color: rgba(255,255,255,0.74); line-height: 1.7; max-width: 620px; margin-bottom: 12px; }
     .close-body em { color: #fff; font-style: italic; }
@@ -465,7 +460,6 @@
         <div class="b-hero-aura" aria-hidden="true"></div>
         <div class="b-hero-grid" aria-hidden="true"></div>
         <div class="open-hero">
-          <div class="hero-eyebrow" data-animate="fade-up" data-anim-delay="0">Apromore · Process Intelligence</div>
           <h1 class="open-h1"><span class="w"><span>Knowledge</span></span> <span class="w"><span>is</span></span> <span class="w"><span>power</span></span></h1>
           <div class="b-rule" aria-hidden="true"></div>
           <p class="open-lead" data-animate="fade-up" data-anim-delay="600"><em>Are you making your decisions on evidence &mdash; or on assumption?</em></p>
@@ -788,7 +782,6 @@
     <!-- ═══ SLIDE 9 · FINAL CLOSE — the hero, answered ═══════════════ -->
     <div class="slide slide-close" data-section="Knowledge Is Power">
       <div class="close-inner">
-        <div class="close-eyebrow" data-animate="fade-up" data-anim-delay="0">Apromore &middot; Process Intelligence</div>
         <div class="close-title">
           <span class="w"><span>Knowledge</span></span> <span class="w"><span>is</span></span> <span class="w"><span>power.</span></span><br/>
           <span class="hl2">Apromore gives you both.</span>
