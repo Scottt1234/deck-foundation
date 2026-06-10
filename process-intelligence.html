@@ -294,8 +294,8 @@
                             extras (Browser/Email/Sheet/Doc) fade in 5.5s, their
                             activity pulses and dark connectors land during it.
          Beat 3 (9.75s+)    Connectors brighten + dots stream from extras (10.4s);
-                            the map then grows its new variants (12.2s) — cause,
-                            then effect. */
+                            after a breath the map grows its new variants (13.5s)
+                            — cause, then effect. */
     .tm-scene { position: absolute; inset: 0; overflow: hidden; }
     .tm-scene::before { content: ''; position: absolute; inset: 0; pointer-events: none;
       background: radial-gradient(54% 62% at 57% 52%, rgba(20,86,220,0.20), transparent 70%); }
@@ -324,7 +324,7 @@
        The new Beat-3 variants (3 forward arcs + 1 upper node + 2 connecting
        edges) DON'T have .tm-static — they animate in at ~15.56s using the
        same .tm-scene.playing animations defined above (streams 10.4s →
-       variants 12.2s — cause, then effect). */
+       breath → variants 13.5s — cause, then effect, at human speed). */
     .tm-scene .pm-edge.tm-static { opacity: 0.92; stroke-dashoffset: 0; animation: none; }
     .tm-scene .pm-node.tm-static { opacity: 1; transform: none; animation: none; }
     .tm-scene .pm-core.tm-static { opacity: 1; animation: none; }
@@ -1305,23 +1305,23 @@
         <path class="pm-edge pm-edge--rework tm-static" pathLength="1" d="M804,276 C796,210 716,210 708,276"/>
 
         <!-- ── Beat 3 NEW variants and node — the streams ignite first (10.4s),
-             then the new variants animate in from 12.2s, ordered strictly
-             left → right by their starting x: cause, then effect. ── -->
+             then after a breath the new variants animate in from 13.5s, ordered
+             strictly left → right by their starting x: cause, then effect. ── -->
         <!-- 1. N1 → N3 above the spine (skip past N2) — leftmost (starts x=484) -->
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:12.2s" d="M484,278 C540,200 660,200 696,278"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:13.5s" d="M484,278 C540,200 660,200 696,278"/>
         <!-- 2. N1 → upper alt-path node (NEW diagonal lift) (starts x=498) -->
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:12.35s" d="M498,282 C530,260 555,180 574,154"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:13.65s" d="M498,282 C530,260 555,180 574,154"/>
         <!-- 3. N2 → upper (vertical lift) (starts x=590) -->
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:12.5s" d="M590,278 C586,240 586,200 590,162"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:13.8s" d="M590,278 C586,240 586,200 590,162"/>
         <!-- 4. Upper alt-path node + core pop in once both incoming edges have arrived -->
-        <circle class="pm-node" cx="590" cy="140" r="22" style="animation-delay:12.65s"/>
-        <circle class="pm-core" cx="590" cy="140" r="6"  style="animation-delay:12.8s"/>
+        <circle class="pm-node" cx="590" cy="140" r="22" style="animation-delay:13.95s"/>
+        <circle class="pm-core" cx="590" cy="140" r="6"  style="animation-delay:14.1s"/>
         <!-- 5. upper → N4 edge (long diagonal across) (starts x=610) -->
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:12.8s" d="M610,148 C720,140 760,210 794,290"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:14.1s" d="M610,148 C720,140 760,210 794,290"/>
         <!-- 6. Lower → N5 (skips re-joining at N4) (starts x=715) -->
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:12.95s" d="M715,452 C800,475 880,420 906,322"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:14.25s" d="M715,452 C800,475 880,420 906,322"/>
         <!-- 7. N4 → N5 above the spine (rightmost, starts x=826) -->
-        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:13.1s" d="M826,278 C840,238 900,238 914,278"/>
+        <path class="pm-edge pm-edge--alt" pathLength="1" style="animation-delay:14.4s" d="M826,278 C840,238 900,238 914,278"/>
 
         <!-- main spine nodes + cores (all plain cyan, all static) -->
         <circle class="pm-node tm-static" cx="480" cy="300" r="26"/>
@@ -2319,11 +2319,11 @@
     // Beat 3 — "Task mining captures what process mining misses."
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
       cardType(scene, nar, [{ t: 'Task mining captures what process mining ' }, { t: 'misses', hl: true }, { t: '.' }], 46, 0); }, 9750);
-    // Beat 3 closer — typed AS the new variants draw onto the map (12.2–13.1s),
-    // appended to the same line: the words and the map growth are one beat.
+    // Beat 3 closer — a 1.3s breath after the streams settle, then typed AS the
+    // new variants draw onto the map (13.5–14.4s): one beat, at human speed.
     T(() => {
       cardType(scene, nar, [{ t: ' Showing you what\'s ' }, { t: 'really', hl: true }, { t: ' going on.' }], 46, 0, true);
-    }, 12200);
+    }, 13500);
   }
   function stopTM(el) {
     const scene = el.querySelector('.tm-scene'); if (!scene) return;
