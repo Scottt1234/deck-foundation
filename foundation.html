@@ -853,6 +853,30 @@
     .deck-hidden { display: none; }
   </style>
 
+  <!-- ════════ FINAL CLOSE — hero mirror ════════ -->
+  <style>
+    /* The last slide mirrors the first: same canvas, same per-word headline
+       reveal, and the deck's opening motif finally pays off. */
+    .close-title { font-size: clamp(34px, 6.4vw, 84px); line-height: 1.06; margin-bottom: 22px; }
+    .close-title .hl2 { color: var(--sf-blue-l); }
+    .close-title .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 0.08em 0.16em 0.04em; margin: 0 -0.08em -0.16em -0.04em; }
+    .close-title .w > span { display: inline-block; transform: translateY(115%); }
+    .slide-close.active .close-title .w > span { animation: bMaskUp 0.72s cubic-bezier(0.22,1,0.36,1) both; }
+    .slide-close.active .close-title .w:nth-child(1) > span { animation-delay: 0.15s; }
+    .slide-close.active .close-title .w:nth-child(2) > span { animation-delay: 0.29s; }
+    .slide-close.active .close-title .w:nth-child(3) > span { animation-delay: 0.43s; }
+    /* the blue payoff line rises after the white words have landed */
+    .close-title .hl2 { display: inline-block; opacity: 0; font-size: 0.72em; line-height: 1.15; }
+    .slide-close.active .close-title .hl2 { animation: fallInUp 0.6s 0.75s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes fallInUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    .close-body { font-size: clamp(15px, 1.6vw, 19px); max-width: 720px; }
+    .close-note { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; max-width: 560px; }
+    @media (prefers-reduced-motion: reduce) {
+      .close-title .w > span { transform: none !important; animation: none !important; }
+      .close-title .hl2 { opacity: 1 !important; animation: none !important; }
+    }
+  </style>
+
   <!-- ════════ BLACK BOX VISUAL — workstation reveal ════════ -->
   <style>
     /* Stage occupies most of the slide body; caption sits beneath */
@@ -1338,20 +1362,20 @@
       </div>
     </div>
 
-    <!-- ═══ SLIDE 9 · START WITH WHAT MATTERS — process cards close (placeholder) ═══ -->
-    <div class="slide sd" data-section="Start With What Matters" style="--placeholder:1;">
-      <div class="slide-body" style="display:flex; align-items:center; justify-content:center; text-align:center;">
-        <div style="border:2px dashed rgba(255,255,255,0.22); border-radius:18px; padding:56px 48px; max-width:920px;">
-          <div class="eyebrow" style="opacity:0.6; letter-spacing:0.18em;">Placeholder · Slide 9 · Final close</div>
-          <div class="section-title" style="margin-top:14px;">Start with what matters.<br/><span style="color:var(--sf-blue-l)">Pick one. Four weeks. Your data.</span></div>
-          <div class="section-sub" style="margin-top:24px; opacity:0.78; max-width:760px; margin-left:auto; margin-right:auto;">
-            The process card library — pre-filtered to 3–5 candidates relevant to this customer's industry, persona and pressures. Shifts the room from <em>"do we want this?"</em> to <em>"which one would we start with?"</em> Significant work to do here — leaving the rich version out for now.
-          </div>
-          <a href="https://scottt1234.github.io/top-30-processes/" target="_blank" rel="noopener" class="cards-cta">
-            Open the process library
-            <span aria-hidden="true" style="color:var(--sf-blue-l); font-size:18px; line-height:1;">→</span>
-          </a>
+    <!-- ═══ SLIDE 9 · FINAL CLOSE — the hero, answered ═══════════════ -->
+    <div class="slide slide-close" data-section="Knowledge Is Power">
+      <div class="close-inner">
+        <div class="close-eyebrow" data-animate="fade-up" data-anim-delay="0">Apromore &times; Salesforce &middot; Process Intelligence</div>
+        <div class="close-title">
+          <span class="w"><span>Knowledge</span></span> <span class="w"><span>is</span></span> <span class="w"><span>power.</span></span><br/>
+          <span class="hl2">Apromore gives you both.</span>
         </div>
+        <p class="close-body" data-animate="fade-up" data-anim-delay="900">The decisions you face haven&rsquo;t changed. <em>The evidence you make them on is about to.</em></p>
+        <a class="site-link" href="https://scottt1234.github.io/top-30-processes/" target="_blank" rel="noopener" data-animate="fade-up" data-anim-delay="1100">
+          <span class="slp-label">Start with what matters most to you</span>
+          <span class="slp-arrow">&rarr;</span>
+        </a>
+        <div class="close-note" data-animate="fade-up" data-anim-delay="1300">Choose your industry and the KPIs you want to move &mdash; we&rsquo;ll shape a four-week pilot on your data around them.</div>
       </div>
     </div>
 
