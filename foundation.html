@@ -304,7 +304,9 @@
     .sd .card-body { color: rgba(255,255,255,0.66); }
     .sd .card-body strong { color: #fff; }
     .sd .p-lead { color: #fff; }
-    .sd .p-punch { color: rgba(255,255,255,0.82); border-left-color: var(--sf-blue-l); }
+    /* punch lines carry the cards' strongest copy — a blue-white tint lifts them
+       above the body text without competing with the accent-blue card titles */
+    .sd .p-punch { color: #cfe0ff; border-left-color: var(--sf-blue-l); }
     .sd .p-index { color: var(--sf-blue-l); opacity: 0.55; }
     .sd .ci-blue, .sd .ci-accent { background: rgba(143,184,255,0.15); color: #cfe0ff; }
     .sd .card:hover, .sd .pressure-card:hover, .sd .thread-card:hover, .sd .either-card:hover { border-color: rgba(143,184,255,0.5); }
