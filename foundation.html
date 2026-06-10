@@ -528,6 +528,24 @@
     .sd .either-b { color: rgba(255,255,255,0.72); }
     .sd .either-b strong { color: #fff; }
 
+    /* slide 9 — process library CTA (placeholder) */
+    .cards-cta {
+      display: inline-flex; align-items: center; gap: 12px;
+      margin-top: 32px; padding: 14px 26px;
+      background: rgba(143,184,255,0.12);
+      border: 1px solid rgba(143,184,255,0.55);
+      border-radius: 10px;
+      color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 15px;
+      text-decoration: none; letter-spacing: 0.02em;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+    .cards-cta:hover {
+      background: rgba(143,184,255,0.24);
+      border-color: rgba(143,184,255,0.95);
+      transform: translateY(-2px);
+    }
+    .cards-cta:active { transform: translateY(0); }
+
     /* slide 3 — convergence diagram */
     .cv-link { display: block; width: 100%; height: 92px; margin: 2px auto 0; }
     .cv-link path { stroke: var(--sf-blue-l); fill: none; opacity: 0.9; }
@@ -1223,6 +1241,10 @@
           <div class="section-sub" style="margin-top:24px; opacity:0.78; max-width:760px; margin-left:auto; margin-right:auto;">
             The process card library — pre-filtered to 3–5 candidates relevant to this customer's industry, persona and pressures. Shifts the room from <em>"do we want this?"</em> to <em>"which one would we start with?"</em> Significant work to do here — leaving the rich version out for now.
           </div>
+          <a href="https://scottt1234.github.io/top-30-processes/" target="_blank" rel="noopener" class="cards-cta">
+            Open the process library
+            <span aria-hidden="true" style="color:var(--sf-blue-l); font-size:18px; line-height:1;">→</span>
+          </a>
         </div>
       </div>
     </div>
