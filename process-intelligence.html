@@ -251,11 +251,10 @@
        chips and the pillar are painted exactly over them (FLIP), the originals
        are hidden in the same frame, and the doubles glide down to the centre of
        the open canvas, growing into glyph cards. No stage chrome, no clipping. ── */
-    #app.recap-mode .pi-big { background: transparent !important; border: none; box-shadow: none; overflow: visible;
-      max-width: 984px; }  /* match the rail's usable column exactly: width is held, only height grows */
+    #app.recap-mode .pi-big { background: transparent !important; border: none; box-shadow: none; overflow: visible; }
     #app.recap-mode #pillar-wrap::before { display: none; }  /* the rail bracket leaves with the rail */
     .rs-scene { position: absolute; inset: 0; }
-    .rs-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: 0 0 9vh; }
+    .rs-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 4px 2px; }
     .rs-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
     .rs-card {
       display: flex; flex-direction: column; align-items: center; gap: 7px;
@@ -1540,10 +1539,10 @@
       pillar.style.visibility = 'hidden';
       raf(() => raf(() => {
         movers.forEach(m => {
-          m.style.transition = 'transform 1.15s cubic-bezier(0.3, 0.9, 0.3, 1)';
+          m.style.transition = 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
           m.style.transform = '';
         });
-        if (scene._t) scene._t.push(setTimeout(() => scene.classList.add('morphed'), 1050));
+        if (scene._t) scene._t.push(setTimeout(() => scene.classList.add('morphed'), 750));
       }));
     });
   }
