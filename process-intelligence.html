@@ -2295,11 +2295,11 @@
     // Beat 3 — "Task mining captures what process mining misses."
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
       cardType(scene, nar, [{ t: 'Task mining captures what process mining ' }, { t: 'misses', hl: true }, { t: '.' }], 46, 0); }, 9750);
-    // Beat 3 closer — appended once the new variants have drawn (~13.7s),
-    // typed onto the same line directly after the first sentence.
+    // Beat 3 closer — typed AS the new variants draw onto the map (12.2–13.1s),
+    // appended to the same line: the words and the map growth are one beat.
     T(() => {
       cardType(scene, nar, [{ t: ' Showing you what\'s ' }, { t: 'really', hl: true }, { t: ' going on.' }], 46, 0, true);
-    }, 13800);
+    }, 12200);
   }
   function stopTM(el) {
     const scene = el.querySelector('.tm-scene'); if (!scene) return;
