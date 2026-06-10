@@ -807,10 +807,12 @@
     .si-ring { fill: none; stroke: #5fe3a0; stroke-width: 2.4; stroke-dasharray: 7 6; opacity: 0; transform-box: fill-box; transform-origin: center;
       filter: drop-shadow(0 0 7px rgba(95,227,160,0.7)); }
     .si-scene.playing .si-ring { animation: rcDashIn 0.5s 5.8s ease forwards, rcRingSpin 26s 5.8s linear infinite; }
-    .si-scene.playing .si-rework { animation: rcFadeOut 0.9s 6.2s ease forwards; }
+    /* the fix removes variants: rework loop, upper detour, top-right arc all dissolve */
+    .si-scene.playing .si-gone { animation: rcFadeOut 0.9s 6.2s ease forwards; }
+    /* simulated cases ride the spine AND the remaining variants (animateMotion paths);
+       motion free-runs from load — visibility is gated to Beat 2 */
     .si-simtok { fill: #c5e9ff; opacity: 0; filter: drop-shadow(0 0 5px rgba(0,179,255,0.9)); }
-    .si-scene.playing .si-simtok { animation: siReplay 1.15s linear infinite; }
-    @keyframes siReplay { 0% { opacity: 0; transform: translate(0, 0); } 12% { opacity: 0.95; } 88% { opacity: 0.9; } 100% { opacity: 0; transform: translate(var(--tx, 440px), var(--ty, 0px)); } }
+    .si-scene.playing .si-simtok { animation: piFade 0.6s 6.6s ease forwards; }
     .si-count-label { fill: rgba(255,255,255,0.55); font: 700 9.5px var(--font-body); letter-spacing: 0.14em; opacity: 0; }
     .si-count { fill: #ffffff; font: 700 24px var(--font-display); opacity: 0; }
     .si-scene.playing .si-count, .si-scene.playing .si-count-label { animation: piFade 0.5s 6.6s ease both; }
@@ -850,9 +852,9 @@
     .mo-scene.playing .mo-live { animation: piFade 0.5s 2.0s ease both; }
     .mo-scene.playing .mo-live-dot { animation: moBlink 2.2s 2.2s ease-in-out infinite; }
     @keyframes moBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.82); } }
-    /* live cases riding the (now loop-free) spine */
+    /* live cases riding the cleaned-up map — spine and remaining variants */
     .mo-tok { fill: #c5e9ff; opacity: 0; filter: drop-shadow(0 0 5px rgba(0,179,255,0.85)); }
-    .mo-scene.playing .mo-tok { animation: siReplay 1.7s linear infinite; }
+    .mo-scene.playing .mo-tok { animation: piFade 0.6s 2.4s ease forwards; }
     /* monitor panel (left column, same geometry as cards 3–5) */
     .mo-panel { fill: rgba(10,28,68,0.72); stroke: rgba(111,155,255,0.4); stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; transform: translateY(10px) scale(0.97); }
     .mo-scene.playing .mo-panel { animation: rcCardIn 0.6s 2.4s cubic-bezier(.22,1,.36,1) both; }
@@ -882,13 +884,16 @@
     .mo-val-drift { fill: #ffc24d; font: 700 13.5px var(--font-display); }
     .mo-chip-drift { fill: rgba(255,194,77,0.12); stroke: rgba(255,194,77,0.65); stroke-width: 1; }
     .mo-chip-drift-t { fill: #ffd98a; font: 700 9px var(--font-body); letter-spacing: 0.1em; }
-    .mo-warm { fill: none; stroke: #ffc24d; stroke-width: 2.4; opacity: 0; filter: drop-shadow(0 0 7px rgba(255,194,77,0.55)); }
-    .mo-scene.playing .mo-warm { animation: piFade 0.5s 10.2s ease both; }
-    .mo-warm-ring { fill: none; stroke: #ffc24d; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
-    .mo-scene.playing .mo-warm-ring { animation: rcDashIn 0.4s 10.4s ease forwards, moRing 2.2s 10.6s ease-in-out infinite; }
-    @keyframes moRing { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.3); opacity: 0.2; } }
+    /* drift IS a new variant: an amber edge nobody designed draws itself onto the
+       map (the old rework loop creeping back), and cases start using it */
+    .mo-newvar { fill: none; stroke: #ffc24d; stroke-width: 2.2; stroke-linecap: round;
+      stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0;
+      filter: drop-shadow(0 0 5px rgba(255,194,77,0.55)); }
+    .mo-scene.playing .mo-newvar { animation: pmDraw 0.8s 10.2s ease forwards; }
+    .mo-newvar-tok { fill: #ffd98a; opacity: 0; filter: drop-shadow(0 0 5px rgba(255,194,77,0.9)); }
+    .mo-scene.playing .mo-newvar-tok { animation: piFade 0.5s 11.0s ease forwards; }
     .mo-flag { opacity: 0; }
-    .mo-scene.playing .mo-flag { animation: moFlagIn 0.6s 10.5s cubic-bezier(.22,1,.36,1) forwards; }
+    .mo-scene.playing .mo-flag { animation: moFlagIn 0.6s 10.6s cubic-bezier(.22,1,.36,1) forwards; }
     @keyframes moFlagIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
     .mo-flag-pole { stroke: #ffce85; stroke-width: 1.6; }
     .mo-flag-flag { fill: #ffc24d; }
@@ -920,13 +925,13 @@
       .si-box, .si-twin-tag, .si-twin-tag-bg, .si-count, .si-count-label,
       .si-panel, .si-ptag, .si-row, .si-verdict { opacity: 1 !important; transform: none !important; animation: none !important; }
       .si-ring { opacity: 0.95 !important; transform: none !important; animation: none !important; }
-      .si-rework, .si-simtok { opacity: 0 !important; animation: none !important; }
+      .si-gone, .si-simtok { opacity: 0 !important; animation: none !important; }
       .si-shimmer { animation: none !important; }
       /* Monitor — settle on the drift-caught end state */
-      .mo-live, .mo-panel, .mo-phead, .mo-ekg, .mo-row, .mo-warm, .mo-flag, .mo-drift-in
+      .mo-live, .mo-panel, .mo-phead, .mo-ekg, .mo-row, .mo-flag, .mo-drift-in
         { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .mo-warm-ring { opacity: 0.85 !important; transform: none !important; animation: none !important; }
-      .mo-tok, .mo-ok-swap { opacity: 0 !important; animation: none !important; }
+      .mo-newvar { opacity: 0.92 !important; stroke-dashoffset: 0 !important; animation: none !important; }
+      .mo-tok, .mo-newvar-tok, .mo-ok-swap { opacity: 0 !important; animation: none !important; }
     }
 
     /* ── Responsive ── */
@@ -1906,7 +1911,19 @@
   // ── Shared carry-over map (the Analysis / Recommendation geometry) ──────
   // rework=false omits the rework loop (Monitor — the fix is deployed);
   // reworkCls tags it for per-scene animation (Simulation dissolves it).
-  function carryMapSVG({ rework = true, reworkCls = '' } = {}) {
+  function carryMapSVG({ variant = 'full', goneCls = '' } = {}) {
+    const gc = goneCls ? ' ' + goneCls : '';
+    // The pieces the fix removes: rework loop, the whole upper detour, and the
+    // top-right arc. 'full' renders them (tagged goneCls so a scene can dissolve
+    // them); 'fixed' omits them — the cleaned-up process.
+    const removable = `
+      <path class="an-map-edge an-map-edge--rework${gc}" d="M804,276 C796,210 716,210 708,276"/>
+      <path class="an-map-edge an-map-edge--alt${gc}" d="M498,282 C530,260 555,180 574,154"/>
+      <path class="an-map-edge an-map-edge--alt${gc}" d="M590,278 C586,240 586,200 590,162"/>
+      <circle class="an-map-node${gc}" cx="590" cy="140" r="22"/>
+      <circle class="an-map-core${gc}" cx="590" cy="140" r="6"/>
+      <path class="an-map-edge an-map-edge--alt${gc}" d="M610,148 C720,140 760,210 794,290"/>
+      <path class="an-map-edge an-map-edge--alt${gc}" d="M826,278 C840,238 900,238 914,278"/>`;
     return `
       <path class="an-map-edge" d="M506,300 L564,300"/>
       <path class="an-map-edge" d="M616,300 L674,300"/>
@@ -1914,15 +1931,9 @@
       <path class="an-map-edge" d="M726,300 L784,300"/>
       <path class="an-map-edge an-map-edge--alt" d="M700,440 C730,440 760,400 792,318"/>
       <path class="an-map-edge" d="M836,300 L894,300"/>
-      ${rework ? `<path class="an-map-edge an-map-edge--rework ${reworkCls}" d="M804,276 C796,210 716,210 708,276"/>` : ''}
       <path class="an-map-edge an-map-edge--alt" d="M484,278 C540,200 660,200 696,278"/>
-      <path class="an-map-edge an-map-edge--alt" d="M498,282 C530,260 555,180 574,154"/>
-      <path class="an-map-edge an-map-edge--alt" d="M590,278 C586,240 586,200 590,162"/>
-      <circle class="an-map-node" cx="590" cy="140" r="22"/>
-      <circle class="an-map-core" cx="590" cy="140" r="6"/>
-      <path class="an-map-edge an-map-edge--alt" d="M610,148 C720,140 760,210 794,290"/>
       <path class="an-map-edge an-map-edge--alt" d="M715,452 C800,475 880,420 906,322"/>
-      <path class="an-map-edge an-map-edge--alt" d="M826,278 C840,238 900,238 914,278"/>
+      ${variant === 'full' ? removable : ''}
       <circle class="an-map-node" cx="480" cy="300" r="26"/>
       <circle class="an-map-node" cx="590" cy="300" r="26"/>
       <circle class="an-map-node" cx="700" cy="300" r="26"/>
@@ -1937,30 +1948,41 @@
       <circle class="an-map-core" cx="920" cy="300" r="7"/>`;
   }
 
+  // ── One looping path-follower through the map (animateMotion). Cases visibly
+  // USE the variants — spine, lower detour, long top arc, lower long path. Motion
+  // free-runs from page load (SMIL clock); each scene fades its tokens in at the
+  // right beat via CSS. Function declaration so it hoists above the card build. ──
+  function motTok(cls, route, dur, begin, r) {
+    const ROUTES = {
+      spine:     'M480,300 L920,300',
+      lowerAlt:  'M480,300 L602,312 C640,400 670,440 700,440 C730,440 760,400 796,312 L810,300 L920,300',
+      topAlt:    'M480,300 L486,280 C540,200 660,200 694,280 L700,300 L920,300',
+      lowerLong: 'M480,300 L602,312 C640,400 670,440 700,440 L713,449 C800,475 880,420 906,325 L920,302',
+    };
+    return `<circle class="${cls}" r="${r || 2.5}"><animateMotion dur="${dur}s" begin="${begin}s" repeatCount="indefinite" path="${ROUTES[route]}"/></circle>`;
+  }
+
   // ════════════ Card 5 · Simulation ════════════
   // Continuity scene: the map carries over with the rework loop intact — the fix is
   // approved but nothing real has changed yet.
   // Beat 1: a dashed DIGITAL TWIN boundary draws around the map — the test runs on
   //         a copy, never on the business.
-  // Beat 2: the fix applies inside the twin (green target ring on the bottleneck,
-  //         rework loop dissolves) and simulated cases replay along the spine while
-  //         the counter runs to 312,847 — the case volume from Process Reality.
+  // Beat 2: the fix applies inside the twin — the green target ring lands and the
+  //         map visibly heals (rework loop, upper detour and top-right arc all
+  //         dissolve) while your data replays along the spine AND the remaining
+  //         variants, with a progress counter running to 100%.
   // Beat 3: results panel — before → after across cost, time and resource, marked
   //         PROJECTED, figures matching the Recommendation card; verdict line.
   function buildSimulate() {
-    // simulated cases replaying along the spine once the fix is in (Beat 2+)
-    const simtoks = (() => {
-      let sd = 0x51AB5;
-      const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7FFFFFFF; return sd / 0x7FFFFFFF; };
-      let html = '';
-      for (let i = 0; i < 9; i++) {
-        const cy = (300 + (rnd() - 0.5) * 8).toFixed(0);
-        const dur = (1.05 + rnd() * 0.4).toFixed(2);
-        const delay = (6.6 + rnd() * 1.5).toFixed(2);
-        html += `<circle class="si-simtok" cx="480" cy="${cy}" r="2.6" style="--tx:440px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
-      }
-      return html;
-    })();
+    // simulated cases replaying through the NEW process (Beat 2+) — they ride the
+    // spine and every remaining variant, so the cleaned-up map is visibly in use
+    const simtoks = [
+      motTok('si-simtok', 'spine',     2.6, 0.0), motTok('si-simtok', 'spine',     3.1, 0.9),
+      motTok('si-simtok', 'spine',     2.8, 1.7), motTok('si-simtok', 'spine',     3.4, 2.3),
+      motTok('si-simtok', 'lowerAlt',  4.6, 0.4), motTok('si-simtok', 'lowerAlt',  5.1, 2.8),
+      motTok('si-simtok', 'topAlt',    4.2, 1.4),
+      motTok('si-simtok', 'lowerLong', 5.4, 2.0),
+    ].join('');
 
     // sandbox boundary + copy shimmer + tag + replay counter (top corners)
     const sandbox = `
@@ -1968,8 +1990,8 @@
       <rect class="si-shimmer" x="442" y="88" width="518" height="420" rx="16"/>
       <rect class="si-twin-tag-bg" x="456" y="100" width="122" height="22" rx="11"/>
       <text class="si-twin-tag" x="517" y="115" text-anchor="middle">DIGITAL TWIN</text>
-      <text class="si-count-label" x="946" y="110" text-anchor="end">CASES REPLAYED</text>
-      <text class="si-count" x="946" y="136" text-anchor="end">0</text>`;
+      <text class="si-count-label" x="946" y="110" text-anchor="end">SIMULATION RUN &middot; YOUR DATA</text>
+      <text class="si-count" x="946" y="136" text-anchor="end">0%</text>`;
 
     // the fix applied in the twin (Beat 2)
     const fix = `<circle class="si-ring" cx="700" cy="300" r="36"/>`;
@@ -1994,7 +2016,7 @@
       <g class="si-verdict">
         <circle class="si-check-circ" cx="66" cy="398" r="12"/>
         <path class="si-check-mark" d="M60.5,398.5 L65,403 L72,394"/>
-        <text class="si-verdict-text" x="86" y="402">Bottleneck cleared &middot; rework loop removed</text>
+        <text class="si-verdict-text" x="86" y="402">Bottleneck cleared &middot; variants reduced</text>
       </g>`;
 
     const scene = document.createElement('div');
@@ -2002,7 +2024,7 @@
     scene.innerHTML = `<div class="pi-narr"></div>
       <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         ${sandbox}
-        ${carryMapSVG({ rework: true, reworkCls: 'si-rework' })}
+        ${carryMapSVG({ variant: 'full', goneCls: 'si-gone' })}
         ${fix}
         ${simtoks}
         ${panel}
@@ -2019,12 +2041,12 @@
     // Beat 2 — the fix applies in the twin while cases replay and the counter runs.
     T(() => nar.classList.add('wipe'), 4900);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'The fix is applied — ' }, { t: '312,847 cases', hl: true }, { t: ' replay through it.' }], 46, 0); }, 5250);
+      cardType(scene, nar, [{ t: 'The fix is applied — ' }, { t: 'your data', hl: true }, { t: ' runs against the new process.' }], 46, 0); }, 5250);
     // Beat 3 — before → after results, still only a projection.
     T(() => nar.classList.add('wipe'), 10600);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
       cardType(scene, nar, [{ t: 'The result — ' }, { t: 'proven', hl: true }, { t: ' before you commit.' }], 46, 0); }, 10950);
-    cardCount(scene, scene.querySelector('.si-count'), 312847, 2600, 6700, v => Math.round(v).toLocaleString());
+    cardCount(scene, scene.querySelector('.si-count'), 100, 2600, 6700, v => Math.round(v) + '%');
     cardCount(scene, scene.querySelector('.si-after--cost'), 560, 900, 11900,
       v => v >= 1000 ? '$' + (v / 1000).toFixed(1) + 'M / yr' : '$' + Math.round(v) + 'K / yr', 1200);
     cardCount(scene, scene.querySelector('.si-after--time'), 5.5, 900, 12150, v => v.toFixed(1) + ' days / case', 9);
@@ -2038,22 +2060,19 @@
   //         opens with a steady green trace.
   // Beat 2: the three baselines report in — cost, time and resource at their new
   //         levels (the simulated figures, now real), all ON TRACK.
-  // Beat 3: one node drifts — it warms amber and is flagged on the map, and the
-  //         TIME baseline flips to DRIFT in the same moment. Caught, not found.
+  // Beat 3: drift appears as a NEW amber variant drawing itself onto the map (the
+  //         rework loop creeping back), cases start using it, and the TIME baseline
+  //         flips to DRIFT in the same moment. Caught as it forms, not found later.
   function buildMonitor() {
-    // live cases on the spine — slower and steadier than Simulation's replay
-    const livetoks = (() => {
-      let sd = 0x4D00;
-      const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7FFFFFFF; return sd / 0x7FFFFFFF; };
-      let html = '';
-      for (let i = 0; i < 6; i++) {
-        const cy = (300 + (rnd() - 0.5) * 8).toFixed(0);
-        const dur = (1.6 + rnd() * 0.5).toFixed(2);
-        const delay = (2.4 + rnd() * 2.0).toFixed(2);
-        html += `<circle class="mo-tok" cx="480" cy="${cy}" r="2.4" style="--tx:440px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
-      }
-      return html;
-    })();
+    // live cases riding the cleaned-up map — slower and steadier than the
+    // simulation's replay, on the spine and every remaining variant
+    const livetoks = [
+      motTok('mo-tok', 'spine',     3.8, 0.0, 2.4), motTok('mo-tok', 'spine',     4.6, 1.6, 2.4),
+      motTok('mo-tok', 'spine',     4.2, 3.0, 2.4),
+      motTok('mo-tok', 'lowerAlt',  6.2, 0.8, 2.4),
+      motTok('mo-tok', 'topAlt',    5.6, 2.2, 2.4),
+      motTok('mo-tok', 'lowerLong', 6.8, 3.6, 2.4),
+    ].join('');
 
     const live = `<g class="mo-live">
         <circle class="mo-live-dot" cx="886" cy="106" r="5"/>
@@ -2092,21 +2111,24 @@
       <path class="mo-ekg" d="${ekgPath}" pathLength="1000"/>
       ${rows}`;
 
-    // drift caught on the map (Beat 3): node N4 warms, ring pulses, flag pops
+    // drift caught on the map (Beat 3): a NEW amber variant draws itself in —
+    // the old rework loop creeping back — and cases start using it
     const drift = `
-      <circle class="mo-warm" cx="810" cy="300" r="26"/>
-      <circle class="mo-warm-ring" cx="810" cy="300" r="33"/>
+      <path class="mo-newvar" pathLength="1" d="M804,276 C796,210 716,210 708,276"/>
+      <circle class="mo-newvar-tok" r="2.6">
+        <animateMotion dur="2.2s" begin="0s" repeatCount="indefinite" path="M804,276 C796,210 716,210 708,276"/>
+      </circle>
       <g class="mo-flag">
-        <line class="mo-flag-pole" x1="810" y1="268" x2="810" y2="238"/>
-        <path class="mo-flag-flag" d="M810,238 L834,245 L810,252 Z"/>
-        <text class="mo-flag-label" x="810" y="226" text-anchor="middle">Drift detected</text>
+        <line class="mo-flag-pole" x1="756" y1="222" x2="756" y2="196"/>
+        <path class="mo-flag-flag" d="M756,196 L780,203 L756,210 Z"/>
+        <text class="mo-flag-label" x="756" y="184" text-anchor="middle">New variant detected</text>
       </g>`;
 
     const scene = document.createElement('div');
     scene.className = 'mo-scene pi-cardscene';
     scene.innerHTML = `<div class="pi-narr"></div>
       <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        ${carryMapSVG({ rework: false })}
+        ${carryMapSVG({ variant: 'fixed' })}
         ${livetoks}
         ${live}
         ${panel}
@@ -2128,7 +2150,7 @@
     // Beat 3 — drift caught: map node warms 10.2s, flag 10.5s, TIME row flips 10.7s.
     T(() => nar.classList.add('wipe'), 9300);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'The moment anything ' }, { t: 'drifts', hl: true }, { t: ', you know.' }], 46, 0); }, 9650);
+      cardType(scene, nar, [{ t: 'A ' }, { t: 'new variant', hl: true }, { t: ' appears — caught as it forms.' }], 46, 0); }, 9650);
   }
 
   // ── Task Mining: same shared cardPlay/cardType pattern as Process Mining and
