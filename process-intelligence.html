@@ -231,9 +231,8 @@
     #intro.show .ov-station { animation: ovPop 0.5s cubic-bezier(.22,1,.36,1) both; }  /* inline delays */
     .ov-plate { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 1.8; filter: drop-shadow(0 0 6px rgba(143,184,255,0.35)); }
     .ov-glyph { fill: none; stroke: #8fb8ff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-    .ov-glyph--green { stroke: #5fe3a0; }
-    .ov-bolt { fill: #5fe3a0; }
-    .ov-bar--cost { fill: #ff9a6a; } .ov-bar--time { fill: #8fb8ff; } .ov-bar--resource { fill: #5fe3a0; }
+    .ov-bolt { fill: #8fb8ff; }
+    .ov-bar { fill: #8fb8ff; }
     .ov-lbl { fill: rgba(255,255,255,0.5); font: 700 9.5px var(--font-body); letter-spacing: 0.14em; }
     .ov-out { opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.4); }
     #intro.show .ov-out { animation: ovPop 0.55s 1.6s cubic-bezier(.22,1,.36,1) both; }
@@ -253,7 +252,7 @@
     @keyframes ovFade { from { opacity: 0; } to { opacity: 1; } }
     @keyframes ovDraw { 0% { opacity: 1; stroke-dashoffset: 1; } 100% { opacity: 1; stroke-dashoffset: 0; } }
     @keyframes ovPop { 0% { opacity: 0; transform: scale(0.4); } 65% { opacity: 1; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
-    @keyframes ovTok { 0% { opacity: 0; transform: translateX(0); } 6% { opacity: 0.95; } 92% { opacity: 0.9; } 100% { opacity: 0; transform: translateX(776px); } }
+    @keyframes ovTok { 0% { opacity: 0; transform: translateX(0); } 6% { opacity: 0.95; } 92% { opacity: 0.9; } 100% { opacity: 0; transform: translateX(790px); } }
     @media (prefers-reduced-motion: reduce) {
       .ov-chaos, .ov-station, .ov-out, .ov-stem, .ov-band { opacity: 1 !important; transform: none !important; animation: none !important; }
       .ov-line { opacity: 1 !important; stroke-dashoffset: 0 !important; animation: none !important; }
@@ -1011,7 +1010,7 @@
           </g>
           <text class="ov-lbl ov-station" x="78" y="231" text-anchor="middle" style="animation-delay:0.2s">TODAY</text>
 
-          <path class="ov-line" pathLength="1" d="M128,170 L902,170"/>
+          <path class="ov-line" pathLength="1" d="M128,170 L924,170"/>
           <circle class="ov-tok" cx="132" cy="170" r="2.6" style="animation-delay:2.0s"/><circle class="ov-tok" cx="132" cy="170" r="2.6" style="animation-delay:3.1s"/><circle class="ov-tok" cx="132" cy="170" r="2.6" style="animation-delay:4.3s"/>
         <g class="ov-station" style="animation-delay:0.55s">
           <circle class="ov-plate" cx="218" cy="170" r="27"/>
@@ -1019,41 +1018,41 @@
           <text class="ov-lbl" x="218" y="219" text-anchor="middle">SEE</text>
         </g>
         <g class="ov-station" style="animation-delay:0.71s">
-          <circle class="ov-plate" cx="344" cy="170" r="27"/>
-          <g transform="translate(344,170)"><rect class="ov-glyph" x="-9" y="-8" width="18" height="12.5" rx="2"/><path class="ov-glyph" d="M-3.5,8 h7 M0,4.5 v3.5"/></g>
-          <text class="ov-lbl" x="344" y="219" text-anchor="middle">CAPTURE</text>
+          <circle class="ov-plate" cx="336" cy="170" r="27"/>
+          <g transform="translate(336,170)"><rect class="ov-glyph" x="-9" y="-8" width="18" height="12.5" rx="2"/><path class="ov-glyph" d="M-3.5,8 h7 M0,4.5 v3.5"/></g>
+          <text class="ov-lbl" x="336" y="219" text-anchor="middle">CAPTURE</text>
         </g>
         <g class="ov-station" style="animation-delay:0.87s">
-          <circle class="ov-plate" cx="470" cy="170" r="27"/>
-          <g transform="translate(470,170)"><rect class="ov-bar--cost" x="-8.5" y="-2" width="4.6" height="10" rx="1"/><rect class="ov-bar--time" x="-2.3" y="-6" width="4.6" height="14" rx="1"/><rect class="ov-bar--resource" x="3.9" y="-9" width="4.6" height="17" rx="1"/></g>
-          <text class="ov-lbl" x="470" y="219" text-anchor="middle">QUANTIFY</text>
+          <circle class="ov-plate" cx="454" cy="170" r="27"/>
+          <g transform="translate(454,170)"><rect class="ov-bar" x="-8.5" y="-2" width="4.6" height="10" rx="1"/><rect class="ov-bar" x="-2.3" y="-6" width="4.6" height="14" rx="1"/><rect class="ov-bar" x="3.9" y="-9" width="4.6" height="17" rx="1"/></g>
+          <text class="ov-lbl" x="454" y="219" text-anchor="middle">QUANTIFY</text>
         </g>
         <g class="ov-station" style="animation-delay:1.03s">
-          <circle class="ov-plate" cx="596" cy="170" r="27"/>
-          <g transform="translate(596,170)"><path class="ov-bolt" d="M2.2,-9 L-4.8,1.2 L-0.8,1.2 L-2.8,9 L4.8,-1.6 L0.6,-1.6 Z"/></g>
-          <text class="ov-lbl" x="596" y="219" text-anchor="middle">PROPOSE</text>
+          <circle class="ov-plate" cx="572" cy="170" r="27"/>
+          <g transform="translate(572,170)"><path class="ov-bolt" d="M2.2,-9 L-4.8,1.2 L-0.8,1.2 L-2.8,9 L4.8,-1.6 L0.6,-1.6 Z"/></g>
+          <text class="ov-lbl" x="572" y="219" text-anchor="middle">PROPOSE</text>
         </g>
         <g class="ov-station" style="animation-delay:1.19s">
-          <circle class="ov-plate" cx="722" cy="170" r="27"/>
-          <g transform="translate(722,170)"><rect class="ov-glyph" x="-9" y="-7.5" width="18" height="15" rx="3" stroke-dasharray="3 3"/><circle class="ov-glyph" cx="0" cy="0" r="2.6"/></g>
-          <text class="ov-lbl" x="722" y="219" text-anchor="middle">PROVE</text>
+          <circle class="ov-plate" cx="690" cy="170" r="27"/>
+          <g transform="translate(690,170)"><rect class="ov-glyph" x="-9" y="-7.5" width="18" height="15" rx="3" stroke-dasharray="3 3"/><circle class="ov-glyph" cx="0" cy="0" r="2.6"/></g>
+          <text class="ov-lbl" x="690" y="219" text-anchor="middle">PROVE</text>
         </g>
         <g class="ov-station" style="animation-delay:1.35s">
-          <circle class="ov-plate" cx="848" cy="170" r="27"/>
-          <g transform="translate(848,170)"><path class="ov-glyph ov-glyph--green" d="M-10,1 L-4,1 L-1.2,-6 L2,6.5 L4.6,1 L10,1"/></g>
-          <text class="ov-lbl" x="848" y="219" text-anchor="middle">PROTECT</text>
+          <circle class="ov-plate" cx="808" cy="170" r="27"/>
+          <g transform="translate(808,170)"><path class="ov-glyph" d="M-10,1 L-4,1 L-1.2,-6 L2,6.5 L4.6,1 L10,1"/></g>
+          <text class="ov-lbl" x="808" y="219" text-anchor="middle">PROTECT</text>
         </g>
 
           <!-- the outcome -->
           <g class="ov-out">
-            <circle class="ov-check-circ" cx="932" cy="170" r="21"/>
-            <path class="ov-check" d="M923,170.5 L929.5,177 L941,162.5"/>
-            <text class="ov-lbl" x="932" y="212" text-anchor="middle">DECISIONS</text>
-            <text class="ov-lbl" x="932" y="226" text-anchor="middle">ON EVIDENCE</text>
+            <circle class="ov-check-circ" cx="948" cy="170" r="21"/>
+            <path class="ov-check" d="M939,170.5 L945.5,177 L957,162.5"/>
+            <text class="ov-lbl" x="948" y="212" text-anchor="middle">DECISIONS</text>
+            <text class="ov-lbl" x="948" y="226" text-anchor="middle">ON EVIDENCE</text>
           </g>
 
           <!-- conversational band beneath, feeding every station -->
-          <line class="ov-stem" x1="218" y1="198" x2="218" y2="300"/><line class="ov-stem" x1="344" y1="198" x2="344" y2="300"/><line class="ov-stem" x1="470" y1="198" x2="470" y2="300"/><line class="ov-stem" x1="596" y1="198" x2="596" y2="300"/><line class="ov-stem" x1="722" y1="198" x2="722" y2="300"/><line class="ov-stem" x1="848" y1="198" x2="848" y2="300"/>
+          <line class="ov-stem" x1="218" y1="198" x2="218" y2="300"/><line class="ov-stem" x1="336" y1="198" x2="336" y2="300"/><line class="ov-stem" x1="454" y1="198" x2="454" y2="300"/><line class="ov-stem" x1="572" y1="198" x2="572" y2="300"/><line class="ov-stem" x1="690" y1="198" x2="690" y2="300"/><line class="ov-stem" x1="808" y1="198" x2="808" y2="300"/>
           <g class="ov-band">
             <rect class="ov-band-bg" x="190" y="300" width="686" height="44" rx="22"/>
             <g transform="translate(222,322)">
