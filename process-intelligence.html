@@ -611,8 +611,10 @@
        Layout: process map (TM final state) is carried over UNCHANGED on the right; the
        left third (where System+Engine+Extras lived in PM/TM) is now occupied by three
        large pills — Cost / Time / Resource. Beat 1 sweeps a scan line across the map.
-       Beat 2 introduces the pills and scatters coloured metric dots across the map.
-       Beat 3 flares the lead cost dot dramatically and runs figures into the pills. */
+       Beat 2 introduces the pills and runs their figures up as the caption types —
+       "quantified" means numbers on screen, not placeholders.
+       Beat 3 is purely spatial: the lead cost dot flares and the rest pulse — the
+       map answers "where". */
 
     /* ── carry-over map (TM final state, visible from frame 1, no animation) ── */
     .an-map-edge { fill: none; stroke: #6f9bff; stroke-width: 2.6; stroke-linecap: round; opacity: 0.92;
@@ -688,9 +690,9 @@
     .an-pill-bar-f--cost     { fill: #ff9a6a; }
     .an-pill-bar-f--time     { fill: #8fb8ff; }
     .an-pill-bar-f--resource { fill: #5fe3a0; }
-    .an-scene.playing .an-pill-bar-f--cost     { animation: anBarFill 1.0s 10.0s cubic-bezier(.4,0,.2,1) forwards; }
-    .an-scene.playing .an-pill-bar-f--resource { animation: anBarFill 1.0s 12.0s cubic-bezier(.4,0,.2,1) forwards; }
-    .an-scene.playing .an-pill-bar-f--time     { animation: anBarFill 1.0s 12.2s cubic-bezier(.4,0,.2,1) forwards; }
+    .an-scene.playing .an-pill-bar-f--cost     { animation: anBarFill 1.0s 5.7s cubic-bezier(.4,0,.2,1) forwards; }
+    .an-scene.playing .an-pill-bar-f--resource { animation: anBarFill 1.0s 6.3s cubic-bezier(.4,0,.2,1) forwards; }
+    .an-scene.playing .an-pill-bar-f--time     { animation: anBarFill 1.0s 6.0s cubic-bezier(.4,0,.2,1) forwards; }
     @keyframes anBarFill { from { transform: scaleX(0); } to { transform: scaleX(var(--bar, 0.7)); } }
 
     /* ═══════════ Recommendation — the hotspot feeds AI, AI proposes, you decide ═══════════
@@ -1645,12 +1647,12 @@
   //                         scan line sweeps L→R across the map with a soft cyan trail.
   //                         2-second narration breath after.
   //   Beat 2 (5.1–9.5s)     Caption replaces with "Quantified across cost, time and
-  //                         resource."; pills fade in on the left; coloured metric dots
-  //                         scatter across the map. 2-second breath after.
-  //   Beat 3 (9.5s+)        Caption replaces with the closer; the LEAD cost dot at the
-  //                         bottleneck flares dramatically while $1.2M counts up; the
-  //                         remaining dots pulse softer; resource (12,400 hrs/yr) and
-  //                         time (9 days/case) figures count up into their pills.
+  //                         resource."; pills fade in on the left and their figures
+  //                         count up while the caption types ($1.2M / 9 days /
+  //                         12,400 hrs). 2-second breath after.
+  //   Beat 3 (9.5s+)        Caption replaces with the closer ("showing exactly WHERE
+  //                         it's going"); purely spatial — the LEAD cost dot flares
+  //                         at the bottleneck and the remaining dots pulse.
   function buildAnalysis() {
     // ── carry-over map from Task Mining (final state). All visible from frame 1. ──
     const carryMap = `
@@ -1806,15 +1808,14 @@
       cardType(scene, nar, [{ t: 'Quantified across ' }, { t: 'cost, time and resource', hl: true }, { t: '.' }], 46, 0);
     }, 4950));
     if (scene._t) scene._t.push(setTimeout(() => nar.classList.add('wipe'), 8880));
-    // Beat 3 — "Showing exactly where your time, money and effort are going." +
-    //   cost figure counts (1.2s), then resource and time figures count after the wave.
+    // Beat 2 figures — count up as the pills land, while the caption types.
     if (scene._t) scene._t.push(setTimeout(() => {
       nar.classList.remove('wipe'); nar.innerHTML = '';
       cardType(scene, nar, [{ t: 'Showing exactly where your ' }, { t: 'time, money and effort', hl: true }, { t: ' are going.' }], 46, 0);
     }, 9230));
-    cardCount(scene, scene.querySelector('.an-fig--cost'),     1.2,   1200, 9700,  v => '$' + v.toFixed(1) + 'M');
-    cardCount(scene, scene.querySelector('.an-fig--resource'), 12400, 1100, 11700, v => Math.round(v).toLocaleString());
-    cardCount(scene, scene.querySelector('.an-fig--time'),     9,     1000, 11900, v => String(Math.round(v)));
+    cardCount(scene, scene.querySelector('.an-fig--cost'),     1.2,   1200, 5700,  v => '$' + v.toFixed(1) + 'M');
+    cardCount(scene, scene.querySelector('.an-fig--resource'), 12400, 1100, 6300, v => Math.round(v).toLocaleString());
+    cardCount(scene, scene.querySelector('.an-fig--time'),     9,     1000, 6000, v => String(Math.round(v)));
   }
 
   // ════════════ Card 4 · Recommendation ════════════
