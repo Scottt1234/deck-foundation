@@ -357,6 +357,23 @@
       background: linear-gradient(180deg, transparent, rgba(255,255,255,0.16) 22%, rgba(255,255,255,0.16) 78%, transparent); }
     .cv-qlist { display: flex; flex-direction: column; justify-content: flex-start; gap: 9px; }
 
+    /* ── the ask bar (Beat 2): the change agent itself — slides up over the
+       crowd panel and a plain-English question types into it ── */
+    .cv-ask {
+      position: absolute; left: 50%; bottom: 7%; transform: translate(-50%, 16px);
+      display: inline-flex; align-items: center; gap: 10px; max-width: 86%;
+      background: rgba(10,28,68,0.85); border: 1px solid rgba(143,184,255,0.55);
+      border-radius: 999px; padding: 11px 20px; z-index: 12;
+      opacity: 0; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .cv-scene.ask-on .cv-ask { opacity: 1; transform: translate(-50%, 0); }
+    .cv-ask-glyph { flex-shrink: 0; fill: none; stroke: #8fb8ff; stroke-width: 1.6; stroke-linejoin: round; }
+    .cv-ask-q { font: 600 14.5px var(--font-body); color: #eaf1ff; white-space: nowrap; }
+    .cv-ask-q .cv-caret { display: inline-block; width: 2px; height: 1em; background: var(--sf-blue-l);
+      margin-left: 2px; vertical-align: -2px; animation: cvBlink 1s step-end infinite; }
+    @media (prefers-reduced-motion: reduce) { .cv-ask { transition: none; } }
+
     /* typed narration lines — left (cv-narrate) and right (cv-rtitle), same font + size */
     .cv-narrate, .cv-rtitle { font-family: var(--font-display); font-weight: 700;
       font-size: clamp(15px, 2.2vw, 20px); letter-spacing: -0.01em; line-height: 1.25; color: #fff; }
@@ -1403,6 +1420,12 @@
         <div class="cv-narrate"></div>
         <div class="cv-spotlight"></div>
         <div class="cv-crowd"></div>
+        <div class="cv-ask" aria-hidden="true">
+          <svg class="cv-ask-glyph" viewBox="-10 -10 20 20" width="18" height="18">
+            <path d="M-7,-7 a3,3 0 0 1 3,-3 H7 a3,3 0 0 1 3,3 V1 a3,3 0 0 1 -3,3 H-1 L-6,8 V4 a3,3 0 0 1 -4,-3 z" transform="translate(0,-1) scale(0.85)"/>
+          </svg>
+          <span class="cv-ask-q"></span>
+        </div>
       </div>
       <div class="cv-questions">
         <div class="cv-rtitle"></div>
@@ -2379,7 +2402,7 @@
     if (scene._cvTimers) scene._cvTimers.forEach(clearTimeout);
     scene._cvTimers = [];
     stopConvoQuestions(scene);
-    scene.classList.remove('playing', 'experts', 'revealed');
+    scene.classList.remove('playing', 'experts', 'revealed', 'ask-on');
     const narrate = scene.querySelector('.cv-narrate');
     const rtitle = scene.querySelector('.cv-rtitle');
     narrate.classList.remove('wipe'); narrate.innerHTML = ''; rtitle.innerHTML = '';
@@ -2405,22 +2428,30 @@
     scene.classList.add('playing');                      // blank stage
     const CPS = 67;                                       // ~40% slower typing
     const T = (fn, ms) => scene._cvTimers.push(setTimeout(fn, ms));
+    const askQ = scene.querySelector('.cv-ask-q');
+    if (askQ) askQ.innerHTML = '';
 
-    // 1) "It used to take an expert to get an answer." on the left; experts appear once it finishes.
-    typeLine(scene, narrate, [{ t: 'It used to take an ' }, { t: 'expert', hl: true }, { t: ' to get an answer.' }], CPS, () => scene.classList.add('experts'));
-    // 2) hold, then wipe the line away.
-    T(() => narrate.classList.add('wipe'), 4800);
-    // 3) experts shrink + crowd fades in while "Now everyone can get the answers they need" types
-    //    on the left (and then stays there).
+    // Beat 1 — the before, named out loud: the concession that buys the skeptic's
+    // attention. The two specialist figures appear as the line completes.
+    typeLine(scene, narrate, [{ t: 'Tools like this used to belong to ' }, { t: 'specialists', hl: true }, { t: '.' }], CPS, () => scene.classList.add('experts'));
+    T(() => narrate.classList.add('wipe'), 4600);
+    // Beat 2 — the change agent itself: the ask bar slides up and a plain-English
+    // question types into it; the specialists are absorbed as the crowd blooms.
     T(() => {
       narrate.classList.remove('wipe'); narrate.innerHTML = '';
-      scene.classList.add('revealed');
+      typeLine(scene, narrate, [{ t: 'Now you just ' }, { t: 'ask', hl: true }, { t: ', in plain English.' }], CPS);
+    }, 5250);
+    T(() => scene.classList.add('ask-on'), 5700);
+    T(() => { if (askQ) typeLine(scene, askQ, [{ t: 'Which process costs us the most?' }], 48); }, 6300);
+    T(() => scene.classList.add('revealed'), 8100);
+    // Beat 3 — the after: everyone. Questions stream from every corner.
+    T(() => narrate.classList.add('wipe'), 9900);
+    T(() => {
+      narrate.classList.remove('wipe'); narrate.innerHTML = '';
       typeLine(scene, narrate, [{ t: 'Now ' }, { t: 'everyone', hl: true }, { t: ' can get the answers they need' }], CPS);
-    }, 5650);
-    // 4) after a small beat, the right-hand title types at the same height; the questions (and
-    //    their pulses) wait until it has finished typing before they begin to stream in.
-    T(() => typeLine(scene, rtitle, [{ t: 'Simply by asking in their own words' }], CPS,
-      () => { if (scene._cvTimers) scene._cvTimers.push(setTimeout(() => startConvoQuestions(scene), 650)); }), 9300);
+    }, 10550);
+    T(() => typeLine(scene, rtitle, [{ t: 'From every corner of the organisation' }], CPS,
+      () => { if (scene._cvTimers) scene._cvTimers.push(setTimeout(() => startConvoQuestions(scene), 650)); }), 13800);
   }
   function stopConvo(el) {
     const scene = el.querySelector('.cv-scene'); if (!scene) return;
@@ -2429,7 +2460,8 @@
     const narrate = scene.querySelector('.cv-narrate'); if (narrate) { narrate.classList.remove('wipe'); narrate.innerHTML = ''; }
     const rtitle = scene.querySelector('.cv-rtitle'); if (rtitle) rtitle.innerHTML = '';
     const layer = scene.querySelector('.cv-link-layer'); if (layer) layer.innerHTML = '';
-    scene.classList.remove('playing', 'experts', 'revealed');
+    const askQ = scene.querySelector('.cv-ask-q'); if (askQ) askQ.innerHTML = '';
+    scene.classList.remove('playing', 'experts', 'revealed', 'ask-on');
   }
 
   function showBig(n) {
