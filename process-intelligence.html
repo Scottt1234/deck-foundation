@@ -2446,6 +2446,9 @@
     swapTimer = setTimeout(() => {
       if (prev) prev.classList.remove('closing');
       if (next) {
+        // A rapid back-and-forth can cancel a pending swap, stranding a stale
+        // .closing (opacity 0) on this card — scrub it before re-activating.
+        next.classList.remove('closing');
         next.classList.add('active');
         playScene(next);
       }
