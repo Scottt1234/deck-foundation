@@ -718,8 +718,9 @@
        flare still pulsing on the bottleneck. Human–AI–human: you aim → AI proposes →
        you decide. Three beats:
          Beat 1 (0.35–4.9s)  Caption types; priority chips (Cost / Time / Resource) land
-                             in the left column; the cursor picks Cost; the most
-                             expensive hotspot on the map surges in answer.
+                             in the left column over a NEUTRAL map; the cursor picks
+                             Cost and the map answers — every cost hotspot and the
+                             pulsing bottleneck flare bloom on at once (3.0s).
          Beat 2 (4.9–10.6s)  Caption swaps; the engine (the PM/TM motif) returns and the
                              flaring hotspot streams its data INTO it (card 1 reversed);
                              ordered tokens drop out and a proposal card materialises
@@ -730,13 +731,20 @@
                              loop ghosts out, flare cools) and Review / Approve appear —
                              held, unclicked. Nothing applies itself. */
 
-    /* ── carried-over cost hotspots (static) + lead flare (pulses, cools in Beat 3) ── */
-    .rc-spot { fill: #ff9a6a; opacity: 0.85; filter: drop-shadow(0 0 5px rgba(255,154,106,0.85)); }
-    .rc-flare-glow { fill: rgba(255,154,106,0.20); opacity: 0.85; transform-box: fill-box; transform-origin: center; }
-    .rc-flare-ring { fill: none; stroke: #ff9a6a; stroke-width: 2.4; opacity: 0.95; transform-box: fill-box; transform-origin: center;
+    /* ── cost hotspots + lead flare: hidden until the cursor picks Cost (3.0s),
+       then the whole cost view blooms onto the map at once — the map answering
+       the user's selection. Flare pulses from 3.7s, cools in Beat 3. ── */
+    .rc-spot { fill: #ff9a6a; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.2);
+      filter: drop-shadow(0 0 5px rgba(255,154,106,0.85)); }
+    .rc-scene.playing .rc-spot { animation: anDotIn 0.55s 3.0s cubic-bezier(.22,1,.36,1) both; }
+    .rc-scene.playing .rc-spot.rc-ghost { animation: anDotIn 0.55s 3.0s cubic-bezier(.22,1,.36,1) both, rcGhost 0.9s 11.3s ease forwards; }
+    .rc-flare-glow { fill: rgba(255,154,106,0.20); opacity: 0; transform-box: fill-box; transform-origin: center; }
+    .rc-flare-ring { fill: none; stroke: #ff9a6a; stroke-width: 2.4; opacity: 0; transform-box: fill-box; transform-origin: center;
       filter: drop-shadow(0 0 8px rgba(255,154,106,0.85)); }
-    .rc-scene.playing .rc-flare-glow { animation: anFlareGlowPulse 2.6s ease-in-out infinite, rcFadeOut 0.9s 11.3s ease forwards; }
-    .rc-scene.playing .rc-flare-ring { animation: anFlareRingPulse 2.4s ease-in-out infinite, rcFadeOut 0.9s 11.3s ease forwards; }
+    .rc-scene.playing .rc-flare-glow { animation: rcGlowIn 0.7s 3.0s ease forwards, anFlareGlowPulse 2.6s 3.7s ease-in-out infinite, rcFadeOut 0.9s 11.3s ease forwards; }
+    .rc-scene.playing .rc-flare-ring { animation: rcRingBloom 0.7s 3.0s ease forwards, anFlareRingPulse 2.4s 3.7s ease-in-out infinite, rcFadeOut 0.9s 11.3s ease forwards; }
+    @keyframes rcGlowIn { from { opacity: 0; } to { opacity: 0.85; } }
+    @keyframes rcRingBloom { from { opacity: 0; transform: scale(0.5); } to { opacity: 0.95; transform: scale(1); } }
 
     /* ── Beat 1: priority selector — YOU aim the AI before it moves ── */
     .rc-prio { opacity: 0; }
@@ -964,6 +972,8 @@
       .rc-pchip--sel .rc-pchip-box { fill: rgba(255,154,106,0.14) !important; stroke: #ff9a6a !important; animation: none !important; }
       .rc-pchip--sel .rc-pchip-label { fill: #ffffff !important; animation: none !important; }
       .rc-flare-glow, .rc-flare-ring { opacity: 0 !important; animation: none !important; }
+      .rc-spot { opacity: 0.85 !important; transform: none !important; animation: none !important; }
+      .rc-spot.rc-ghost { opacity: 0.15 !important; }
       .rc-panel, .rc-tag, .rc-title, .rc-mech, .rc-div, .rc-proj, .rc-row, .rc-btn, .rc-cursor, .rc-bolt, .rc-fixlabel
         { opacity: 1 !important; transform: none !important; animation: none !important; }
       .rc-link, .rc-target-ring { opacity: 0.95 !important; transform: none !important; animation: none !important; }
@@ -1869,8 +1879,9 @@
   // Continuity scene: the Analysis map carries over UNCHANGED on the right (same
   // geometry as buildAnalysis), amber cost flare still pulsing on the bottleneck.
   // Human–AI–human arc: you aim → AI proposes → you decide.
-  // Beat 1: priority chips (Cost / Time / Resource) land in the left column; the
-  //         cursor picks Cost, the chip ignites, the hotspot surges in answer.
+  // Beat 1: priority chips land in the left column over a NEUTRAL map; the cursor
+  //         picks Cost, the chip ignites, and the map answers — all cost hotspots
+  //         and the bottleneck flare bloom on at the moment of selection.
   // Beat 2: the engine (PM/TM motif) returns; the hotspot streams its data INTO it,
   //         ordered tokens drop out, and a proposal card materialises beneath —
   //         specific fix, mechanism, projected impact carrying the Analysis
@@ -1910,7 +1921,7 @@
       <circle class="an-map-core" cx="810" cy="300" r="7"/>
       <circle class="an-map-core" cx="920" cy="300" r="7"/>`;
 
-    // ── carried-over cost hotspots (static) + the lead flare on the bottleneck ──
+    // ── cost hotspots + the lead flare: bloom in when the user picks Cost ──
     const spots = `
       <circle class="rc-spot" cx="700" cy="300" r="6"/>
       <circle class="rc-spot rc-ghost" cx="756" cy="232" r="4.5"/>
