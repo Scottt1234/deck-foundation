@@ -782,65 +782,117 @@
     @keyframes rcCursorIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes rcCursorNudge { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, -3px); } }
 
-    /* ═══════════ Simulation — Before → After, marked as a projection ═══════════ */
-    .si-watermark { fill: rgba(143,184,255,0.10); font: 800 60px var(--font-display); letter-spacing: 0.06em; }
-    .si-projtag { fill: #bcd4ff; font: 700 10px var(--font-body); letter-spacing: 0.16em; opacity: 0; }
-    .si-state { fill: rgba(255,255,255,0.85); font: 700 13px var(--font-display); letter-spacing: 0.06em; }
-    .si-node { fill: #0a1c44; stroke: #8fb8ff; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); }
-    .si-node--bottle { stroke: #ffb24d; }
-    .si-edge { fill: none; stroke: #6f9bff; stroke-width: 2.4; stroke-linecap: round; opacity: 0; }
-    .si-edge--rework { stroke: #ffb24d; }
-    .si-tile { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.12); stroke-width: 1; opacity: 0; }
-    .si-tlabel { fill: rgba(255,255,255,0.6); font: 700 11px var(--font-body); letter-spacing: 0.12em; }
-    .si-num { fill: #ff8a6a; font: 700 25px var(--font-display); transition: fill 0.8s ease; }
-    .si-delta { fill: #5fe3a0; font: 700 12px var(--font-body); opacity: 0; }
-    .si-scene.playing .si-node { animation: anPop 0.45s cubic-bezier(.22,1,.36,1) both; }
-    .si-scene.playing .si-edge { animation: piFade 0.5s both; }
-    .si-scene.playing .si-tile { animation: piFade 0.6s both; }
-    .si-scene.playing .si-projtag { animation: piFade 0.6s 0.4s ease both; }
-    /* the "run": rework + bottleneck resolve, figures go green */
-    .si-scene.playing .si-edge--rework { animation: piFade 0.5s both, siFadeOut 0.8s 3.6s ease forwards; }
-    .si-scene.playing .si-node--bottle { animation: anPop 0.45s cubic-bezier(.22,1,.36,1) both, siCalm 0.9s 3.6s ease forwards; }
-    .si-scene.playing .si-num--live { animation: siGreen 0.8s 4.6s ease forwards; }
-    .si-scene.playing .si-delta { animation: piFade 0.6s 4.8s ease both; }
-    .si-scene.playing .si-after { animation: piFade 0.6s 3.5s ease both; }
-    .si-scene.playing .si-before-fade { animation: siFadeOut 0.6s 3.6s ease forwards; }
-    @keyframes siFadeOut { to { opacity: 0; } }
-    @keyframes siCalm { to { stroke: #8fb8ff; } }
-    @keyframes siGreen { to { fill: #5fe3a0; } }
+    /* ═══════════ Simulation — clone it, replay the fix, prove it ═══════════
+       Continuity: the map carries over (rework loop intact — the fix is approved but
+       not yet applied) and is wrapped in a dashed DIGITAL TWIN boundary: the change
+       is tested on a copy, never on the business. Three beats:
+         Beat 1 (0.35–4.9s)  Caption types; the sandbox boundary draws around the map,
+                             a shimmer marks the copy, the DIGITAL TWIN tag lands.
+         Beat 2 (4.9–10.6s)  Caption swaps; the fix applies inside the twin (green
+                             target ring on the bottleneck, rework loop dissolves) and
+                             simulated cases replay along the spine while the counter
+                             runs to 312,847 — the case volume from Process Reality.
+         Beat 3 (10.6s+)     Caption swaps; results panel — before → after across cost,
+                             time and resource, marked PROJECTED, figures matching the
+                             Recommendation card; verdict: bottleneck cleared. */
+    .si-box { fill: rgba(143,184,255,0.03); stroke: rgba(143,184,255,0.45); stroke-width: 1.6; stroke-dasharray: 8 7; opacity: 0; }
+    .si-scene.playing .si-box { animation: rcDashIn 0.8s 2.2s ease forwards; }
+    .si-shimmer { fill: rgba(180,220,255,0); pointer-events: none; }
+    .si-scene.playing .si-shimmer { animation: siShimmer 0.9s 2.7s ease; }
+    @keyframes siShimmer { 0%, 100% { fill: rgba(180,220,255,0); } 40% { fill: rgba(180,220,255,0.10); } }
+    .si-twin-tag-bg { fill: rgba(10,28,68,0.9); stroke: rgba(143,184,255,0.45); stroke-width: 1; opacity: 0; }
+    .si-twin-tag { fill: #bcd4ff; font: 700 10px var(--font-body); letter-spacing: 0.16em; opacity: 0; }
+    .si-scene.playing .si-twin-tag-bg, .si-scene.playing .si-twin-tag { animation: piFade 0.5s 3.1s ease both; }
+    /* Beat 2 — the fix lands in the twin */
+    .si-ring { fill: none; stroke: #5fe3a0; stroke-width: 2.4; stroke-dasharray: 7 6; opacity: 0; transform-box: fill-box; transform-origin: center;
+      filter: drop-shadow(0 0 7px rgba(95,227,160,0.7)); }
+    .si-scene.playing .si-ring { animation: rcDashIn 0.5s 5.8s ease forwards, rcRingSpin 26s 5.8s linear infinite; }
+    .si-scene.playing .si-rework { animation: rcFadeOut 0.9s 6.2s ease forwards; }
+    .si-simtok { fill: #c5e9ff; opacity: 0; filter: drop-shadow(0 0 5px rgba(0,179,255,0.9)); }
+    .si-scene.playing .si-simtok { animation: siReplay 1.15s linear infinite; }
+    @keyframes siReplay { 0% { opacity: 0; transform: translate(0, 0); } 12% { opacity: 0.95; } 88% { opacity: 0.9; } 100% { opacity: 0; transform: translate(var(--tx, 440px), var(--ty, 0px)); } }
+    .si-count-label { fill: rgba(255,255,255,0.55); font: 700 9.5px var(--font-body); letter-spacing: 0.14em; opacity: 0; }
+    .si-count { fill: #ffffff; font: 700 24px var(--font-display); opacity: 0; }
+    .si-scene.playing .si-count, .si-scene.playing .si-count-label { animation: piFade 0.5s 6.6s ease both; }
+    /* Beat 3 — results panel (left column, same geometry as cards 3–4) */
+    .si-panel { fill: rgba(10,28,68,0.72); stroke: rgba(111,155,255,0.4); stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; transform: translateY(10px) scale(0.97); }
+    .si-scene.playing .si-panel { animation: rcCardIn 0.6s 11.3s cubic-bezier(.22,1,.36,1) both; }
+    .si-ptag { fill: #bcd4ff; font: 700 9.5px var(--font-body); letter-spacing: 0.12em; opacity: 0; }
+    .si-scene.playing .si-ptag { animation: piFade 0.5s 11.6s ease both; }
+    .si-row { opacity: 0; }
+    .si-scene.playing .si-row { animation: rcRise 0.5s ease both; }  /* per-row inline delays */
+    .si-row-label { fill: rgba(255,255,255,0.66); font: 600 12.5px var(--font-body); letter-spacing: 0.04em; }
+    .si-before { fill: rgba(255,255,255,0.38); font: 600 12px var(--font-body); }
+    .si-strike { stroke: rgba(255,255,255,0.35); stroke-width: 1.2; }
+    .si-after { font: 700 16px var(--font-display); }
+    .si-after--cost { fill: #ff9a6a; } .si-after--time { fill: #8fb8ff; } .si-after--resource { fill: #5fe3a0; }
+    .si-row-dot--cost     { fill: #ff9a6a; filter: drop-shadow(0 0 5px rgba(255,154,106,0.85)); }
+    .si-row-dot--time     { fill: #8fb8ff; filter: drop-shadow(0 0 5px rgba(143,184,255,0.85)); }
+    .si-row-dot--resource { fill: #5fe3a0; filter: drop-shadow(0 0 5px rgba(95,227,160,0.75)); }
+    .si-verdict { opacity: 0; }
+    .si-scene.playing .si-verdict { animation: rcRise 0.5s 12.9s ease both; }
+    .si-check-circ { fill: rgba(95,227,160,0.14); stroke: #5fe3a0; stroke-width: 1.6; }
+    .si-check-mark { fill: none; stroke: #5fe3a0; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .si-verdict-text { fill: #9defc4; font: 700 12px var(--font-body); }
 
-    /* ═══════════ Monitor — holding, watched, drift caught (calm) ═══════════ */
-    .mo-node { fill: #0a1c44; stroke: #7fc8b0; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); }
-    .mo-node--drift { transition: stroke 0.5s ease; }
-    .mo-edge { fill: none; stroke: #4f9c86; stroke-width: 2.2; stroke-linecap: round; opacity: 0; }
-    .mo-pulse { fill: #aef0d8; opacity: 0; filter: drop-shadow(0 0 5px rgba(120,230,190,0.9)); }
-    .mo-spark { fill: none; stroke: #6fe0b4; stroke-width: 1.8; stroke-linejoin: round; opacity: 0; }
-    .mo-spark-dot { fill: #d6fff0; opacity: 0; filter: drop-shadow(0 0 4px rgba(120,230,190,0.95)); }
+    /* ═══════════ Monitor — live, checked, drift caught ═══════════
+       Continuity: the map returns WITHOUT the rework loop — the fix from cards 4–5
+       is deployed. Calm green status language over the deck's blue map. Three beats:
+         Beat 1 (0.35–4.9s)  Caption types; LIVE badge lands, real cases flow along
+                             the spine, the monitor panel opens with a steady trace.
+         Beat 2 (4.9–9.3s)   Caption swaps; the three baselines report in — cost,
+                             time, resource at their new levels, all ON TRACK.
+         Beat 3 (9.3s+)      Caption swaps; one node drifts (warms amber, flagged on
+                             the map) and the TIME baseline flips to DRIFT with it. */
     .mo-live { opacity: 0; }
-    .mo-live-dot { fill: #5fe3a0; transform-box: fill-box; transform-origin: center; }
-    .mo-live-label { fill: rgba(255,255,255,0.7); font: 700 11px var(--font-body); letter-spacing: 0.16em; }
-    .mo-status { fill: rgba(255,255,255,0.62); font: 600 12px var(--font-body); letter-spacing: 0.04em; opacity: 0; }
-    .mo-flag { opacity: 0; transform-box: fill-box; transform-origin: center bottom; }
-    .mo-flag-ring { fill: none; stroke: #ffc24d; stroke-width: 2; transform-box: fill-box; transform-origin: center; }
+    .mo-live-dot { fill: #5fe3a0; transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 6px rgba(95,227,160,0.9)); }
+    .mo-live-label { fill: rgba(255,255,255,0.78); font: 700 11px var(--font-body); letter-spacing: 0.16em; }
+    .mo-scene.playing .mo-live { animation: piFade 0.5s 2.0s ease both; }
+    .mo-scene.playing .mo-live-dot { animation: moBlink 2.2s 2.2s ease-in-out infinite; }
+    @keyframes moBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.82); } }
+    /* live cases riding the (now loop-free) spine */
+    .mo-tok { fill: #c5e9ff; opacity: 0; filter: drop-shadow(0 0 5px rgba(0,179,255,0.85)); }
+    .mo-scene.playing .mo-tok { animation: siReplay 1.7s linear infinite; }
+    /* monitor panel (left column, same geometry as cards 3–5) */
+    .mo-panel { fill: rgba(10,28,68,0.72); stroke: rgba(111,155,255,0.4); stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; transform: translateY(10px) scale(0.97); }
+    .mo-scene.playing .mo-panel { animation: rcCardIn 0.6s 2.4s cubic-bezier(.22,1,.36,1) both; }
+    .mo-phead { opacity: 0; }
+    .mo-scene.playing .mo-phead { animation: piFade 0.5s 2.8s ease both; }
+    .mo-phead-dot { fill: #5fe3a0; transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 5px rgba(95,227,160,0.9)); }
+    .mo-scene.playing .mo-phead-dot { animation: moBlink 2.2s 3.0s ease-in-out infinite; }
+    .mo-phead-label { fill: rgba(255,255,255,0.78); font: 700 10.5px var(--font-body); letter-spacing: 0.14em; }
+    /* steady trace: a bright segment loops along the baseline */
+    .mo-ekg-base { fill: none; stroke: rgba(143,184,255,0.18); stroke-width: 1.6; }
+    .mo-ekg { fill: none; stroke: #5fe3a0; stroke-width: 2; stroke-linecap: round; opacity: 0;
+      filter: drop-shadow(0 0 5px rgba(95,227,160,0.6)); stroke-dasharray: 150 850; }
+    .mo-scene.playing .mo-ekg { animation: piFade 0.5s 3.0s ease forwards, moTrace 3.6s 3.0s linear infinite; }
+    @keyframes moTrace { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+    /* baselines (Beat 2) */
+    .mo-row { opacity: 0; }
+    .mo-scene.playing .mo-row { animation: rcRise 0.5s ease both; }  /* per-row inline delays */
+    .mo-row-label { fill: rgba(255,255,255,0.66); font: 600 12px var(--font-body); letter-spacing: 0.04em; }
+    .mo-row-val { fill: #ffffff; font: 700 13.5px var(--font-display); }
+    .mo-chip-ok { fill: rgba(95,227,160,0.10); stroke: rgba(95,227,160,0.55); stroke-width: 1; }
+    .mo-chip-ok-t { fill: #7be8ad; font: 700 9px var(--font-body); letter-spacing: 0.1em; }
+    .mo-row-dot--cost { fill: #ff9a6a; } .mo-row-dot--time { fill: #8fb8ff; } .mo-row-dot--resource { fill: #5fe3a0; }
+    /* Beat 3 — drift: the TIME baseline flips while the map node warms + flag pops */
+    .mo-scene.playing .mo-ok-swap { animation: rcFadeOut 0.5s 10.7s ease forwards; }
+    .mo-drift-in { opacity: 0; }
+    .mo-scene.playing .mo-drift-in { animation: piFade 0.5s 10.7s ease both; }
+    .mo-val-drift { fill: #ffc24d; font: 700 13.5px var(--font-display); }
+    .mo-chip-drift { fill: rgba(255,194,77,0.12); stroke: rgba(255,194,77,0.65); stroke-width: 1; }
+    .mo-chip-drift-t { fill: #ffd98a; font: 700 9px var(--font-body); letter-spacing: 0.1em; }
+    .mo-warm { fill: none; stroke: #ffc24d; stroke-width: 2.4; opacity: 0; filter: drop-shadow(0 0 7px rgba(255,194,77,0.55)); }
+    .mo-scene.playing .mo-warm { animation: piFade 0.5s 10.2s ease both; }
+    .mo-warm-ring { fill: none; stroke: #ffc24d; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+    .mo-scene.playing .mo-warm-ring { animation: rcDashIn 0.4s 10.4s ease forwards, moRing 2.2s 10.6s ease-in-out infinite; }
+    @keyframes moRing { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.3); opacity: 0.2; } }
+    .mo-flag { opacity: 0; }
+    .mo-scene.playing .mo-flag { animation: moFlagIn 0.6s 10.5s cubic-bezier(.22,1,.36,1) forwards; }
+    @keyframes moFlagIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
     .mo-flag-pole { stroke: #ffce85; stroke-width: 1.6; }
     .mo-flag-flag { fill: #ffc24d; }
-    .mo-flag-label { fill: #ffd98a; font: 700 10px var(--font-body); letter-spacing: 0.08em; }
-    .mo-scene.playing .mo-node { animation: anPop 0.5s cubic-bezier(.22,1,.36,1) both; }
-    .mo-scene.playing .mo-edge { animation: piFade 0.6s both; }
-    .mo-scene.playing .mo-pulse { animation: piFade 0.8s 1.6s ease both; }
-    .mo-scene.playing .mo-spark { animation: piFade 0.8s 1.4s ease both; }
-    .mo-scene.playing .mo-spark-dot { animation: piFade 0.8s 1.6s ease both; }
-    .mo-scene.playing .mo-live { animation: piFade 0.7s 1.0s ease both; }
-    .mo-scene.playing .mo-live-dot { animation: moBlink 2.4s 1.2s ease-in-out infinite; }
-    .mo-scene.playing .mo-status { animation: piFade 0.6s 2.2s ease both; }
-    /* drift caught at ~5s — one node warms, a flag pops calmly */
-    .mo-scene.playing .mo-node--drift { animation: anPop 0.5s cubic-bezier(.22,1,.36,1) both, moDrift 0.6s 5.0s ease forwards; }
-    .mo-scene.playing .mo-flag { animation: moFlagIn 0.6s 5.1s cubic-bezier(.22,1,.36,1) forwards; }
-    .mo-scene.playing .mo-flag-ring { animation: moRing 2.2s 5.4s ease-in-out infinite; }
-    @keyframes moBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.82); } }
-    @keyframes moDrift { to { stroke: #ffc24d; } }
-    @keyframes moFlagIn { from { opacity: 0; transform: translateY(6px) scale(0.9); } to { opacity: 1; transform: none; } }
-    @keyframes moRing { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.25); opacity: 0.25; } }
+    .mo-flag-label { fill: #ffd98a; font: 700 10.5px var(--font-body); letter-spacing: 0.08em; }
 
     /* reduced motion — settle every card on its final, readable frame */
     @media (prefers-reduced-motion: reduce) {
@@ -864,11 +916,17 @@
         { opacity: 1 !important; transform: none !important; animation: none !important; }
       .rc-link, .rc-target-ring { opacity: 0.95 !important; transform: none !important; animation: none !important; }
       .rc-ghost { opacity: 0.15 !important; animation: none !important; }
-      .si-node, .si-edge, .si-tile, .si-projtag, .si-delta, .si-after { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .si-edge--rework, .si-before-fade { opacity: 0 !important; }
-      .si-node--bottle { stroke: #8fb8ff !important; } .si-num--live { fill: #5fe3a0 !important; }
-      .mo-node, .mo-edge, .mo-pulse, .mo-spark, .mo-spark-dot, .mo-live, .mo-status, .mo-flag { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .mo-node--drift { stroke: #ffc24d !important; }
+      /* Simulation — settle on the Beat-3 end state: twin framed, fix applied, results in */
+      .si-box, .si-twin-tag, .si-twin-tag-bg, .si-count, .si-count-label,
+      .si-panel, .si-ptag, .si-row, .si-verdict { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .si-ring { opacity: 0.95 !important; transform: none !important; animation: none !important; }
+      .si-rework, .si-simtok { opacity: 0 !important; animation: none !important; }
+      .si-shimmer { animation: none !important; }
+      /* Monitor — settle on the drift-caught end state */
+      .mo-live, .mo-panel, .mo-phead, .mo-ekg, .mo-row, .mo-warm, .mo-flag, .mo-drift-in
+        { opacity: 1 !important; transform: none !important; animation: none !important; }
+      .mo-warm-ring { opacity: 0.85 !important; transform: none !important; animation: none !important; }
+      .mo-tok, .mo-ok-swap { opacity: 0 !important; animation: none !important; }
     }
 
     /* ── Responsive ── */
@@ -1845,45 +1903,110 @@
       cardType(scene, nar, [{ t: 'Previewed on your process. ' }, { t: 'Your decision', hl: true }, { t: ' to make.' }], 46, 0); }, 10950);
   }
 
+  // ── Shared carry-over map (the Analysis / Recommendation geometry) ──────
+  // rework=false omits the rework loop (Monitor — the fix is deployed);
+  // reworkCls tags it for per-scene animation (Simulation dissolves it).
+  function carryMapSVG({ rework = true, reworkCls = '' } = {}) {
+    return `
+      <path class="an-map-edge" d="M506,300 L564,300"/>
+      <path class="an-map-edge" d="M616,300 L674,300"/>
+      <path class="an-map-edge an-map-edge--alt" d="M608,318 C640,400 670,440 700,440"/>
+      <path class="an-map-edge" d="M726,300 L784,300"/>
+      <path class="an-map-edge an-map-edge--alt" d="M700,440 C730,440 760,400 792,318"/>
+      <path class="an-map-edge" d="M836,300 L894,300"/>
+      ${rework ? `<path class="an-map-edge an-map-edge--rework ${reworkCls}" d="M804,276 C796,210 716,210 708,276"/>` : ''}
+      <path class="an-map-edge an-map-edge--alt" d="M484,278 C540,200 660,200 696,278"/>
+      <path class="an-map-edge an-map-edge--alt" d="M498,282 C530,260 555,180 574,154"/>
+      <path class="an-map-edge an-map-edge--alt" d="M590,278 C586,240 586,200 590,162"/>
+      <circle class="an-map-node" cx="590" cy="140" r="22"/>
+      <circle class="an-map-core" cx="590" cy="140" r="6"/>
+      <path class="an-map-edge an-map-edge--alt" d="M610,148 C720,140 760,210 794,290"/>
+      <path class="an-map-edge an-map-edge--alt" d="M715,452 C800,475 880,420 906,322"/>
+      <path class="an-map-edge an-map-edge--alt" d="M826,278 C840,238 900,238 914,278"/>
+      <circle class="an-map-node" cx="480" cy="300" r="26"/>
+      <circle class="an-map-node" cx="590" cy="300" r="26"/>
+      <circle class="an-map-node" cx="700" cy="300" r="26"/>
+      <circle class="an-map-node" cx="700" cy="440" r="22"/>
+      <circle class="an-map-node" cx="810" cy="300" r="26"/>
+      <circle class="an-map-node" cx="920" cy="300" r="26"/>
+      <circle class="an-map-core" cx="480" cy="300" r="7"/>
+      <circle class="an-map-core" cx="590" cy="300" r="7"/>
+      <circle class="an-map-core" cx="700" cy="300" r="7"/>
+      <circle class="an-map-core" cx="700" cy="440" r="6"/>
+      <circle class="an-map-core" cx="810" cy="300" r="7"/>
+      <circle class="an-map-core" cx="920" cy="300" r="7"/>`;
+  }
+
   // ════════════ Card 5 · Simulation ════════════
-  // The current state carries its problem (rework loop + bottleneck, weak red
-  // figures); modelling the change streamlines it and the figures improve in real
-  // time, Before → After — marked throughout as a projection, not a done deal.
+  // Continuity scene: the map carries over with the rework loop intact — the fix is
+  // approved but nothing real has changed yet.
+  // Beat 1: a dashed DIGITAL TWIN boundary draws around the map — the test runs on
+  //         a copy, never on the business.
+  // Beat 2: the fix applies inside the twin (green target ring on the bottleneck,
+  //         rework loop dissolves) and simulated cases replay along the spine while
+  //         the counter runs to 312,847 — the case volume from Process Reality.
+  // Beat 3: results panel — before → after across cost, time and resource, marked
+  //         PROJECTED, figures matching the Recommendation card; verdict line.
   function buildSimulate() {
-    const N = [250, 400, 550, 700, 820];
-    let flow = '';
-    for (let i = 0; i < N.length - 1; i++)
-      flow += `<path class="si-edge" d="M${N[i] + 18},250 L${N[i + 1] - 18},250" style="animation-delay:${(0.6 + i * 0.12).toFixed(2)}s"/>`;
-    // rework back-edge (fades out on the run)
-    flow += `<path class="si-edge si-edge--rework" d="M694,232 C660,176 606,176 574,228" style="animation-delay:1.1s"/>`;
-    N.forEach((x, i) => {
-      const bottle = i === 2 ? ' si-node--bottle' : '';
-      flow += `<circle class="si-node${bottle}" cx="${x}" cy="250" r="17" style="animation-delay:${(0.4 + i * 0.12).toFixed(2)}s"/>`;
-    });
-    const figs = [
-      { l: 'COST',     cx: 285, before: 2.4,   after: 1.6,  delta: '−33%', fmt: 'm' },
-      { l: 'RESOURCE', cx: 500, before: 12400, after: 8200, delta: '−34%', fmt: 'n' },
-      { l: 'TIME',     cx: 715, before: 9,     after: 5,    delta: '−44%', fmt: 'd' },
+    // simulated cases replaying along the spine once the fix is in (Beat 2+)
+    const simtoks = (() => {
+      let sd = 0x51AB5;
+      const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7FFFFFFF; return sd / 0x7FFFFFFF; };
+      let html = '';
+      for (let i = 0; i < 9; i++) {
+        const cy = (300 + (rnd() - 0.5) * 8).toFixed(0);
+        const dur = (1.05 + rnd() * 0.4).toFixed(2);
+        const delay = (6.6 + rnd() * 1.5).toFixed(2);
+        html += `<circle class="si-simtok" cx="480" cy="${cy}" r="2.6" style="--tx:440px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
+      }
+      return html;
+    })();
+
+    // sandbox boundary + copy shimmer + tag + replay counter (top corners)
+    const sandbox = `
+      <rect class="si-box" x="442" y="88" width="518" height="420" rx="16"/>
+      <rect class="si-shimmer" x="442" y="88" width="518" height="420" rx="16"/>
+      <rect class="si-twin-tag-bg" x="456" y="100" width="122" height="22" rx="11"/>
+      <text class="si-twin-tag" x="517" y="115" text-anchor="middle">DIGITAL TWIN</text>
+      <text class="si-count-label" x="946" y="110" text-anchor="end">CASES REPLAYED</text>
+      <text class="si-count" x="946" y="136" text-anchor="end">0</text>`;
+
+    // the fix applied in the twin (Beat 2)
+    const fix = `<circle class="si-ring" cx="700" cy="300" r="36"/>`;
+
+    // results panel (Beat 3) — before → after, carrying the Recommendation figures
+    const ROWS = [
+      { c: 'cost',     l: 'COST',     was: 'was $1.2M / yr',     aft: '$560K / yr',      y: 176, d: 11.70, sw: 92 },
+      { c: 'time',     l: 'TIME',     was: 'was 9 days / case',  aft: '5.5 days / case', y: 248, d: 11.95, sw: 108 },
+      { c: 'resource', l: 'RESOURCE', was: 'was 12,400 hrs / yr', aft: '7,300 hrs / yr', y: 320, d: 12.20, sw: 122 },
     ];
-    const fmtOf = k => k === 'm' ? (v => '$' + v.toFixed(1) + 'M') : k === 'n' ? (v => Math.round(v).toLocaleString()) : (v => String(Math.round(v)));
-    let tiles = '';
-    figs.forEach((f, i) => {
-      const init = fmtOf(f.fmt)(f.before);
-      tiles += `<g>
-        <rect class="si-tile" x="${f.cx - 110}" y="372" width="220" height="120" rx="12" style="animation-delay:${(1.4 + i * 0.15).toFixed(2)}s"/>
-        <text class="si-tlabel" x="${f.cx}" y="402" text-anchor="middle">${f.l}</text>
-        <text class="si-num si-num--live si-num--${i}" x="${f.cx}" y="446" text-anchor="middle">${init}</text>
-        <text class="si-delta" x="${f.cx}" y="476" text-anchor="middle">${f.delta}</text>
+    const rows = ROWS.map(r => `<g class="si-row" style="animation-delay:${r.d}s">
+        <circle class="si-row-dot--${r.c}" cx="62" cy="${r.y - 5}" r="5"/>
+        <text class="si-row-label" x="78" y="${r.y}">${r.l}</text>
+        <text class="si-before" x="78" y="${r.y + 26}">${r.was}</text>
+        <line class="si-strike" x1="76" y1="${r.y + 22}" x2="${76 + r.sw}" y2="${r.y + 22}"/>
+        <text class="si-after si-after--${r.c}" x="386" y="${r.y + 28}" text-anchor="end">${r.aft}</text>
+      </g>`).join('');
+    const panel = `
+      <rect class="si-panel" x="30" y="110" width="380" height="320" rx="14"/>
+      <text class="si-ptag" x="54" y="140">SIMULATION RESULT · PROJECTED</text>
+      ${rows}
+      <g class="si-verdict">
+        <circle class="si-check-circ" cx="66" cy="398" r="12"/>
+        <path class="si-check-mark" d="M60.5,398.5 L65,403 L72,394"/>
+        <text class="si-verdict-text" x="86" y="402">Bottleneck cleared &middot; rework loop removed</text>
       </g>`;
-    });
-    const head = `<text class="si-watermark" x="500" y="300" text-anchor="middle" opacity="0.9">PROJECTION</text>
-      <text class="si-projtag" x="500" y="64" text-anchor="middle">SIMULATION · PROJECTED OUTCOME</text>
-      <text class="si-state si-before-fade" x="500" y="150" text-anchor="middle">BEFORE</text>
-      <text class="si-state si-after" x="500" y="150" text-anchor="middle" style="opacity:0;fill:#5fe3a0">AFTER</text>`;
+
     const scene = document.createElement('div');
     scene.className = 'si-scene pi-cardscene';
     scene.innerHTML = `<div class="pi-narr"></div>
-      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${head}${flow}${tiles}</svg>`;
+      <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        ${sandbox}
+        ${carryMapSVG({ rework: true, reworkCls: 'si-rework' })}
+        ${fix}
+        ${simtoks}
+        ${panel}
+      </svg>`;
     return scene;
   }
   function playSI(el) {
@@ -1891,60 +2014,104 @@
     cardPlay(scene);
     const nar = scene.querySelector('.pi-narr');
     const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
-    cardType(scene, nar, [{ t: 'Before you commit…' }], 46, 350);
-    T(() => nar.classList.add('wipe'), 2800);
+    // Beat 1 — caption first (0.35–2.0s); boundary draws 2.2s, shimmer + tag follow.
+    cardType(scene, nar, [{ t: 'Your process, ' }, { t: 'cloned', hl: true }, { t: ' into a sandbox.' }], 46, 350);
+    // Beat 2 — the fix applies in the twin while cases replay and the counter runs.
+    T(() => nar.classList.add('wipe'), 4900);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: '…model the ' }, { t: 'change', hl: true }, { t: '.' }], 46, 0); }, 3400);
-    T(() => nar.classList.add('wipe'), 5700);
+      cardType(scene, nar, [{ t: 'The fix is applied — ' }, { t: '312,847 cases', hl: true }, { t: ' replay through it.' }], 46, 0); }, 5250);
+    // Beat 3 — before → after results, still only a projection.
+    T(() => nar.classList.add('wipe'), 10600);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'Proven', hl: true }, { t: ' before you spend.' }], 46, 0); }, 6300);
-    // figures improve on the run (Before → After)
-    cardCount(scene, scene.querySelector('.si-num--0'), 1.6,  1300, 4600, v => '$' + v.toFixed(1) + 'M', 2.4);
-    cardCount(scene, scene.querySelector('.si-num--1'), 8200, 1300, 4600, v => Math.round(v).toLocaleString(), 12400);
-    cardCount(scene, scene.querySelector('.si-num--2'), 5,    1300, 4600, v => String(Math.round(v)), 9);
+      cardType(scene, nar, [{ t: 'The result — ' }, { t: 'proven', hl: true }, { t: ' before you commit.' }], 46, 0); }, 10950);
+    cardCount(scene, scene.querySelector('.si-count'), 312847, 2600, 6700, v => Math.round(v).toLocaleString());
+    cardCount(scene, scene.querySelector('.si-after--cost'), 560, 900, 11900,
+      v => v >= 1000 ? '$' + (v / 1000).toFixed(1) + 'M / yr' : '$' + Math.round(v) + 'K / yr', 1200);
+    cardCount(scene, scene.querySelector('.si-after--time'), 5.5, 900, 12150, v => v.toFixed(1) + ' days / case', 9);
+    cardCount(scene, scene.querySelector('.si-after--resource'), 7300, 900, 12400, v => Math.round(v).toLocaleString() + ' hrs / yr', 12400);
   }
 
   // ════════════ Card 6 · Monitor ════════════
-  // The fixed process runs live with a calm, steady pulse; a drift surfaces on one
-  // node and is caught and flagged the instant it appears. Calmer than the rest.
+  // Continuity scene: the map returns WITHOUT the rework loop — the fix from cards
+  // 4–5 is deployed. The frame is deliberately the calmest of the six.
+  // Beat 1: LIVE badge lands, real cases flow along the spine, the monitor panel
+  //         opens with a steady green trace.
+  // Beat 2: the three baselines report in — cost, time and resource at their new
+  //         levels (the simulated figures, now real), all ON TRACK.
+  // Beat 3: one node drifts — it warms amber and is flagged on the map, and the
+  //         TIME baseline flips to DRIFT in the same moment. Caught, not found.
   function buildMonitor() {
-    const N = [200, 350, 500, 650, 800], Y = 280;
-    const spine = N.map((x, i) => (i ? 'L' : 'M') + x + ',' + Y).join(' ');
-    let flow = '';
-    for (let i = 0; i < N.length - 1; i++)
-      flow += `<path class="mo-edge" d="M${N[i] + 16},${Y} L${N[i + 1] - 16},${Y}" style="animation-delay:${(0.6 + i * 0.12).toFixed(2)}s"/>`;
-    N.forEach((x, i) => {
-      const drift = i === 3 ? ' mo-node--drift' : '';
-      flow += `<circle class="mo-node${drift}" cx="${x}" cy="${Y}" r="15" style="animation-delay:${(0.3 + i * 0.12).toFixed(2)}s"/>`;
-    });
-    const pulses = `<g class="mo-pulse-wrap">
-        <circle class="mo-pulse" r="5"><animateMotion dur="5.5s" begin="0s" repeatCount="indefinite" path="${spine}"/></circle>
-        <circle class="mo-pulse" r="5"><animateMotion dur="5.5s" begin="2.6s" repeatCount="indefinite" path="${spine}"/></circle>
-      </g>`;
-    // calm steady sparkline across the top + a travelling dot
-    const sx = 200, sw = 600, base = 120, pts = [];
-    for (let i = 0; i <= 24; i++) {
-      const x = sx + sw * i / 24;
-      const y = base - Math.sin(i * 0.9) * 9 - (i % 6 === 0 ? 5 : 0);
-      pts.push(x.toFixed(0) + ',' + y.toFixed(0));
-    }
-    const spark = `<polyline class="mo-spark" points="${pts.join(' ')}"/>
-      <circle class="mo-spark-dot" r="3.5"><animateMotion dur="6s" repeatCount="indefinite" path="M${pts[0].replace(',', ',')} ${pts.map(p => 'L' + p).join(' ')}"/></circle>`;
+    // live cases on the spine — slower and steadier than Simulation's replay
+    const livetoks = (() => {
+      let sd = 0x4D00;
+      const rnd = () => { sd = (sd * 1103515245 + 12345) & 0x7FFFFFFF; return sd / 0x7FFFFFFF; };
+      let html = '';
+      for (let i = 0; i < 6; i++) {
+        const cy = (300 + (rnd() - 0.5) * 8).toFixed(0);
+        const dur = (1.6 + rnd() * 0.5).toFixed(2);
+        const delay = (2.4 + rnd() * 2.0).toFixed(2);
+        html += `<circle class="mo-tok" cx="480" cy="${cy}" r="2.4" style="--tx:440px;animation-duration:${dur}s;animation-delay:${delay}s"/>`;
+      }
+      return html;
+    })();
+
     const live = `<g class="mo-live">
-        <circle class="mo-live-dot" cx="792" cy="116" r="5"/>
-        <text class="mo-live-label" x="806" y="120">LIVE</text>
-      </g>
-      <text class="mo-status" x="200" y="170">Holding · within tolerance</text>`;
-    const flag = `<g class="mo-flag">
-        <circle class="mo-flag-ring" cx="650" cy="${Y}" r="27"/>
-        <line class="mo-flag-pole" x1="650" y1="248" x2="650" y2="214"/>
-        <path class="mo-flag-flag" d="M650,214 L672,220 L650,228 Z"/>
-        <text class="mo-flag-label" x="650" y="205" text-anchor="middle">CAUGHT</text>
+        <circle class="mo-live-dot" cx="886" cy="106" r="5"/>
+        <text class="mo-live-label" x="900" y="110">LIVE</text>
       </g>`;
+
+    // monitor panel: LIVE header, steady trace, three baselines
+    const ekgPath = 'M54,190 C70,184 86,196 102,190 S134,184 150,190 S182,196 198,190 S230,184 246,190 S278,196 294,190 S326,184 342,190 S374,196 386,190';
+    const ROWS = [
+      { c: 'cost',     l: 'COST',     v: '$560K / yr',      y: 262, d: 5.90 },
+      { c: 'time',     l: 'TIME',     v: '5.5 days / case', y: 312, d: 6.15, drift: true },
+      { c: 'resource', l: 'RESOURCE', v: '7,300 hrs / yr',  y: 362, d: 6.40 },
+    ];
+    const rows = ROWS.map(r => {
+      const okCls = r.drift ? ' mo-ok-swap' : '';
+      const driftBits = r.drift ? `
+        <text class="mo-val-drift mo-drift-in" x="296" y="${r.y}" text-anchor="end">6.1 days / case</text>
+        <rect class="mo-chip-drift mo-drift-in" x="308" y="${r.y - 14}" width="78" height="20" rx="10"/>
+        <text class="mo-chip-drift-t mo-drift-in" x="347" y="${r.y - 1}" text-anchor="middle">DRIFT</text>` : '';
+      return `<g class="mo-row" style="animation-delay:${r.d}s">
+        <circle class="mo-row-dot--${r.c}" cx="62" cy="${r.y - 4}" r="5"/>
+        <text class="mo-row-label" x="78" y="${r.y}">${r.l}</text>
+        <text class="mo-row-val${okCls}" x="296" y="${r.y}" text-anchor="end">${r.v}</text>
+        <rect class="mo-chip-ok${okCls}" x="308" y="${r.y - 14}" width="78" height="20" rx="10"/>
+        <text class="mo-chip-ok-t${okCls}" x="347" y="${r.y - 1}" text-anchor="middle">ON TRACK</text>
+        ${driftBits}
+      </g>`;
+    }).join('');
+    const panel = `
+      <rect class="mo-panel" x="30" y="110" width="380" height="300" rx="14"/>
+      <g class="mo-phead">
+        <circle class="mo-phead-dot" cx="66" cy="140" r="5"/>
+        <text class="mo-phead-label" x="80" y="144">LIVE &middot; IN PRODUCTION</text>
+      </g>
+      <path class="mo-ekg-base" d="${ekgPath}"/>
+      <path class="mo-ekg" d="${ekgPath}" pathLength="1000"/>
+      ${rows}`;
+
+    // drift caught on the map (Beat 3): node N4 warms, ring pulses, flag pops
+    const drift = `
+      <circle class="mo-warm" cx="810" cy="300" r="26"/>
+      <circle class="mo-warm-ring" cx="810" cy="300" r="33"/>
+      <g class="mo-flag">
+        <line class="mo-flag-pole" x1="810" y1="268" x2="810" y2="238"/>
+        <path class="mo-flag-flag" d="M810,238 L834,245 L810,252 Z"/>
+        <text class="mo-flag-label" x="810" y="226" text-anchor="middle">Drift detected</text>
+      </g>`;
+
     const scene = document.createElement('div');
     scene.className = 'mo-scene pi-cardscene';
     scene.innerHTML = `<div class="pi-narr"></div>
-      <svg class="pi-cardsvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${spark}${flow}${pulses}${live}${flag}</svg>`;
+      <svg class="pi-cardsvg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        ${carryMapSVG({ rework: false })}
+        ${livetoks}
+        ${live}
+        ${panel}
+        ${drift}
+      </svg>`;
     return scene;
   }
   function playMO(el) {
@@ -1952,13 +2119,16 @@
     cardPlay(scene);
     const nar = scene.querySelector('.pi-narr');
     const T = (fn, ms) => { if (scene._t) scene._t.push(setTimeout(fn, ms)); };
-    cardType(scene, nar, [{ t: 'The fix is ' }, { t: 'holding', hl: true }, { t: '.' }], 46, 350);
-    T(() => nar.classList.add('wipe'), 2800);
-    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'Watched around the clock.' }], 46, 0); }, 3400);
+    // Beat 1 — caption first (0.35–1.7s); LIVE badge 2.0s, panel 2.4s, trace 3.0s.
+    cardType(scene, nar, [{ t: 'The fix is ' }, { t: 'live', hl: true }, { t: ' — and watched.' }], 46, 350);
+    // Beat 2 — the baselines report in while the caption types.
     T(() => nar.classList.add('wipe'), 4900);
     T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
-      cardType(scene, nar, [{ t: 'Drift — ' }, { t: 'caught', hl: true }, { t: ' the moment it shows.' }], 46, 0); }, 5200);
+      cardType(scene, nar, [{ t: 'Every case, checked against the ' }, { t: 'new baseline', hl: true }, { t: '.' }], 46, 0); }, 5250);
+    // Beat 3 — drift caught: map node warms 10.2s, flag 10.5s, TIME row flips 10.7s.
+    T(() => nar.classList.add('wipe'), 9300);
+    T(() => { nar.classList.remove('wipe'); nar.innerHTML = '';
+      cardType(scene, nar, [{ t: 'The moment anything ' }, { t: 'drifts', hl: true }, { t: ', you know.' }], 46, 0); }, 9650);
   }
 
   // ── Task Mining: same shared cardPlay/cardType pattern as Process Mining and
