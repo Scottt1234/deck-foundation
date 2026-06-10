@@ -247,11 +247,12 @@
     #nav button:active { transform: scale(0.94); }
     #nav button:disabled { opacity: 0.3; cursor: default; }
 
-    /* ── Step 8 · recap: identical layout to every other frame. The rail chips
-       fade in place while matching cards drop simultaneously into the stage and
-       grow — reading as the rail itself descending and morphing. ── */
-    #rail-wrap, #pillar-wrap { transition: opacity 0.45s ease 0.12s; }
-    #app.recap-mode #rail-wrap, #app.recap-mode #pillar-wrap { opacity: 0; pointer-events: none; }
+    /* ── Step 8 · recap: the REAL rail morphs. Pixel-perfect doubles of the six
+       chips and the pillar are painted exactly over them (FLIP), the originals
+       are hidden in the same frame, and the doubles glide down to the centre of
+       the open canvas, growing into glyph cards. No stage chrome, no clipping. ── */
+    #app.recap-mode .pi-big { background: transparent !important; border: none; box-shadow: none; overflow: visible; }
+    #app.recap-mode #pillar-wrap::before { display: none; }  /* the rail bracket leaves with the rail */
     .rs-scene { position: absolute; inset: 0; }
     .rs-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 4px 2px; }
     .rs-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
@@ -259,10 +260,8 @@
       display: flex; flex-direction: column; align-items: center; gap: 7px;
       padding: 22px 10px 18px; border-radius: 12px; text-align: center; min-height: 132px;
       background: rgba(143,184,255,0.07); border: 1px solid rgba(143,184,255,0.4);
-      opacity: 0; transform: translateY(-72px) scaleY(0.5); transform-origin: top center;
+      opacity: 0;
     }
-    .rs-scene.playing .rs-card { animation: rsDrop 0.65s 0.3s cubic-bezier(.22,1,.36,1) both; }
-    @keyframes rsDrop { from { opacity: 0; transform: translateY(-72px) scaleY(0.5); } to { opacity: 1; transform: none; } }
     .rs-num { font: 700 12px var(--font-body); letter-spacing: 0.06em; color: #8fb8ff; }
     .rs-name { font: 700 14.5px var(--font-body); color: #fff; line-height: 1.2; }
     .rs-glyph { margin: 8px 0 2px; }
@@ -273,18 +272,20 @@
       display: flex; align-items: center; justify-content: center; gap: 13px;
       padding: 16px 24px; border-radius: 14px;
       background: rgba(143,184,255,0.12); border: 1px solid rgba(143,184,255,0.5);
-      opacity: 0; transform: translateY(-44px);
+      opacity: 0;
     }
-    .rs-scene.playing .rs-band { animation: rsBandDrop 0.6s 0.85s cubic-bezier(.22,1,.36,1) both; }
-    @keyframes rsBandDrop { from { opacity: 0; transform: translateY(-44px); } to { opacity: 1; transform: none; } }
+    /* glyphs, verbs and the band tag arrive once the morph has landed */
+    .rs-glyph, .rs-verb { opacity: 0; transition: opacity 0.45s ease; }
+    .rs-band-tag, .rs-caret { opacity: 0; transition: opacity 0.45s ease 0.1s; }
+    .rs-scene.morphed .rs-glyph, .rs-scene.morphed .rs-verb,
+    .rs-scene.morphed .rs-band-tag, .rs-scene.morphed .rs-caret { opacity: 1; }
     .rs-band-glyph { fill: none; stroke: #cfe0ff; stroke-width: 1.6; stroke-linejoin: round; }
     .rs-band-name { font: 700 15px var(--font-body); color: #fff; }
     .rs-band-tag { font: 600 12.5px var(--font-body); color: rgba(255,255,255,0.66); }
     .rs-caret { width: 2px; height: 15px; background: var(--sf-blue-l); animation: cvBlink 1s step-end infinite; }
     @media (max-width: 900px) { .rs-row { grid-template-columns: repeat(3, 1fr); } }
     @media (prefers-reduced-motion: reduce) {
-      .rs-card, .rs-band { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .rs-caret { animation: none !important; }
+      .rs-card, .rs-band, .rs-glyph, .rs-verb, .rs-band-tag, .rs-caret { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
     }
 
     /* ═══════════ Task Mining animation — the work between the systems ═══════════
@@ -1510,6 +1511,42 @@
     return scene;
   }
 
+  // ── Recap morph: FLIP from the real rail. Measure each chip, paint its grown
+  // card exactly on top (translated + scaled), hide the original in the same
+  // frame, then release the card to glide to its resting place. ──
+  function playRS(el) {
+    const scene = el.querySelector('.rs-scene'); if (!scene) return;
+    cardPlay(scene);
+    scene.classList.remove('morphed');
+    const cards = [...scene.querySelectorAll('.rs-card')];
+    const band = scene.querySelector('.rs-band');
+    const movers = band ? cards.concat([band]) : cards;
+    movers.forEach(m => { m.style.transition = 'none'; m.style.transform = ''; m.style.opacity = ''; });
+    if (reduceMotion()) { movers.forEach(m => m.style.opacity = '1'); scene.classList.add('morphed'); return; }
+    const raf = fn => requestAnimationFrame(fn);
+    raf(() => {
+      const place = (target, src) => {
+        const t = target.getBoundingClientRect(), sc = src.getBoundingClientRect();
+        if (!t.width || !sc.width) { target.style.opacity = '1'; return; }
+        target.style.transformOrigin = 'top left';
+        target.style.transform = `translate(${sc.left - t.left}px, ${sc.top - t.top}px) scale(${sc.width / t.width}, ${sc.height / t.height})`;
+        target.style.opacity = '1';
+      };
+      cards.forEach((c, i) => railCards[i] && place(c, railCards[i]));
+      if (band) place(band, pillar);
+      // hide the originals in the same paint as the doubles appear
+      railCards.forEach(c => c.style.visibility = 'hidden');
+      pillar.style.visibility = 'hidden';
+      raf(() => raf(() => {
+        movers.forEach(m => {
+          m.style.transition = 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
+          m.style.transform = '';
+        });
+        if (scene._t) scene._t.push(setTimeout(() => scene.classList.add('morphed'), 750));
+      }));
+    });
+  }
+
   // ── Recap (step 8): the rail, descended and grown — six cards with the
   // glyph + verb of each layer, above the Conversational Interface band. ──
   function buildRecap() {
@@ -1672,7 +1709,7 @@
     else if (el.querySelector('.si-scene')) playSI(el);
     else if (el.querySelector('.mo-scene')) playMO(el);
     else if (el.querySelector('.cv-scene')) playConvo(el);
-    else if (el.querySelector('.rs-scene')) { const sc = el.querySelector('.rs-scene'); if (sc) cardPlay(sc); }
+    else if (el.querySelector('.rs-scene')) playRS(el);
   }
   function stopScene(el) {
     if (!el) return;
@@ -2543,6 +2580,8 @@
   }
 
   function render() {
+    // restore the real rail whenever we're not on the recap step (the morph hides it)
+    if (step !== STEPS) { railCards.forEach(c => { c.style.visibility = ''; }); pillar.style.visibility = ''; }
     // rail + pillar highlight
     railCards.forEach((c, i) => {
       c.classList.toggle('active', step === i + 1);
