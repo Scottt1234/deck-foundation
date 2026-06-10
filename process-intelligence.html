@@ -335,7 +335,12 @@
        of the same family. ── */
     .tm-extra { opacity: 0; }
     .tm-extra-box { fill: rgba(143,184,255,0.10); stroke: rgba(143,184,255,0.55); stroke-width: 1.2; }
-    .tm-extra-glyph { fill: none; stroke: #8fb8ff; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+    .tm-win-dot { fill: rgba(143,184,255,0.45); }
+    .tm-win-name { fill: rgba(255,255,255,0.66); font: 600 8.5px var(--font-body); letter-spacing: 0.03em; }
+    .tm-ui-div { stroke: rgba(143,184,255,0.28); stroke-width: 1; }
+    .tm-ui { fill: none; stroke: rgba(143,184,255,0.45); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .tm-ui-fill { fill: rgba(143,184,255,0.16); }
+    .tm-ui-dot { fill: rgba(143,184,255,0.4); }
     .tm-scene.playing .tm-extra { animation: pmFade 0.55s ease forwards; }
     /* Beat 2: the extras are visibly ACTIVE — content lines pulse like live work —
        but nothing flows out of them. Their connections to the engine exist, dark
@@ -1140,21 +1145,37 @@
   // activity (a dashed rim with ghost tokens) surfaces, then a central intelligence
   // element ignites and captures it — every source spoked inward with bright inflow.
   // Generic app glyphs (drawn in a ~14px local box) used for the TM extras.
-  const TM_GLYPHS = {
-    grid: '<rect x="0.6" y="0.6" width="12.8" height="12.8" rx="1.4"/><path d="M0.6,5 H13.4 M0.6,9 H13.4 M5,0.6 V13.4 M9,0.6 V13.4"/>',
-    web:  '<rect x="0.6" y="1.4" width="12.8" height="11.2" rx="1.4"/><path d="M0.6,5 H13.4"/><circle cx="2.6" cy="3.2" r="0.5"/><circle cx="4.3" cy="3.2" r="0.5"/>',
-    doc:  '<rect x="2.4" y="0.6" width="9.2" height="12.8" rx="1.2"/><path d="M4.4,4 H9.6 M4.4,6.6 H9.6 M4.4,9.2 H8"/>',
-    chat: '<path d="M1,3 a2,2 0 0 1 2,-2 H11 a2,2 0 0 1 2,2 V8.4 a2,2 0 0 1 -2,2 H6.2 L3,13 V10.4 a2,2 0 0 1 -2,-2 z"/><path d="M4,5.6 H10 M4,7.8 H8"/>',
-  };
-
-  // The four "non-logged" sources that fade in around the System in Beat 2.
-  // Positioned around the System (50–190 wide × 190–390 tall), all to the LEFT
-  // of the Engine (cx=370). Half-system size (~50×44 panels).
-  const TM_EXTRAS = [
-    { cx: 130, cy: 120, glyph: 'web'  },   // Browser, top-left
-    { cx: 260, cy: 130, glyph: 'chat' },   // Email,   top-right (between sys and engine)
-    { cx: 260, cy: 470, glyph: 'grid' },   // Spreadsheet, bottom-right
-    { cx: 130, cy: 480, glyph: 'doc'  },   // Document, bottom-left
+  // The four "non-logged" sources that fade in around the System in Beat 2 —
+  // each drawn as a miniature app window (chrome dots + name + app-specific
+  // content) so they read as the real tools the work happens in. The pulsing
+  // .tm-act elements are each app's live activity: a loading page, an unread
+  // mail, an active cell, a line being written.
+  const TM_APPS = [
+    { cx: 130, cy: 120, name: 'Browser', body: `
+        <rect class="tm-ui" x="-42" y="-19" width="84" height="9" rx="4.5"/>
+        <circle class="tm-ui-dot" cx="-37" cy="-14.5" r="1.6"/>
+        <rect class="tm-ui-fill" x="-42" y="-4" width="36" height="22" rx="2"/>
+        <rect class="tm-ui-fill" x="-1" y="-4" width="43" height="8" rx="2"/>
+        <rect class="tm-ui-fill" x="-1" y="8" width="43" height="8" rx="2"/>
+        <rect class="tm-act" x="-1" y="22" width="30" height="4" rx="2" style="animation-delay:6.2s"/>` },
+    { cx: 260, cy: 130, name: 'Email', body: `
+        <circle class="tm-ui-dot" cx="-40" cy="-15" r="2.6"/><rect class="tm-ui-fill" x="-32" y="-18" width="64" height="6" rx="2"/>
+        <circle class="tm-ui-dot" cx="-40" cy="-2" r="2.6"/><rect class="tm-ui-fill" x="-32" y="-5" width="52" height="6" rx="2"/>
+        <circle class="tm-ui-dot" cx="-40" cy="11" r="2.6"/><rect class="tm-ui-fill" x="-32" y="8" width="58" height="6" rx="2"/>
+        <circle class="tm-act" cx="-40" cy="24" r="2.6" style="animation-delay:6.35s"/>
+        <rect class="tm-act" x="-32" y="21" width="44" height="6" rx="2" style="animation-delay:6.35s"/>` },
+    { cx: 260, cy: 470, name: 'Spreadsheet', body: `
+        <rect class="tm-ui-fill" x="-42" y="-19" width="86" height="11.5"/>
+        <path class="tm-ui" d="M-42,-19 H44 M-42,-7.5 H44 M-42,4 H44 M-42,15.5 H44 M-42,27 H44 M-42,-19 V27 M-20.5,-19 V27 M1,-19 V27 M22.5,-19 V27 M44,-19 V27"/>
+        <rect class="tm-act" x="1" y="4" width="21.5" height="11.5" style="animation-delay:6.5s"/>` },
+    { cx: 130, cy: 480, name: 'Notes', body: `
+        <rect class="tm-ui" x="-42" y="-19" width="8" height="8" rx="1.5"/><path class="tm-ui" d="M-40.5,-15.5 l2,2.2 l3.6,-4.4"/>
+        <rect class="tm-ui-fill" x="-29" y="-17" width="60" height="5" rx="2"/>
+        <rect class="tm-ui" x="-42" y="-4" width="8" height="8" rx="1.5"/><path class="tm-ui" d="M-40.5,-0.5 l2,2.2 l3.6,-4.4"/>
+        <rect class="tm-ui-fill" x="-29" y="-2" width="48" height="5" rx="2"/>
+        <rect class="tm-ui" x="-42" y="11" width="8" height="8" rx="1.5"/>
+        <rect class="tm-act" x="-29" y="13" width="52" height="5" rx="2" style="animation-delay:6.65s"/>
+        <rect class="tm-act" x="-29" y="22" width="34" height="5" rx="2" style="animation-delay:6.8s"/>` },
   ];
 
   function buildTaskMining() {
@@ -1185,7 +1206,7 @@
       const rnd = () => { s = (s * 1103515245 + 12345) & 0x7FFFFFFF; return s / 0x7FFFFFFF; };
       const PER_EXTRA = 6, BASE_DELAY = 10.4;
       let html = '';
-      TM_EXTRAS.forEach(ex => {
+      TM_APPS.forEach(ex => {
         for (let i = 0; i < PER_EXTRA; i++) {
           const sx = ex.cx + (rnd() - 0.5) * 26;
           const sy = ex.cy + (rnd() - 0.5) * 18;
@@ -1203,13 +1224,16 @@
 
     // Extras: enlarged again to 100×75 (33% wider, 36% taller than previous 75×55).
     // Glyph scaled 2.4× from its 14×14 base. Faded in during Beat 2.
-    const extrasHTML = TM_EXTRAS.map((ex, i) => {
+    const extrasHTML = TM_APPS.map((ex, i) => {
       const delay = (5.5 + i * 0.12).toFixed(2);
       return `<g class="tm-extra" transform="translate(${ex.cx},${ex.cy})" style="animation-delay:${delay}s">
         <rect class="tm-extra-box" x="-50" y="-37.5" width="100" height="75" rx="12"/>
-        <g class="tm-extra-glyph" transform="translate(-17,-23) scale(2.4)">${TM_GLYPHS[ex.glyph]}</g>
-        <rect class="tm-act" x="-36" y="20" width="44" height="4" rx="2" style="animation-delay:${(6.2 + i * 0.3).toFixed(2)}s"/>
-        <rect class="tm-act" x="-36" y="27" width="28" height="4" rx="2" style="animation-delay:${(6.35 + i * 0.3).toFixed(2)}s"/>
+        <circle class="tm-win-dot" cx="-42" cy="-30" r="2"/>
+        <circle class="tm-win-dot" cx="-35.5" cy="-30" r="2"/>
+        <circle class="tm-win-dot" cx="-29" cy="-30" r="2"/>
+        <text class="tm-win-name" x="-21" y="-27.2">${ex.name}</text>
+        <line class="tm-ui-div" x1="-50" y1="-24" x2="50" y2="-24"/>
+        ${ex.body}
       </g>`;
     }).join('');
 
