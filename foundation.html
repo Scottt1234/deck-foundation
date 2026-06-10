@@ -727,6 +727,25 @@
     .ev-logo.capricorn  { height: 74px; filter: brightness(0) invert(1); }
     @media (max-width: 760px) { .ev-logo-row { gap: 24px; } }
 
+    /* ── Evidence wall: sector-grouped, white-logo treatment, no tiles ─────
+       One quiet uppercase label per sector group; logos render white via the
+       brightness-invert filter (any transparent-background file works). Brands
+       without a sourced file yet render as styled wordmarks (.ev-wordmark) —
+       drop a transparent SVG/PNG into assets/logos/ and swap the span for an
+       <img class="ev-logo2 inv"> to upgrade. */
+    .ev-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 40px; margin: 24px 0 6px; }
+    .ev-group { border-top: 1px solid rgba(255,255,255,0.14); padding-top: 13px; }
+    .ev-group-label { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 13px; }
+    .ev-group-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 24px; min-height: 38px; }
+    .ev-logo2 { height: var(--h, 28px); width: auto; object-fit: contain; opacity: 0.92; }
+    .ev-logo2.inv { filter: brightness(0) invert(1); }
+    .ev-wordmark { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: rgba(255,255,255,0.9); letter-spacing: 0.01em; line-height: 1; white-space: nowrap; }
+    .ev-wordmark.sm { font-size: 13.5px; }
+    @media (max-width: 900px) { .ev-wall { grid-template-columns: 1fr; gap: 18px; } }
+    /* compact stat cards so the wall + outcomes share one screen */
+    .ev-stats .layer-card { padding: 18px 16px 16px; }
+    .ev-stats .ev-stat-num { font-family: var(--font-display); font-size: 44px; font-weight: 700; color: #fff; line-height: 1; }
+
     /* Evidence-slide stat cards — responsive 3 → 1 column */
     .ev-stats { grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 38px; }
     @media (max-width: 900px) { .ev-stats { grid-template-columns: 1fr; gap: 14px; margin-top: 28px; } }
@@ -1163,31 +1182,75 @@
       <div class="slide-body">
         <div class="eyebrow" data-animate="fade-up" data-anim-delay="0">Evidence</div>
         <div class="section-title" data-animate="fade-up" data-anim-delay="60">Where this has worked.<br/><span style="color:var(--sf-blue-l)">And what it improved.</span></div>
-        <div class="section-sub" data-animate="fade-up" data-anim-delay="120">Trusted by leaders in regulated financial services.</div>
+        <div class="section-sub" data-animate="fade-up" data-anim-delay="120">Trusted across banking, insurance, energy, manufacturing and the public sector.</div>
 
-        <div class="ev-logos ev-logos-lead" data-animate="fade-up" data-anim-delay="200" style="margin-top: 18px;">
-          <div class="ev-logo-row">
-            <img class="ev-logo topdanmark" src="assets/logos/topdanmark.png" alt="Topdanmark" />
-            <img class="ev-logo capricorn"  src="assets/logos/capricorn.png"  alt="Capricorn Society Limited" />
-            <img class="ev-logo anz"        src="assets/logos/anz.png"        alt="ANZ" />
-            <img class="ev-logo westpac"    src="assets/logos/westpac.png"    alt="Westpac" />
-            <img class="ev-logo nab"        src="assets/logos/nab.png"        alt="NAB" />
+        <div class="ev-wall">
+          <div class="ev-group" data-animate="fade-up" data-anim-delay="200">
+            <div class="ev-group-label">Banking &amp; Wealth</div>
+            <div class="ev-group-logos">
+              <img class="ev-logo2" src="assets/logos/anz.png"     alt="ANZ"     style="--h:36px" />
+              <img class="ev-logo2" src="assets/logos/westpac.png" alt="Westpac" style="--h:24px" />
+              <img class="ev-logo2" src="assets/logos/nab.png"     alt="NAB"     style="--h:34px" />
+              <span class="ev-wordmark">Compass</span>
+              <span class="ev-wordmark">Rest</span>
+            </div>
+          </div>
+          <div class="ev-group" data-animate="fade-up" data-anim-delay="260">
+            <div class="ev-group-label">Insurance</div>
+            <div class="ev-group-logos">
+              <img class="ev-logo2 inv" src="assets/logos/topdanmark.png" alt="Topdanmark" style="--h:100px; margin:-32px 0" />
+              <img class="ev-logo2 inv" src="assets/logos/capricorn.png"  alt="Capricorn"  style="--h:44px; margin:-5px 0" />
+              <span class="ev-wordmark">Assurant</span>
+            </div>
+          </div>
+          <div class="ev-group" data-animate="fade-up" data-anim-delay="320">
+            <div class="ev-group-label">Energy &amp; Utilities</div>
+            <div class="ev-group-logos">
+              <span class="ev-wordmark">NextEra Energy</span>
+              <span class="ev-wordmark">BKW</span>
+              <span class="ev-wordmark">Alia Plures</span>
+            </div>
+          </div>
+          <div class="ev-group" data-animate="fade-up" data-anim-delay="380">
+            <div class="ev-group-label">Manufacturing &amp; Pharma</div>
+            <div class="ev-group-logos">
+              <span class="ev-wordmark">LEONARDO</span>
+              <span class="ev-wordmark">KOMATSU</span>
+              <span class="ev-wordmark sm">Daiichi Sankyo</span>
+            </div>
+          </div>
+          <div class="ev-group" data-animate="fade-up" data-anim-delay="440">
+            <div class="ev-group-label">Consulting &amp; Technology</div>
+            <div class="ev-group-logos">
+              <span class="ev-wordmark">Deloitte.</span>
+              <span class="ev-wordmark">pwc</span>
+              <span class="ev-wordmark sm">Hitachi Solutions</span>
+            </div>
+          </div>
+          <div class="ev-group" data-animate="fade-up" data-anim-delay="500">
+            <div class="ev-group-label">Public Sector, Travel &amp; Education</div>
+            <div class="ev-group-logos">
+              <span class="ev-wordmark">INAIL</span>
+              <span class="ev-wordmark sm">Amex GBT</span>
+              <span class="ev-wordmark sm">University of Melbourne</span>
+              <span class="ev-wordmark">VEYER</span>
+            </div>
           </div>
         </div>
 
-        <div class="layer-cards ev-stats">
+        <div class="layer-cards ev-stats" style="margin-top: 26px;">
           <div class="card layer-card" data-animate="scale-in" data-anim-delay="320">
-            <div style="font-family: var(--font-display); font-size: 56px; font-weight: 700; color: #fff; line-height: 1;">39<span style="color: var(--sf-blue-l);">%</span></div>
+            <div class="ev-stat-num">39<span style="color: var(--sf-blue-l);">%</span></div>
             <div class="card-title" style="margin-top: 14px; font-size: 16px;">Faster claims handling</div>
             <div class="card-body" style="font-size: 12px; opacity: 0.7;">Fortune 500 motor insurer · 55M vehicles</div>
           </div>
           <div class="card layer-card" data-animate="scale-in" data-anim-delay="380">
-            <div style="font-family: var(--font-display); font-size: 56px; font-weight: 700; color: #fff; line-height: 1;">84<span style="color: var(--sf-blue-l);">%</span></div>
+            <div class="ev-stat-num">84<span style="color: var(--sf-blue-l);">%</span></div>
             <div class="card-title" style="margin-top: 14px; font-size: 16px;">Process automation post-replatform</div>
             <div class="card-body" style="font-size: 12px; opacity: 0.7;">Top-50 APAC bank · Salesforce FSC migration</div>
           </div>
           <div class="card layer-card" data-animate="scale-in" data-anim-delay="440">
-            <div style="font-family: var(--font-display); font-size: 56px; font-weight: 700; color: #fff; line-height: 1;">46<span style="color: var(--sf-blue-l);">%</span></div>
+            <div class="ev-stat-num">46<span style="color: var(--sf-blue-l);">%</span></div>
             <div class="card-title" style="margin-top: 14px; font-size: 16px;">Fewer compliance violations</div>
             <div class="card-body" style="font-size: 12px; opacity: 0.7;">Same Fortune 500 insurer · Compliance Center</div>
           </div>
