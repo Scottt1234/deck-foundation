@@ -247,15 +247,11 @@
     #nav button:active { transform: scale(0.94); }
     #nav button:disabled { opacity: 0.3; cursor: default; }
 
-    /* ── Step 8 · recap: the rail descends and grows. The six chips the viewer
-       has watched light up return as taller cards — same styling, now with a
-       glyph and a verb each — above the Conversational Interface band. ── */
-    #app.recap-mode #rail-wrap, #app.recap-mode #pillar-wrap { display: none; }
-    /* the recap lives on the open canvas — no stage card around the grown rail */
-    #app.recap-mode .pi-big { background: transparent !important; border: none; box-shadow: none; }
-    #app.recap-mode #caption { text-align: center; }
-    #app.recap-mode #cap-title { font-size: clamp(28px, 3.6vw, 46px); letter-spacing: -0.025em; line-height: 1.12; }
-    #app.recap-mode #cap-sub { margin-left: auto; margin-right: auto; }
+    /* ── Step 8 · recap: identical layout to every other frame. The rail chips
+       fade in place while matching cards drop simultaneously into the stage and
+       grow — reading as the rail itself descending and morphing. ── */
+    #rail-wrap, #pillar-wrap { transition: opacity 0.45s ease 0.12s; }
+    #app.recap-mode #rail-wrap, #app.recap-mode #pillar-wrap { opacity: 0; pointer-events: none; }
     .rs-scene { position: absolute; inset: 0; }
     .rs-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 4px 2px; }
     .rs-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
@@ -263,10 +259,10 @@
       display: flex; flex-direction: column; align-items: center; gap: 7px;
       padding: 22px 10px 18px; border-radius: 12px; text-align: center; min-height: 132px;
       background: rgba(143,184,255,0.07); border: 1px solid rgba(143,184,255,0.4);
-      opacity: 0; transform: translateY(-48px) scaleY(0.55); transform-origin: top center;
+      opacity: 0; transform: translateY(-72px) scaleY(0.5); transform-origin: top center;
     }
-    .rs-scene.playing .rs-card { animation: rsDrop 0.6s cubic-bezier(.22,1,.36,1) both; }  /* inline delays */
-    @keyframes rsDrop { from { opacity: 0; transform: translateY(-48px) scaleY(0.55); } to { opacity: 1; transform: none; } }
+    .rs-scene.playing .rs-card { animation: rsDrop 0.65s 0.3s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes rsDrop { from { opacity: 0; transform: translateY(-72px) scaleY(0.5); } to { opacity: 1; transform: none; } }
     .rs-num { font: 700 12px var(--font-body); letter-spacing: 0.06em; color: #8fb8ff; }
     .rs-name { font: 700 14.5px var(--font-body); color: #fff; line-height: 1.2; }
     .rs-glyph { margin: 8px 0 2px; }
@@ -277,10 +273,10 @@
       display: flex; align-items: center; justify-content: center; gap: 13px;
       padding: 16px 24px; border-radius: 14px;
       background: rgba(143,184,255,0.12); border: 1px solid rgba(143,184,255,0.5);
-      opacity: 0; transform: translateY(16px);
+      opacity: 0; transform: translateY(-44px);
     }
-    .rs-scene.playing .rs-band { animation: rsRise 0.6s 1.25s cubic-bezier(.22,1,.36,1) both; }
-    @keyframes rsRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .rs-scene.playing .rs-band { animation: rsBandDrop 0.6s 0.85s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes rsBandDrop { from { opacity: 0; transform: translateY(-44px); } to { opacity: 1; transform: none; } }
     .rs-band-glyph { fill: none; stroke: #cfe0ff; stroke-width: 1.6; stroke-linejoin: round; }
     .rs-band-name { font: 700 15px var(--font-body); color: #fff; }
     .rs-band-tag { font: 600 12.5px var(--font-body); color: rgba(255,255,255,0.66); }
@@ -1089,7 +1085,7 @@
     desc:'The layer that underpins every other: ask any question in plain English and get an evidence-backed answer drawn from all six layers above.' };
 
   const RECAP = { num: '', name: 'The Whole System', tag: '', color: '#8fb8ff', anim: 'recap',
-    sub: 'Everything you just watched &mdash; working as one.', desc: '' };
+    sub: 'Six layers, one conversation &mdash; everything you just watched, working as one.', desc: '' };
 
   const ALL = LAYERS.concat([FOUNDATION, RECAP]);  // index aligned with focus steps 1..8
   const STEPS = ALL.length;                        // 6 layers + conversational + recap
@@ -1531,8 +1527,8 @@
       ['06', 'Monitor', 'PROTECT',
        '<path class="rs-g" d="M-10,1 L-4,1 L-1.2,-6 L2,6.5 L4.6,1 L10,1"/>'],
     ];
-    const cards = CARDS.map(([num, name, verb, glyph], i) => `
-      <div class="rs-card" style="animation-delay:${(0.3 + i * 0.12).toFixed(2)}s">
+    const cards = CARDS.map(([num, name, verb, glyph]) => `
+      <div class="rs-card">
         <div class="rs-num">${num}</div>
         <div class="rs-name">${name}</div>
         <div class="rs-glyph"><svg viewBox="-13 -13 26 26" width="38" height="38" aria-hidden="true">${glyph}</svg></div>
@@ -2564,8 +2560,6 @@
     // Step 0 poses the bridging question; steps 1+ revert to the structural title.
     capTitle.innerHTML = step === 0
       ? 'How does Process Intelligence<br/><span class="hl">solve this?</span>'
-      : step === STEPS
-      ? 'This is Process Intelligence.<br/><span class="hl">Six layers, one conversation.</span>'
       : 'The layers of Process Intelligence.';
     capSub.innerHTML = step === 0
       ? 'Six layers of process intelligence &mdash; underpinned by a conversational interface anyone can use.'
